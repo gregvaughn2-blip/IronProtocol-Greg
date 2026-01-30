@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#09090b">
+  <title>Iron Protocol - Planet Fitness</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;Iron Protocol&quot;,&quot;short_name&quot;:&quot;IronProtocol&quot;,&quot;start_url&quot;:&quot;.&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;%2309090b&quot;,&quot;theme_color&quot;:&quot;%2309090b&quot;}">
+  <style>
+    * { -webkit-tap-highlight-color: transparent; }
+    body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    input[type="number"] { -moz-appearance: textfield; }
+    .safe-area-pb { padding-bottom: env(safe-area-inset-bottom, 12px); }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // Icons as simple SVG components
+    const ChevronLeft = ({ size = 24 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>;
+    const ChevronRight = ({ size = 24 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>;
+    const Dumbbell = ({ size = 24, className = "" }) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6.5 6.5 11 11"/><path d="m21 21-1-1"/><path d="m3 3 1 1"/><path d="m18 22 4-4"/><path d="m2 6 4-4"/><path d="m3 10 7-7"/><path d="m14 21 7-7"/></svg>;
+    const Calendar = ({ size = 24 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>;
+    const TrendingUp = ({ size = 24, className = "" }) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>;
+    const Check = ({ size = 24 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>;
+    const Menu = ({ size = 24 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>;
+    const X = ({ size = 24 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>;
+    const Moon = ({ size = 24 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>;
+    const Sun = ({ size = 24 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>;
+    const Clock = ({ size = 24 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>;
+    const Target = ({ size = 24 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>;
+    const Flame = ({ size = 24, className = "" }) => <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>;
+    const Info = ({ size = 24 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>;
+
+    // Full 12-month periodized program - PLANET FITNESS COMPATIBLE
+    const programData = {
+      phases: [
+        { name: 'Foundation & Hypertrophy', months: [1, 2, 3], repRange: '10-12 reps', rest: '60-90 sec', description: 'Build base strength and muscle. Focus on mind-muscle connection and form.' },
+        { name: 'Strength & Power', months: [4, 5, 6], repRange: '6-8 reps (compound), 8-10 (isolation)', rest: '2-3 min (compound), 60-90 sec (isolation)', description: 'Heavier loads, progressive overload emphasis. Build raw strength.' },
+        { name: 'Hypertrophy & Detail', months: [7, 8, 9], repRange: '8-12 reps with drop sets', rest: '45-60 sec', description: 'Higher volume, advanced techniques. Focus on lagging areas and definition.' },
+        { name: 'Peak & Refinement', months: [10, 11, 12], repRange: 'Varied (pyramid sets)', rest: 'Varied by technique', description: 'Mix of strength and hypertrophy. Peak conditioning and muscle maturity.' }
+      ],
+      months: {
+        1: {
+          emphasis: 'Upper Chest, Rear Delts, Long Head Triceps, Hamstrings',
+          days: {
+            1: { name: 'Push A', focus: 'Chest/Shoulders/Triceps', exercises: [
+              { name: 'Incline Dumbbell Press', sets: 4, reps: '10-12', target: 'Upper chest', notes: 'Use adjustable bench at 30-45°' },
+              { name: 'Smith Machine Flat Press', sets: 3, reps: '12', target: 'Overall chest', notes: 'Control the negative' },
+              { name: 'Incline Dumbbell Flyes', sets: 3, reps: '12', target: 'Upper chest stretch', notes: 'Deep stretch at bottom' },
+              { name: 'Seated Dumbbell OHP', sets: 4, reps: '10', target: 'All delt heads', notes: 'Keep core tight' },
+              { name: 'Overhead Dumbbell Extension', sets: 3, reps: '12', target: 'Long head tricep', notes: 'Single DB, both hands' },
+              { name: 'Lying Dumbbell Skull Crushers', sets: 3, reps: '12', target: 'Long head emphasis', notes: 'Lower behind head' }
+            ]},
+            2: { name: 'Pull A', focus: 'Back/Biceps/Rear Delts', exercises: [
+              { name: 'Wide Grip Lat Pulldown', sets: 4, reps: '10-12', target: 'Lat width', notes: 'Pull to upper chest' },
+              { name: 'Seated Cable Row (Wide)', sets: 4, reps: '12', target: 'Upper back thickness', notes: 'Squeeze shoulder blades' },
+              { name: 'Rear Delt Fly Machine', sets: 4, reps: '15', target: 'Rear delt focus', notes: 'Pec deck reversed' },
+              { name: 'Cable Face Pulls', sets: 3, reps: '15', target: 'Rear delts/external rotation', notes: 'High cable, rope attachment' },
+              { name: 'Dumbbell Curl', sets: 3, reps: '12', target: 'Overall bicep', notes: 'Standing, alternating' },
+              { name: 'Incline Dumbbell Curl', sets: 3, reps: '12', target: 'Long head bicep', notes: 'Bench at 45°' }
+            ]},
+            3: { name: 'Legs A', focus: 'Quad/Hamstring', exercises: [
+              { name: 'Leg Press', sets: 4, reps: '12', target: 'Quad foundation', notes: 'Feet middle of platform' },
+              { name: 'Smith Machine RDL', sets: 4, reps: '10', target: 'Hamstring emphasis', notes: 'Slight knee bend, hinge at hips' },
+              { name: 'Dumbbell Walking Lunges', sets: 3, reps: '12 each', target: 'Quad/glute', notes: 'Long strides' },
+              { name: 'Lying Leg Curl', sets: 4, reps: '12', target: 'Hamstring isolation', notes: 'Squeeze at top' },
+              { name: 'Standing Calf Raise Machine', sets: 4, reps: '15', target: 'Gastroc focus', notes: 'Full ROM' },
+              { name: 'Plank Hold', sets: 3, reps: '45 sec', target: 'Core stability', notes: 'Squeeze glutes' }
+            ]},
+            4: { name: 'Push B', focus: 'Chest/Shoulders/Triceps', exercises: [
+              { name: 'Smith Machine Incline Press', sets: 4, reps: '10', target: 'Upper chest', notes: 'Bench at 30°' },
+              { name: 'Dumbbell Bench Press', sets: 3, reps: '12', target: 'Chest stretch', notes: 'Full ROM' },
+              { name: 'Low-to-High Cable Flye', sets: 3, reps: '15', target: 'Upper chest', notes: 'Cross cables at top' },
+              { name: 'Cable Lateral Raises', sets: 4, reps: '12', target: 'Side delt width', notes: 'Single arm, lean away' },
+              { name: 'Smith Machine Close Grip Press', sets: 3, reps: '10', target: 'Tricep mass', notes: 'Hands shoulder width' },
+              { name: 'Cable Tricep Pushdowns', sets: 3, reps: '15', target: 'Lateral head', notes: 'Rope or bar' }
+            ]},
+            5: { name: 'Pull B', focus: 'Back/Biceps', exercises: [
+              { name: 'Assisted Pull-up Machine', sets: 4, reps: '8-10', target: 'Bicep/lat', notes: 'Chin-up grip' },
+              { name: 'Single Arm Dumbbell Row', sets: 4, reps: '10 each', target: 'Lat thickness', notes: 'Knee on bench' },
+              { name: 'Straight Arm Pulldowns', sets: 3, reps: '12', target: 'Lat isolation', notes: 'Keep arms straight' },
+              { name: 'Reverse Pec Deck', sets: 3, reps: '15', target: 'Rear delt', notes: 'Face the pad' },
+              { name: 'Dumbbell Hammer Curls', sets: 3, reps: '12', target: 'Brachialis', notes: 'Neutral grip' },
+              { name: 'Cable Curl', sets: 3, reps: '12', target: 'Peak contraction', notes: 'Low cable, bar' }
+            ]},
+            6: { name: 'Active Recovery', focus: 'Walking/Mobility', exercises: [
+              { name: 'Treadmill Walk (Incline)', sets: 1, reps: '45-60 min', target: 'Low intensity cardio', notes: '3.0-3.5 mph, 5-10% incline' },
+              { name: 'Hip Circles', sets: 2, reps: '10 each way', target: 'Hip mobility', notes: 'Hands on hips' },
+              { name: 'Cat-Cow Stretch', sets: 2, reps: '10 reps', target: 'Spine mobility', notes: 'On mat in stretch area' },
+              { name: 'World\'s Greatest Stretch', sets: 2, reps: '5 each side', target: 'Full body', notes: 'Lunge + rotation' },
+              { name: 'Band Pull Aparts', sets: 2, reps: '15', target: 'Shoulder health', notes: 'Bring resistance band' }
+            ]}
+          }
+        },
+        2: {
+          emphasis: 'Mid Chest, Side Delts, Medial Triceps, Quads',
+          days: {
+            1: { name: 'Push A', focus: 'Chest/Shoulders/Triceps', exercises: [
+              { name: 'Flat Dumbbell Press', sets: 4, reps: '10-12', target: 'Mid chest', notes: 'Squeeze at top' },
+              { name: 'Cable Crossover (Mid Height)', sets: 3, reps: '12', target: 'Inner chest', notes: 'Meet at chest level' },
+              { name: 'Push-ups (Feet Elevated)', sets: 3, reps: '15', target: 'Upper/mid chest', notes: 'Feet on bench' },
+              { name: 'Seated Dumbbell Press', sets: 4, reps: '10', target: 'All delts', notes: 'Upright bench' },
+              { name: 'Machine Lateral Raise', sets: 3, reps: '12', target: 'Side delt', notes: 'Use lateral raise machine' },
+              { name: 'Cable Rope Pushdowns', sets: 4, reps: '12', target: 'Medial/lateral', notes: 'Spread rope at bottom' }
+            ]},
+            2: { name: 'Pull A', focus: 'Back/Biceps', exercises: [
+              { name: 'Neutral Grip Pulldown', sets: 4, reps: '10-12', target: 'Overall lat', notes: 'V-bar attachment' },
+              { name: 'Chest Supported Row Machine', sets: 4, reps: '10', target: 'Mid-back', notes: 'Use machine row' },
+              { name: 'Rear Delt Fly Machine', sets: 4, reps: '15', target: 'Rear delt', notes: 'Slow and controlled' },
+              { name: 'Face Pulls', sets: 3, reps: '15', target: 'External rotation', notes: 'High cable, rope' },
+              { name: 'EZ Bar Cable Curl', sets: 3, reps: '12', target: 'Overall bicep', notes: 'Low cable + EZ bar' },
+              { name: 'Cross Body Dumbbell Curl', sets: 3, reps: '12', target: 'Brachialis', notes: 'Curl across body' }
+            ]},
+            3: { name: 'Legs A', focus: 'Quad Emphasis', exercises: [
+              { name: 'Smith Machine Squat', sets: 4, reps: '10', target: 'Quad emphasis', notes: 'Feet slightly forward' },
+              { name: 'Dumbbell Bulgarian Split Squat', sets: 3, reps: '10 each', target: 'Single leg', notes: 'Rear foot on bench' },
+              { name: 'Hip Thrust Machine', sets: 4, reps: '12', target: 'Glute focus', notes: 'Or barbell on Smith' },
+              { name: 'Leg Extension', sets: 3, reps: '15', target: 'Quad isolation', notes: 'Squeeze at top' },
+              { name: 'Standing Calf Raises', sets: 4, reps: '15', target: 'Gastroc', notes: 'Calf raise machine' },
+              { name: 'Hanging Knee Raises', sets: 3, reps: '12', target: 'Lower abs', notes: 'Captain\'s chair' }
+            ]},
+            4: { name: 'Push B', focus: 'Chest/Shoulders/Triceps', exercises: [
+              { name: 'Chest Press Machine', sets: 4, reps: '12', target: 'Mid chest', notes: 'Adjust seat height' },
+              { name: 'Dumbbell Flyes', sets: 3, reps: '12', target: 'Chest stretch', notes: 'Flat bench' },
+              { name: 'Landmine Press', sets: 3, reps: '10 each', target: 'Upper chest', notes: 'Corner + barbell or cable' },
+              { name: 'Dumbbell Upright Row (Wide)', sets: 3, reps: '12', target: 'Side delt', notes: 'Lead with elbows' },
+              { name: 'Tricep Pushdown (Bar)', sets: 3, reps: '12', target: 'Lateral head', notes: 'Straight bar' },
+              { name: 'Bench Dips', sets: 3, reps: '15', target: 'Overall tricep', notes: 'Hands on bench' }
+            ]},
+            5: { name: 'Pull B', focus: 'Back/Biceps', exercises: [
+              { name: 'Lat Pulldown (V-Handle)', sets: 4, reps: '12', target: 'Lower lat', notes: 'Lean back slightly' },
+              { name: 'Smith Machine Row', sets: 4, reps: '10', target: 'Lower lat/bicep', notes: 'Underhand grip' },
+              { name: 'Prone Y-Raises', sets: 3, reps: '15', target: 'Rear delt/trap', notes: 'Incline bench, light DBs' },
+              { name: 'Dumbbell Shrugs', sets: 3, reps: '12', target: 'Trap', notes: 'Hold at top' },
+              { name: 'Incline Dumbbell Hammer Curl', sets: 3, reps: '12', target: 'Long head', notes: 'Bench at 45°' },
+              { name: 'Cable Preacher Curl', sets: 3, reps: '12', target: 'Short head', notes: 'Preacher bench + low cable' }
+            ]},
+            6: { name: 'Active Recovery', focus: 'Walking/Mobility', exercises: [
+              { name: 'Treadmill Walk (Incline)', sets: 1, reps: '45-60 min', target: 'Low intensity cardio', notes: '3.5 mph, 8% incline' },
+              { name: 'Foam Rolling', sets: 1, reps: '10 min', target: 'Recovery', notes: 'Quads, IT band, back' },
+              { name: '90/90 Hip Stretch', sets: 2, reps: '60 sec each', target: 'Hip mobility', notes: 'On mat' },
+              { name: 'Thread the Needle', sets: 2, reps: '8 each side', target: 'Thoracic spine', notes: 'Quadruped position' },
+              { name: 'Band Pull Aparts', sets: 3, reps: '15', target: 'Shoulder health', notes: 'Bring band' }
+            ]}
+          }
+        },
+        3: {
+          emphasis: 'Lower Chest, Front Delts, Short Head Triceps, Glutes',
+          days: {
+            1: { name: 'Push A', focus: 'Chest/Shoulders/Triceps', exercises: [
+              { name: 'Decline Dumbbell Press', sets: 4, reps: '10-12', target: 'Lower chest', notes: 'Decline bench' },
+              { name: 'Dips Machine (Chest Focus)', sets: 3, reps: '10-12', target: 'Lower chest', notes: 'Lean forward' },
+              { name: 'Pec Deck', sets: 3, reps: '12', target: 'Inner chest', notes: 'Full squeeze' },
+              { name: 'Dumbbell Front Raises', sets: 3, reps: '12', target: 'Front delt', notes: 'Alternating' },
+              { name: 'Arnold Press', sets: 4, reps: '10', target: 'All delts', notes: 'Rotate as you press' },
+              { name: 'Diamond Push-ups', sets: 3, reps: 'AMRAP', target: 'Short head tricep', notes: 'Hands together' }
+            ]},
+            2: { name: 'Pull A', focus: 'Back/Biceps', exercises: [
+              { name: 'Smith Machine RDL', sets: 4, reps: '8', target: 'Full posterior', notes: 'Hinge at hips' },
+              { name: 'T-Bar Row Machine', sets: 4, reps: '10', target: 'Mid-back thickness', notes: 'Chest supported' },
+              { name: 'Close Grip Pulldown', sets: 3, reps: '12', target: 'Lower lat', notes: 'Supinated grip' },
+              { name: 'Cable Face Pull', sets: 3, reps: '15', target: 'Rear delt', notes: 'Pull to forehead' },
+              { name: 'Preacher Curl Machine', sets: 3, reps: '12', target: 'Short head', notes: 'Or preacher bench + DBs' },
+              { name: 'Concentration Curl', sets: 3, reps: '12', target: 'Peak', notes: 'Seated, elbow on thigh' }
+            ]},
+            3: { name: 'Legs A', focus: 'Glute Emphasis', exercises: [
+              { name: 'Hip Thrust (Smith Machine)', sets: 4, reps: '12', target: 'Glute max', notes: 'Back on bench' },
+              { name: 'Smith Machine Sumo Squat', sets: 4, reps: '10', target: 'Glute/adductor', notes: 'Wide stance, toes out' },
+              { name: 'Dumbbell Goblet Squat', sets: 3, reps: '12', target: 'Quad/glute', notes: 'Hold DB at chest' },
+              { name: 'Cable Kickback', sets: 3, reps: '15 each', target: 'Glute isolation', notes: 'Ankle strap' },
+              { name: 'Seated Calf Raises', sets: 4, reps: '15', target: 'Soleus', notes: 'Seated calf machine' },
+              { name: 'Ab Wheel Rollout', sets: 3, reps: '10', target: 'Core', notes: 'On knees' }
+            ]},
+            4: { name: 'Push B', focus: 'Chest/Shoulders/Triceps', exercises: [
+              { name: 'Smith Machine Decline Press', sets: 4, reps: '10', target: 'Lower chest', notes: 'Decline bench in Smith' },
+              { name: 'Low Cable Flye', sets: 3, reps: '12', target: 'Lower inner chest', notes: 'Cable low position' },
+              { name: 'Shoulder Press Machine', sets: 4, reps: '10', target: 'Overall delt', notes: 'Adjust seat' },
+              { name: 'Bent Over Dumbbell Lateral Raise', sets: 3, reps: '15', target: 'Rear delt', notes: 'Chest on incline bench' },
+              { name: 'Close Grip Push-ups', sets: 3, reps: 'AMRAP', target: 'Tricep', notes: 'Hands close together' },
+              { name: 'Overhead Cable Extension', sets: 3, reps: '12', target: 'Long head', notes: 'Rope, face away' }
+            ]},
+            5: { name: 'Pull B', focus: 'Back/Biceps', exercises: [
+              { name: 'Assisted Pull-ups (Wide)', sets: 4, reps: 'AMRAP', target: 'Lat width', notes: 'Wide overhand grip' },
+              { name: 'Meadows Row (Dumbbell)', sets: 4, reps: '10 each', target: 'Lat/rear delt', notes: 'Angled stance' },
+              { name: 'Reverse Grip Pulldown', sets: 3, reps: '12', target: 'Lower lat/bicep', notes: 'Supinated grip' },
+              { name: 'Dumbbell Shrug', sets: 3, reps: '12', target: 'Upper trap', notes: 'Hold at top 2 sec' },
+              { name: 'Spider Curl', sets: 3, reps: '12', target: 'Short head', notes: 'Chest on incline bench' },
+              { name: 'Reverse Curl (Cable)', sets: 3, reps: '12', target: 'Forearm', notes: 'Overhand grip' }
+            ]},
+            6: { name: 'Active Recovery', focus: 'Walking/Mobility', exercises: [
+              { name: 'Treadmill Walk', sets: 1, reps: '45-60 min', target: 'Low intensity cardio', notes: '3.5 mph' },
+              { name: 'Pigeon Stretch', sets: 2, reps: '60 sec each', target: 'Hip flexor/glute', notes: 'On mat' },
+              { name: 'Bretzel Stretch', sets: 2, reps: '45 sec each', target: 'Full body', notes: 'Lying rotation' },
+              { name: 'Wall Angels', sets: 2, reps: '10', target: 'Shoulder mobility', notes: 'Back against wall' },
+              { name: 'Deep Squat Hold', sets: 3, reps: '30 sec', target: 'Ankle/hip mobility', notes: 'Hold onto rack' }
+            ]}
+          }
+        },
+        4: {
+          emphasis: 'Strength Phase - Upper Chest, Long Head Triceps, Posterior Chain',
+          days: {
+            1: { name: 'Push A (Heavy)', focus: 'Strength - Chest/Shoulders', exercises: [
+              { name: 'Smith Machine Incline Press', sets: 5, reps: '5', target: 'Upper chest strength', notes: 'Heavy, controlled' },
+              { name: 'Flat Dumbbell Press', sets: 4, reps: '6-8', target: 'Chest mass', notes: 'Heaviest DBs you can handle' },
+              { name: 'Incline Dumbbell Flyes', sets: 3, reps: '10', target: 'Upper chest stretch', notes: 'Moderate weight' },
+              { name: 'Smith Machine OHP', sets: 4, reps: '6', target: 'Overhead strength', notes: 'Seated or standing' },
+              { name: 'Smith Machine Close Grip Press', sets: 4, reps: '6-8', target: 'Tricep strength', notes: 'Shoulder width grip' },
+              { name: 'Lying Dumbbell Skull Crushers', sets: 3, reps: '10', target: 'Long head', notes: 'Lower behind head' }
+            ]},
+            2: { name: 'Pull A (Heavy)', focus: 'Strength - Back', exercises: [
+              { name: 'Assisted Pull-ups (Heavy)', sets: 5, reps: '5', target: 'Lat strength', notes: 'Minimum assistance' },
+              { name: 'Smith Machine Row', sets: 4, reps: '6-8', target: 'Back thickness', notes: 'Overhand, bent over' },
+              { name: 'Smith Machine Rack Pulls', sets: 4, reps: '5', target: 'Upper back/trap', notes: 'Start at knee height' },
+              { name: 'Face Pulls', sets: 3, reps: '15', target: 'Rear delt health', notes: 'Light, high reps' },
+              { name: 'Dumbbell Curl (Heavy)', sets: 4, reps: '8', target: 'Bicep strength', notes: 'Cheat curl allowed' },
+              { name: 'Hammer Curl', sets: 3, reps: '10', target: 'Brachialis', notes: 'Strict form' }
+            ]},
+            3: { name: 'Legs A (Heavy)', focus: 'Strength - Lower', exercises: [
+              { name: 'Smith Machine Squat', sets: 5, reps: '5', target: 'Quad/glute strength', notes: 'Feet forward, heavy' },
+              { name: 'Smith Machine RDL', sets: 4, reps: '6-8', target: 'Posterior chain', notes: 'Hinge pattern' },
+              { name: 'Leg Press (Heavy)', sets: 4, reps: '8', target: 'Quad volume', notes: 'Full stack if possible' },
+              { name: 'Lying Leg Curl', sets: 3, reps: '8', target: 'Hamstring', notes: 'Heavy' },
+              { name: 'Standing Calf Raises', sets: 5, reps: '12', target: 'Gastroc', notes: 'Pause at top' },
+              { name: 'Weighted Plank', sets: 3, reps: '45 sec', target: 'Core', notes: 'Plate on back' }
+            ]},
+            4: { name: 'Push B (Volume)', focus: 'Hypertrophy - Chest/Shoulders', exercises: [
+              { name: 'Incline Dumbbell Press', sets: 4, reps: '8-10', target: 'Upper chest', notes: 'Moderate weight' },
+              { name: 'Chest Press Machine', sets: 3, reps: '10', target: 'Chest pump', notes: 'Squeeze at top' },
+              { name: 'Cable Flyes (Low to High)', sets: 3, reps: '12', target: 'Upper chest', notes: 'Cross at top' },
+              { name: 'Dumbbell Lateral Raises', sets: 4, reps: '12', target: 'Side delt width', notes: 'Light, strict' },
+              { name: 'Overhead Rope Extension', sets: 4, reps: '10', target: 'Long head', notes: 'Face away' },
+              { name: 'Cable Pushdowns', sets: 3, reps: '12', target: 'Pump', notes: 'Rope or bar' }
+            ]},
+            5: { name: 'Pull B (Volume)', focus: 'Hypertrophy - Back', exercises: [
+              { name: 'Lat Pulldown', sets: 4, reps: '10', target: 'Lat width', notes: 'Wide grip' },
+              { name: 'Single Arm Cable Row', sets: 4, reps: '10 each', target: 'Unilateral', notes: 'Twist at end' },
+              { name: 'Reverse Pec Deck', sets: 4, reps: '15', target: 'Rear delt', notes: 'Slow negatives' },
+              { name: 'Dumbbell Shrugs', sets: 4, reps: '12', target: 'Trap', notes: 'High reps' },
+              { name: 'Incline Dumbbell Curl', sets: 4, reps: '10', target: 'Long head', notes: 'Full stretch' },
+              { name: 'Cable Curl', sets: 3, reps: '12', target: 'Peak', notes: 'Squeeze at top' }
+            ]},
+            6: { name: 'Active Recovery', focus: 'Walking/Mobility', exercises: [
+              { name: 'Treadmill Walk (Incline)', sets: 1, reps: '45-60 min', target: 'Recovery cardio', notes: '10-12% incline' },
+              { name: 'Full Body Stretch', sets: 1, reps: '15 min', target: 'Joint health', notes: 'All major muscles' }
+            ]}
+          }
+        },
+        5: {
+          emphasis: 'Strength Phase - Lower Chest, Lateral Tricep, Quad Dominant',
+          days: {
+            1: { name: 'Push A (Heavy)', focus: 'Strength Focus', exercises: [
+              { name: 'Smith Machine Flat Press', sets: 5, reps: '5', target: 'Chest strength', notes: 'Max effort' },
+              { name: 'Decline Dumbbell Press', sets: 4, reps: '6-8', target: 'Lower chest', notes: 'Heavy DBs' },
+              { name: 'Dips Machine (Heavy)', sets: 4, reps: '6-8', target: 'Chest/tri power', notes: 'Add weight if possible' },
+              { name: 'Smith Machine Push Press', sets: 4, reps: '5', target: 'Explosive overhead', notes: 'Use legs to drive' },
+              { name: 'Close Grip Smith Press', sets: 4, reps: '8', target: 'Tricep strength', notes: 'Slow negative' },
+              { name: 'Tricep Dips (Machine)', sets: 3, reps: '10', target: 'Pump', notes: 'Upright position' }
+            ]},
+            2: { name: 'Pull A (Heavy)', focus: 'Strength Focus', exercises: [
+              { name: 'Smith Machine RDL', sets: 5, reps: '5', target: 'Full posterior', notes: 'Hip hinge, heavy' },
+              { name: 'Assisted Chin-ups (Heavy)', sets: 4, reps: '6-8', target: 'Bicep/lat', notes: 'Underhand grip' },
+              { name: 'Chest Supported Row Machine', sets: 4, reps: '6', target: 'Explosive back', notes: 'Pull hard' },
+              { name: 'Rear Delt Cable Row', sets: 3, reps: '12', target: 'Rear delt', notes: 'High cable, wide' },
+              { name: 'Preacher Curl Machine', sets: 4, reps: '8', target: 'Short head', notes: 'Heavy' },
+              { name: 'Reverse Cable Curl', sets: 3, reps: '12', target: 'Forearm', notes: 'Overhand grip' }
+            ]},
+            3: { name: 'Legs A (Heavy)', focus: 'Quad Strength', exercises: [
+              { name: 'Smith Machine Front Squat', sets: 5, reps: '5', target: 'Quad strength', notes: 'Bar on front delts' },
+              { name: 'Hack Squat Machine', sets: 4, reps: '8', target: 'Quad focus', notes: 'Feet low on platform' },
+              { name: 'Leg Extension', sets: 4, reps: '12', target: 'Quad isolation', notes: 'Pause at top' },
+              { name: 'Smith Machine Good Morning', sets: 3, reps: '10', target: 'Lower back/ham', notes: 'Light, controlled' },
+              { name: 'Seated Calf Raises', sets: 4, reps: '15', target: 'Soleus', notes: 'Full ROM' },
+              { name: 'Ab Wheel Rollout', sets: 3, reps: '12', target: 'Core', notes: 'On knees' }
+            ]},
+            4: { name: 'Push B (Volume)', focus: 'Volume Focus', exercises: [
+              { name: 'Decline Smith Press', sets: 4, reps: '8-10', target: 'Lower chest', notes: 'Moderate weight' },
+              { name: 'Dumbbell Bench', sets: 3, reps: '10', target: 'Chest stretch', notes: 'Full ROM' },
+              { name: 'Pec Deck', sets: 3, reps: '12', target: 'Inner chest', notes: 'Squeeze hard' },
+              { name: 'Arnold Press', sets: 4, reps: '10', target: 'Delt rotation', notes: 'Full rotation' },
+              { name: 'Close Grip Dumbbell Press', sets: 4, reps: '10', target: 'Tricep mass', notes: 'Neutral grip' },
+              { name: 'Cable Kickbacks', sets: 3, reps: '15', target: 'Lateral head', notes: 'Single arm' }
+            ]},
+            5: { name: 'Pull B (Volume)', focus: 'Volume Focus', exercises: [
+              { name: 'Close Grip Pulldown', sets: 4, reps: '10', target: 'Lat thickness', notes: 'V-bar' },
+              { name: 'T-Bar Row Machine', sets: 4, reps: '10', target: 'Mid-back', notes: 'Chest supported' },
+              { name: 'Cable Rear Delt Fly', sets: 4, reps: '15', target: 'Isolation', notes: 'High cable, no handle' },
+              { name: 'Face Pulls', sets: 3, reps: '15', target: 'Health', notes: 'Light, controlled' },
+              { name: 'Spider Curls', sets: 4, reps: '12', target: 'Short head', notes: 'Incline bench' },
+              { name: 'Hammer Curl', sets: 3, reps: '12', target: 'Brachialis', notes: 'Strict form' }
+            ]},
+            6: { name: 'Active Recovery', focus: 'Walking/Mobility', exercises: [
+              { name: 'Incline Treadmill Walk', sets: 1, reps: '45-60 min', target: 'Cardio', notes: '12-15% incline' },
+              { name: 'Hip Mobility', sets: 1, reps: '15 min', target: 'Recovery', notes: '90/90, pigeon' }
+            ]}
+          }
+        },
+        6: {
+          emphasis: 'Strength Phase - Full Chest, All Delts, Balanced Legs',
+          days: {
+            1: { name: 'Push A (Heavy)', focus: 'Max Strength', exercises: [
+              { name: 'Smith Machine Bench Press', sets: 5, reps: '5', target: 'Max strength', notes: 'Work up to heavy 5' },
+              { name: 'Smith Machine Incline', sets: 4, reps: '6', target: 'Upper strength', notes: '30° angle' },
+              { name: 'Decline Chest Machine', sets: 3, reps: '8', target: 'Lower chest', notes: 'Full ROM' },
+              { name: 'Smith Machine Military Press', sets: 5, reps: '5', target: 'Overhead max', notes: 'Seated' },
+              { name: 'Close Grip Smith Bench', sets: 4, reps: '5', target: 'Lockout strength', notes: 'Heavy' },
+              { name: 'Dips Machine', sets: 3, reps: '8', target: 'Volume', notes: 'Lean forward' }
+            ]},
+            2: { name: 'Pull A (Heavy)', focus: 'Max Strength', exercises: [
+              { name: 'Smith Machine Row', sets: 5, reps: '5', target: 'Row strength', notes: 'Overhand, heavy' },
+              { name: 'Assisted Pull-ups', sets: 4, reps: '5', target: 'Vertical pull', notes: 'Minimum assist' },
+              { name: 'Single Arm DB Row (Heavy)', sets: 3, reps: '15-20', target: 'Grip/lat', notes: 'Kroc row style' },
+              { name: 'Face Pulls', sets: 3, reps: '15', target: 'Health', notes: 'Light' },
+              { name: 'Heavy Dumbbell Curl', sets: 4, reps: '6-8', target: 'Overload', notes: 'Cheat curl OK' },
+              { name: 'Strict Cable Curl', sets: 3, reps: '10', target: 'Form', notes: 'No momentum' }
+            ]},
+            3: { name: 'Legs A (Heavy)', focus: 'Full Lower', exercises: [
+              { name: 'Smith Machine Squat', sets: 5, reps: '5', target: 'Squat max', notes: 'Work up heavy' },
+              { name: 'Smith Machine RDL', sets: 4, reps: '5', target: 'Full pull', notes: 'Heavy hinge' },
+              { name: 'Dumbbell Walking Lunges', sets: 3, reps: '10 each', target: 'Unilateral', notes: 'Heavy DBs' },
+              { name: 'Leg Curl', sets: 4, reps: '10', target: 'Hamstring', notes: 'Controlled' },
+              { name: 'Calf Raises', sets: 5, reps: '12', target: 'Full calf', notes: 'Standing' },
+              { name: 'Weighted Decline Sit-ups', sets: 3, reps: '15', target: 'Core', notes: 'Plate on chest' }
+            ]},
+            4: { name: 'Push B (Volume)', focus: 'Volume', exercises: [
+              { name: 'Dumbbell Bench', sets: 4, reps: '10', target: 'Chest', notes: 'Moderate weight' },
+              { name: 'Incline Chest Machine', sets: 3, reps: '12', target: 'Upper', notes: 'Squeeze' },
+              { name: 'Cable Flyes', sets: 3, reps: '15', target: 'Stretch', notes: 'Mid height' },
+              { name: 'Lateral Raise Machine', sets: 4, reps: '12', target: 'Side delt', notes: 'Constant tension' },
+              { name: 'Overhead Extension', sets: 4, reps: '12', target: 'Long head', notes: 'Cable or DB' },
+              { name: 'Pushdowns', sets: 3, reps: '15', target: 'Pump', notes: 'Rope' }
+            ]},
+            5: { name: 'Pull B (Volume)', focus: 'Volume', exercises: [
+              { name: 'Lat Pulldown', sets: 4, reps: '12', target: 'Width', notes: 'Wide grip' },
+              { name: 'Seated Cable Row', sets: 4, reps: '12', target: 'Thickness', notes: 'Close grip' },
+              { name: 'Rear Delt Flyes', sets: 4, reps: '15', target: 'Rear', notes: 'Bent over or machine' },
+              { name: 'Dumbbell Shrugs', sets: 3, reps: '15', target: 'Traps', notes: 'Light, high rep' },
+              { name: 'EZ Cable Curl', sets: 4, reps: '12', target: 'Bicep', notes: 'Full ROM' },
+              { name: 'Concentration Curl', sets: 3, reps: '12', target: 'Peak', notes: 'Squeeze hard' }
+            ]},
+            6: { name: 'Active Recovery', focus: 'Recovery', exercises: [
+              { name: 'Treadmill Walk', sets: 1, reps: '45-60 min', target: 'Cardio', notes: 'Easy pace' },
+              { name: 'Full Body Stretch', sets: 1, reps: '15 min', target: 'Flexibility', notes: 'All muscles' }
+            ]}
+          }
+        },
+        7: {
+          emphasis: 'Hypertrophy & Detail - Upper Chest + Drop Sets',
+          days: {
+            1: { name: 'Chest Hypertrophy', focus: 'Upper Chest Detail', exercises: [
+              { name: 'Incline DB Press + DROP SET', sets: 4, reps: '10-12 + drop', target: 'Upper chest', notes: 'Drop weight 30%, 8 more' },
+              { name: 'Low Incline Smith Press', sets: 3, reps: '12', target: 'Upper chest', notes: '15-20° angle' },
+              { name: 'Cable Flye (Low-High)', sets: 4, reps: '15', target: 'Upper isolation', notes: 'Cross at top' },
+              { name: 'Flat DB Press + DROP SET', sets: 3, reps: '12 + drop', target: 'Mid chest', notes: 'Drop 30%' },
+              { name: 'Push-ups', sets: 3, reps: 'AMRAP', target: 'Burnout', notes: 'To failure' },
+              { name: 'Plank Circuit', sets: 4, reps: '60 sec', target: 'Core endurance', notes: 'Side planks too' }
+            ]},
+            2: { name: 'Back Hypertrophy', focus: 'Width Focus', exercises: [
+              { name: 'Wide Grip Pulldown + DROP', sets: 4, reps: '10-12 + drop', target: 'Lat width', notes: 'Drop 30%' },
+              { name: 'Assisted Pull-ups', sets: 4, reps: '8-10', target: 'Width', notes: 'Wide grip' },
+              { name: 'Wide Grip Cable Row', sets: 4, reps: '12', target: 'Upper back', notes: 'Long bar, wide' },
+              { name: 'Straight Arm Pulldown', sets: 3, reps: '15', target: 'Lat sweep', notes: 'Keep arms straight' },
+              { name: 'Face Pulls', sets: 4, reps: '15', target: 'Rear delt', notes: 'High cable' },
+              { name: 'Hanging Knee Raises', sets: 3, reps: '20', target: 'Lower abs', notes: 'Captain\'s chair' }
+            ]},
+            3: { name: 'Legs & Core', focus: 'Full Lower', exercises: [
+              { name: 'Leg Press + DROP SET', sets: 4, reps: '12 + drop', target: 'Quad', notes: 'Strip plates' },
+              { name: 'Smith Machine RDL', sets: 4, reps: '10', target: 'Hamstring', notes: 'Feel the stretch' },
+              { name: 'Walking Lunges', sets: 3, reps: '15 each', target: 'Single leg', notes: 'Long strides' },
+              { name: 'Leg Extension', sets: 4, reps: '15', target: 'Quad detail', notes: 'Squeeze' },
+              { name: 'Leg Curl', sets: 4, reps: '12', target: 'Hamstring', notes: 'Controlled' },
+              { name: 'Calf Raises', sets: 5, reps: '15', target: 'Full calf', notes: 'Both machines' }
+            ]},
+            4: { name: 'Shoulders & Arms', focus: 'Detail Work', exercises: [
+              { name: 'Seated DB OHP', sets: 4, reps: '10', target: 'Overall delt', notes: 'Full ROM' },
+              { name: 'Lateral Raises + DROP', sets: 4, reps: '15 + drop', target: 'Side delt', notes: 'Drop 30%' },
+              { name: 'Rear Delt Fly Machine', sets: 4, reps: '15', target: 'Rear delt', notes: 'Slow negatives' },
+              { name: 'EZ Cable Curl', sets: 4, reps: '12', target: 'Bicep', notes: 'Strict form' },
+              { name: 'Overhead Tricep Ext', sets: 4, reps: '12', target: 'Long head', notes: 'Cable rope' },
+              { name: 'Curl / Pushdown Superset', sets: 3, reps: '12 each', target: 'Arms superset', notes: 'No rest between' }
+            ]},
+            5: { name: 'Full Body Pump', focus: 'Blood Flow', exercises: [
+              { name: 'Chest Press Machine', sets: 3, reps: '15', target: 'Chest pump', notes: 'Light, fast' },
+              { name: 'Lat Pulldown', sets: 3, reps: '15', target: 'Back pump', notes: 'Squeeze' },
+              { name: 'Leg Press', sets: 3, reps: '15', target: 'Leg pump', notes: 'Moderate weight' },
+              { name: 'Lateral Raises', sets: 3, reps: '20', target: 'Delt pump', notes: 'Light' },
+              { name: 'Cable Curl', sets: 3, reps: '15', target: 'Bicep pump', notes: 'Constant tension' },
+              { name: 'Pushdowns', sets: 3, reps: '15', target: 'Tricep pump', notes: 'Fast reps' }
+            ]},
+            6: { name: 'Active Recovery', focus: 'Walking/Mobility', exercises: [
+              { name: 'Treadmill Walk', sets: 1, reps: '45-60 min', target: 'Recovery', notes: 'Easy pace' },
+              { name: 'Yoga/Stretch', sets: 1, reps: '20 min', target: 'Flexibility', notes: 'Use stretch area' }
+            ]}
+          }
+        },
+        8: {
+          emphasis: 'Hypertrophy & Detail - Mid Chest + Supersets',
+          days: {
+            1: { name: 'Push (Superset)', focus: 'Chest/Tricep Supersets', exercises: [
+              { name: 'Flat DB Press / Pushdowns SS', sets: 4, reps: '10/12', target: 'Chest/Tri', notes: 'No rest between' },
+              { name: 'Incline Machine / OH Ext SS', sets: 3, reps: '12/12', target: 'Upper/Tri', notes: 'Superset' },
+              { name: 'Cable Flyes', sets: 3, reps: '15', target: 'Chest isolation', notes: 'Mid height' },
+              { name: 'Seated DB OHP', sets: 4, reps: '10', target: 'Delts', notes: 'Strict form' },
+              { name: 'Lateral / Front Raise SS', sets: 3, reps: '12/12', target: 'Delts', notes: 'Superset' },
+              { name: 'Close Grip DB Press', sets: 3, reps: '10', target: 'Tricep finisher', notes: 'Neutral grip' }
+            ]},
+            2: { name: 'Pull (Superset)', focus: 'Back/Bicep Supersets', exercises: [
+              { name: 'Pulldown / Curl SS', sets: 4, reps: '10/10', target: 'Lat/Bicep', notes: 'Superset' },
+              { name: 'Seated Row / Hammer Curl SS', sets: 4, reps: '10/10', target: 'Back/Bicep', notes: 'Superset' },
+              { name: 'Face Pulls', sets: 3, reps: '15', target: 'Rear delt', notes: 'Light' },
+              { name: 'Straight Arm Pulldown', sets: 3, reps: '12', target: 'Lat isolation', notes: 'Keep arms straight' },
+              { name: 'Preacher Curl Machine', sets: 3, reps: '12', target: 'Short head', notes: 'Squeeze' },
+              { name: 'Reverse Curl', sets: 3, reps: '12', target: 'Forearm', notes: 'Cable or DBs' }
+            ]},
+            3: { name: 'Legs (Giant Sets)', focus: 'High Volume', exercises: [
+              { name: 'Smith Machine Squat', sets: 4, reps: '10', target: 'Quad/Glute', notes: 'Controlled' },
+              { name: 'Smith Machine RDL', sets: 4, reps: '10', target: 'Hamstring', notes: 'Feel stretch' },
+              { name: 'Leg Press', sets: 3, reps: '12', target: 'Quad', notes: 'Moderate weight' },
+              { name: 'Leg Curl', sets: 3, reps: '12', target: 'Hamstring', notes: 'Squeeze' },
+              { name: 'Leg Ext / Curl Superset', sets: 3, reps: '15/15', target: 'Quad/Ham', notes: 'No rest' },
+              { name: 'Calf Raises', sets: 5, reps: '15', target: 'Calves', notes: 'Alternate machines' }
+            ]},
+            4: { name: 'Upper (Superset)', focus: 'Full Upper', exercises: [
+              { name: 'Incline Press / Row SS', sets: 4, reps: '10/10', target: 'Push/Pull', notes: 'DB or machine' },
+              { name: 'Dips / Pull-ups SS', sets: 3, reps: 'AMRAP', target: 'Bodyweight', notes: 'Assisted OK' },
+              { name: 'Lateral / Rear Delt SS', sets: 3, reps: '12/15', target: 'Delts', notes: 'Superset' },
+              { name: 'Curl / Extension SS', sets: 4, reps: '12/12', target: 'Arms', notes: 'Superset' },
+              { name: 'Cable Flyes', sets: 3, reps: '15', target: 'Chest finish', notes: 'Squeeze' },
+              { name: 'Face Pulls', sets: 3, reps: '15', target: 'Health', notes: 'Always' }
+            ]},
+            5: { name: 'Conditioning', focus: 'Metabolic', exercises: [
+              { name: 'Circuit: Push/Pull/Squat', sets: 4, reps: '10 each', target: 'Full body', notes: 'Machines, no rest' },
+              { name: 'Stairclimber Intervals', sets: 5, reps: '1 min fast/1 slow', target: 'Conditioning', notes: '10 min total' },
+              { name: 'Dumbbell Swings', sets: 4, reps: '20', target: 'Posterior', notes: 'Like kettlebell' },
+              { name: 'Step-ups', sets: 4, reps: '10 each', target: 'Power', notes: 'On bench' },
+              { name: 'Farmer Carries', sets: 4, reps: '40 yards', target: 'Grip/Core', notes: 'Heavy DBs' },
+              { name: 'Plank', sets: 3, reps: '60 sec', target: 'Core', notes: 'Squeeze everything' }
+            ]},
+            6: { name: 'Active Recovery', focus: 'Walking', exercises: [
+              { name: 'Treadmill Walk', sets: 1, reps: '45-60 min', target: 'Recovery', notes: 'Easy' },
+              { name: 'Stretching', sets: 1, reps: '15 min', target: 'Flexibility', notes: 'Full body' }
+            ]}
+          }
+        },
+        9: {
+          emphasis: 'Hypertrophy & Detail - Lower Chest + Intensity',
+          days: {
+            1: { name: 'Chest Focus', focus: 'All Angles', exercises: [
+              { name: 'Decline DB Press + DROP', sets: 4, reps: '10 + drop', target: 'Lower chest', notes: 'Drop 30%' },
+              { name: 'Flat Dumbbell Press', sets: 4, reps: '10', target: 'Mid chest', notes: 'Full ROM' },
+              { name: 'Incline Chest Machine', sets: 3, reps: '12', target: 'Upper chest', notes: 'Squeeze' },
+              { name: 'Dips Machine', sets: 3, reps: 'AMRAP', target: 'Lower/Tri', notes: 'Lean forward' },
+              { name: 'Pec Deck + DROP', sets: 3, reps: '15 + drop', target: 'Inner chest', notes: 'Drop 30%' },
+              { name: 'Push-ups', sets: 2, reps: 'Failure', target: 'Burnout', notes: 'To complete failure' }
+            ]},
+            2: { name: 'Back Focus', focus: 'Thickness', exercises: [
+              { name: 'Smith Machine Row', sets: 4, reps: '8', target: 'Thickness', notes: 'Heavy, controlled' },
+              { name: 'T-Bar Row Machine', sets: 4, reps: '10', target: 'Mid back', notes: 'Chest supported' },
+              { name: 'Pulldown + DROP', sets: 3, reps: '12 + drop', target: 'Width', notes: 'Drop weight' },
+              { name: 'Cable Row', sets: 3, reps: '12', target: 'Detail', notes: 'Close grip' },
+              { name: 'Rear Delt Machine', sets: 4, reps: '15', target: 'Rear', notes: 'Slow' },
+              { name: 'Dumbbell Shrugs', sets: 4, reps: '12', target: 'Traps', notes: 'Hold at top' }
+            ]},
+            3: { name: 'Legs Focus', focus: 'Definition', exercises: [
+              { name: 'Smith Machine Squat', sets: 4, reps: '10', target: 'Foundation', notes: 'Full depth' },
+              { name: 'Smith Machine RDL', sets: 4, reps: '10', target: 'Hamstring', notes: 'Stretch' },
+              { name: 'Leg Press + DROP', sets: 3, reps: '15 + drop', target: 'Quad pump', notes: 'Strip plates' },
+              { name: 'Leg Extension', sets: 3, reps: '15', target: 'Quad detail', notes: 'Pause at top' },
+              { name: 'Leg Curl', sets: 3, reps: '15', target: 'Ham detail', notes: 'Squeeze' },
+              { name: 'Calves', sets: 5, reps: '15', target: 'Full calf', notes: 'Both machines' }
+            ]},
+            4: { name: 'Arms & Shoulders', focus: 'Detail', exercises: [
+              { name: 'Seated DB OHP', sets: 4, reps: '8', target: 'Delt mass', notes: 'Go heavy' },
+              { name: 'Lateral Raises + DROP', sets: 4, reps: '15 + drop', target: 'Side delt', notes: 'Drop 30%' },
+              { name: 'Rear Delt Machine', sets: 3, reps: '15', target: 'Rear', notes: 'Slow' },
+              { name: 'Dumbbell Curl', sets: 4, reps: '10', target: 'Bicep', notes: 'Strict' },
+              { name: 'Lying DB Skull Crushers', sets: 4, reps: '10', target: 'Tricep', notes: 'Behind head' },
+              { name: 'Curl / Extension SS', sets: 3, reps: '12/12', target: 'Arms finish', notes: 'Superset' }
+            ]},
+            5: { name: 'Full Body', focus: 'Pump Day', exercises: [
+              { name: 'Chest Machine', sets: 3, reps: '15', target: 'Pump', notes: 'Light, fast' },
+              { name: 'Back Machine', sets: 3, reps: '15', target: 'Pump', notes: 'Squeeze' },
+              { name: 'Leg Press', sets: 3, reps: '15', target: 'Pump', notes: 'Moderate' },
+              { name: 'Shoulder Machine', sets: 3, reps: '15', target: 'Pump', notes: 'Lateral raise' },
+              { name: 'Arms Circuit', sets: 2, reps: '12 each', target: 'Pump', notes: 'Curl/extension' },
+              { name: 'Core Circuit', sets: 2, reps: '15 each', target: 'Core', notes: 'Crunches/planks' }
+            ]},
+            6: { name: 'Active Recovery', focus: 'Walking', exercises: [
+              { name: 'Treadmill Walk', sets: 1, reps: '45-60 min', target: 'Recovery', notes: 'Easy pace' },
+              { name: 'Mobility', sets: 1, reps: '15 min', target: 'Flexibility', notes: 'Stretch all' }
+            ]}
+          }
+        },
+        10: {
+          emphasis: 'Peak Phase - Pyramid Training',
+          days: {
+            1: { name: 'Push (Pyramid)', focus: 'Strength to Hypertrophy', exercises: [
+              { name: 'Smith Machine Bench', sets: 5, reps: '15/12/10/8/6', target: 'Pyramid up', notes: 'Add weight each set' },
+              { name: 'Incline Dumbbell', sets: 4, reps: '12/10/8/8', target: 'Upper chest', notes: 'Increase weight' },
+              { name: 'Seated DB OHP', sets: 4, reps: '12/10/8/8', target: 'Delts', notes: 'Pyramid' },
+              { name: 'Lateral Raises', sets: 4, reps: '15/12/12/10', target: 'Side delt', notes: 'Increase slightly' },
+              { name: 'Close Grip Smith Press', sets: 4, reps: '12/10/8/8', target: 'Tricep', notes: 'Pyramid' },
+              { name: 'Pushdowns', sets: 3, reps: '15', target: 'Pump', notes: 'Light finish' }
+            ]},
+            2: { name: 'Pull (Pyramid)', focus: 'Strength to Hypertrophy', exercises: [
+              { name: 'Smith Machine Row', sets: 5, reps: '15/12/10/8/6', target: 'Pyramid up', notes: 'Add weight each set' },
+              { name: 'Pulldown', sets: 4, reps: '12/10/8/8', target: 'Width', notes: 'Increase weight' },
+              { name: 'Cable Row', sets: 4, reps: '12/10/10/8', target: 'Thickness', notes: 'Pyramid' },
+              { name: 'Face Pulls', sets: 3, reps: '15', target: 'Health', notes: 'Light' },
+              { name: 'Dumbbell Curl', sets: 4, reps: '12/10/8/8', target: 'Bicep', notes: 'Pyramid' },
+              { name: 'Hammer Curl', sets: 3, reps: '12', target: 'Brachialis', notes: 'Finish' }
+            ]},
+            3: { name: 'Legs (Pyramid)', focus: 'Full Lower', exercises: [
+              { name: 'Smith Machine Squat', sets: 5, reps: '15/12/10/8/6', target: 'Pyramid up', notes: 'Add weight' },
+              { name: 'Smith Machine RDL', sets: 4, reps: '12/10/8/8', target: 'Hamstring', notes: 'Pyramid' },
+              { name: 'Leg Press', sets: 4, reps: '15/12/10/10', target: 'Quad', notes: 'Add plates' },
+              { name: 'Leg Curl', sets: 3, reps: '12', target: 'Hamstring', notes: 'Moderate' },
+              { name: 'Leg Extension', sets: 3, reps: '15', target: 'Quad detail', notes: 'Light finish' },
+              { name: 'Calves', sets: 5, reps: '15', target: 'Full calf', notes: 'Both machines' }
+            ]},
+            4: { name: 'Upper (Mixed)', focus: 'Balanced', exercises: [
+              { name: 'Incline DB Press', sets: 4, reps: '10', target: 'Upper chest', notes: 'Moderate' },
+              { name: 'Lat Pulldown', sets: 4, reps: '10', target: 'Back', notes: 'Controlled' },
+              { name: 'Seated DB OHP', sets: 4, reps: '10', target: 'Delts', notes: 'Strict' },
+              { name: 'Cable Row', sets: 4, reps: '10', target: 'Mid back', notes: 'Squeeze' },
+              { name: 'Arms Superset', sets: 3, reps: '12 each', target: 'Arms', notes: 'Curl/ext' },
+              { name: 'Face Pulls', sets: 3, reps: '15', target: 'Health', notes: 'Always' }
+            ]},
+            5: { name: 'Conditioning', focus: 'Metabolic', exercises: [
+              { name: 'Circuit Training', sets: 4, reps: '10 each', target: 'Full body', notes: 'Machines, minimal rest' },
+              { name: 'Stairclimber', sets: 1, reps: '10 min', target: 'Conditioning', notes: 'Steady pace' },
+              { name: 'Dumbbell Complex', sets: 4, reps: '8 each move', target: 'Metabolic', notes: 'Curl/press/squat' },
+              { name: 'Core Circuit', sets: 3, reps: '15 each', target: 'Core', notes: 'Crunch/plank/twist' },
+              { name: 'Farmer Carries', sets: 3, reps: '40 yards', target: 'Grip', notes: 'Heavy DBs' },
+              { name: 'Stretching', sets: 1, reps: '10 min', target: 'Cool down', notes: 'Full body' }
+            ]},
+            6: { name: 'Active Recovery', focus: 'Walking', exercises: [
+              { name: 'Treadmill Walk', sets: 1, reps: '45-60 min', target: 'Recovery', notes: 'Easy' },
+              { name: 'Yoga/Stretch', sets: 1, reps: '20 min', target: 'Flexibility', notes: 'Deep stretches' }
+            ]}
+          }
+        },
+        11: {
+          emphasis: 'Peak Phase - Reverse Pyramid',
+          days: {
+            1: { name: 'Push (RPT)', focus: 'Heavy First', exercises: [
+              { name: 'Smith Machine Bench', sets: 4, reps: '6/8/10/12', target: 'RPT down', notes: 'Heaviest first, drop weight' },
+              { name: 'Incline Dumbbell', sets: 4, reps: '6/8/10/12', target: 'Upper', notes: 'RPT' },
+              { name: 'Dips Machine', sets: 3, reps: 'AMRAP', target: 'Chest/Tri', notes: 'To failure' },
+              { name: 'Smith Machine OHP', sets: 4, reps: '6/8/10/12', target: 'Delts', notes: 'RPT' },
+              { name: 'Lateral Raises', sets: 4, reps: '12', target: 'Side delt', notes: 'Moderate' },
+              { name: 'Tricep Work', sets: 3, reps: '12', target: 'Pump', notes: 'Pushdowns' }
+            ]},
+            2: { name: 'Pull (RPT)', focus: 'Heavy First', exercises: [
+              { name: 'Assisted Pull-ups', sets: 4, reps: '6/8/10/12', target: 'RPT down', notes: 'Less assist each set' },
+              { name: 'Smith Machine Row', sets: 4, reps: '6/8/10/12', target: 'Thickness', notes: 'RPT' },
+              { name: 'Cable Row', sets: 3, reps: '12', target: 'Detail', notes: 'Moderate' },
+              { name: 'Face Pulls', sets: 3, reps: '15', target: 'Health', notes: 'Light' },
+              { name: 'Dumbbell Curl', sets: 4, reps: '8/10/12/12', target: 'Bicep', notes: 'RPT' },
+              { name: 'Hammer Curl', sets: 3, reps: '12', target: 'Brachialis', notes: 'Finish' }
+            ]},
+            3: { name: 'Legs (RPT)', focus: 'Heavy First', exercises: [
+              { name: 'Smith Machine Squat', sets: 4, reps: '6/8/10/12', target: 'RPT down', notes: 'Heaviest first' },
+              { name: 'Smith Machine RDL', sets: 4, reps: '6/8/10/12', target: 'Hamstring', notes: 'RPT' },
+              { name: 'Leg Press', sets: 3, reps: '12', target: 'Volume', notes: 'Moderate' },
+              { name: 'Leg Curl', sets: 3, reps: '12', target: 'Hamstring', notes: 'Controlled' },
+              { name: 'Leg Extension', sets: 3, reps: '15', target: 'Quad', notes: 'Squeeze' },
+              { name: 'Calves', sets: 5, reps: '15', target: 'Full calf', notes: 'Both machines' }
+            ]},
+            4: { name: 'Upper (Volume)', focus: 'Pump', exercises: [
+              { name: 'Chest Press Machine', sets: 4, reps: '12', target: 'Chest', notes: 'Moderate' },
+              { name: 'Pulldown', sets: 4, reps: '12', target: 'Back', notes: 'Squeeze' },
+              { name: 'Shoulder Press Machine', sets: 4, reps: '12', target: 'Delts', notes: 'Full ROM' },
+              { name: 'Cable Row', sets: 4, reps: '12', target: 'Back', notes: 'Close grip' },
+              { name: 'Arms Circuit', sets: 3, reps: '15 each', target: 'Arms', notes: 'Superset' },
+              { name: 'Core', sets: 3, reps: '15', target: 'Abs', notes: 'Your choice' }
+            ]},
+            5: { name: 'Full Body Power', focus: 'Athletic', exercises: [
+              { name: 'DB High Pulls', sets: 5, reps: '8', target: 'Power', notes: 'Explosive' },
+              { name: 'Box Step-ups (Explosive)', sets: 4, reps: '8 each', target: 'Explosive', notes: 'Drive up fast' },
+              { name: 'Smith Machine Push Press', sets: 4, reps: '6', target: 'Overhead power', notes: 'Use legs' },
+              { name: 'Dumbbell Swings', sets: 4, reps: '15', target: 'Hip power', notes: 'Like KB swing' },
+              { name: 'Med Ball Slams', sets: 4, reps: '10', target: 'Core power', notes: 'If available' },
+              { name: 'Farmer Walks', sets: 3, reps: '40 yards', target: 'Grip', notes: 'Heavy DBs' }
+            ]},
+            6: { name: 'Active Recovery', focus: 'Walking', exercises: [
+              { name: 'Treadmill Walk', sets: 1, reps: '45-60 min', target: 'Recovery', notes: 'Easy' },
+              { name: 'Stretching', sets: 1, reps: '15 min', target: 'Flexibility', notes: 'Full body' }
+            ]}
+          }
+        },
+        12: {
+          emphasis: 'Peak Phase - Mixed Methods',
+          days: {
+            1: { name: 'Push (Peak)', focus: 'Best of All', exercises: [
+              { name: 'Smith Machine Bench', sets: 4, reps: '8', target: 'Strength', notes: 'Heavy, controlled' },
+              { name: 'Incline Dumbbell', sets: 4, reps: '10', target: 'Upper', notes: 'Full ROM' },
+              { name: 'Cable Flyes + DROP', sets: 3, reps: '12 + drop', target: 'Isolation', notes: 'Drop 30%' },
+              { name: 'Seated DB OHP', sets: 4, reps: '8', target: 'Delts', notes: 'Heavy' },
+              { name: 'Lateral Raises', sets: 4, reps: '15', target: 'Side delt', notes: 'Light, strict' },
+              { name: 'Tricep Circuit', sets: 3, reps: '10 each', target: 'Arms', notes: 'Push/ext/dip' }
+            ]},
+            2: { name: 'Pull (Peak)', focus: 'Best of All', exercises: [
+              { name: 'Assisted Pull-ups', sets: 4, reps: 'AMRAP', target: 'Back', notes: 'To failure' },
+              { name: 'Smith Machine Row', sets: 4, reps: '8', target: 'Thickness', notes: 'Heavy' },
+              { name: 'Pulldown + DROP', sets: 3, reps: '12 + drop', target: 'Width', notes: 'Drop 30%' },
+              { name: 'Face Pulls', sets: 3, reps: '15', target: 'Health', notes: 'Always' },
+              { name: 'Curl Variety', sets: 4, reps: '10', target: 'Bicep', notes: 'Mix grips' },
+              { name: 'Reverse Curl', sets: 3, reps: '12', target: 'Forearm', notes: 'Cable or DB' }
+            ]},
+            3: { name: 'Legs (Peak)', focus: 'Best of All', exercises: [
+              { name: 'Smith Machine Squat', sets: 4, reps: '8', target: 'Strength', notes: 'Heavy' },
+              { name: 'Smith Machine RDL', sets: 4, reps: '10', target: 'Hamstring', notes: 'Feel stretch' },
+              { name: 'Leg Press + DROP', sets: 3, reps: '12 + drop', target: 'Quad', notes: 'Strip plates' },
+              { name: 'Walking Lunges', sets: 3, reps: '12 each', target: 'Unilateral', notes: 'Heavy DBs' },
+              { name: 'Leg Curl/Ext SS', sets: 3, reps: '12 each', target: 'Superset', notes: 'No rest' },
+              { name: 'Calves', sets: 5, reps: '15', target: 'Full calf', notes: 'Both machines' }
+            ]},
+            4: { name: 'Upper (Peak)', focus: 'Balanced', exercises: [
+              { name: 'Incline DB Press', sets: 4, reps: '10', target: 'Upper chest', notes: 'Squeeze' },
+              { name: 'Seated Cable Row', sets: 4, reps: '10', target: 'Back', notes: 'Controlled' },
+              { name: 'Dips Machine', sets: 3, reps: 'AMRAP', target: 'Push', notes: 'Lean forward' },
+              { name: 'Assisted Pull-ups', sets: 3, reps: 'AMRAP', target: 'Pull', notes: 'Chin grip' },
+              { name: 'Shoulder Work', sets: 4, reps: '12', target: 'Delts', notes: 'Machine or DB' },
+              { name: 'Arms Superset', sets: 3, reps: '12 each', target: 'Arms', notes: 'Curl/extension' }
+            ]},
+            5: { name: 'Athletic', focus: 'Conditioning', exercises: [
+              { name: 'Circuit: Push/Pull/Squat', sets: 4, reps: '10 each', target: 'Full body', notes: 'Machines' },
+              { name: 'Dumbbell Complex', sets: 4, reps: '10 each', target: 'Conditioning', notes: 'No rest' },
+              { name: 'Core Work', sets: 3, reps: '15 each', target: 'Core', notes: 'Mix it up' },
+              { name: 'Stairclimber', sets: 1, reps: '10 min', target: 'Finisher', notes: 'Fast pace' },
+              { name: 'Farmer Carries', sets: 3, reps: '40 yards', target: 'Grip', notes: 'Heavy' },
+              { name: 'Stretching', sets: 1, reps: '10 min', target: 'Cool down', notes: 'Full body' }
+            ]},
+            6: { name: 'Active Recovery', focus: 'Walking', exercises: [
+              { name: 'Treadmill Walk', sets: 1, reps: '60 min', target: 'Recovery', notes: 'Easy' },
+              { name: 'Full Body Stretch', sets: 1, reps: '20 min', target: 'Flexibility', notes: 'Deep stretches' }
+            ]}
+          }
+        }
+      }
+    };
+
+    // Main App Component
+    function WorkoutTrackerApp() {
+      const [currentMonth, setCurrentMonth] = useState(1);
+      const [currentWeek, setCurrentWeek] = useState(1);
+      const [currentDay, setCurrentDay] = useState(1);
+      const [workoutLogs, setWorkoutLogs] = useState({});
+      const [showMenu, setShowMenu] = useState(false);
+      const [view, setView] = useState('workout');
+      const [darkMode, setDarkMode] = useState(true);
+      const [savedIndicator, setSavedIndicator] = useState(false);
+      const [showNotes, setShowNotes] = useState({});
+
+      useEffect(() => {
+        const saved = localStorage.getItem('pf_workoutLogs');
+        if (saved) setWorkoutLogs(JSON.parse(saved));
+        const savedMonth = localStorage.getItem('pf_currentMonth');
+        const savedWeek = localStorage.getItem('pf_currentWeek');
+        const savedDay = localStorage.getItem('pf_currentDay');
+        if (savedMonth) setCurrentMonth(parseInt(savedMonth));
+        if (savedWeek) setCurrentWeek(parseInt(savedWeek));
+        if (savedDay) setCurrentDay(parseInt(savedDay));
+      }, []);
+
+      useEffect(() => {
+        localStorage.setItem('pf_workoutLogs', JSON.stringify(workoutLogs));
+        localStorage.setItem('pf_currentMonth', currentMonth.toString());
+        localStorage.setItem('pf_currentWeek', currentWeek.toString());
+        localStorage.setItem('pf_currentDay', currentDay.toString());
+      }, [workoutLogs, currentMonth, currentWeek, currentDay]);
+
+      const getCurrentPhase = () => programData.phases.find(p => p.months.includes(currentMonth));
+      const getCurrentWorkout = () => programData.months[currentMonth]?.days[currentDay];
+
+      const getLogKey = (month, week, day, exerciseIndex) => `${month}-${week}-${day}-${exerciseIndex}`;
+
+      const updateLog = (exerciseIndex, setIndex, field, value) => {
+        const key = getLogKey(currentMonth, currentWeek, currentDay, exerciseIndex);
+        setWorkoutLogs(prev => ({
+          ...prev,
+          [key]: {
+            ...(prev[key] || { sets: {} }),
+            sets: {
+              ...(prev[key]?.sets || {}),
+              [setIndex]: { ...(prev[key]?.sets?.[setIndex] || {}), [field]: value }
+            }
+          }
+        }));
+        setSavedIndicator(true);
+        setTimeout(() => setSavedIndicator(false), 1500);
+      };
+
+      const getLog = (exerciseIndex, setIndex, field) => {
+        const key = getLogKey(currentMonth, currentWeek, currentDay, exerciseIndex);
+        return workoutLogs[key]?.sets?.[setIndex]?.[field] || '';
+      };
+
+      const navigateDay = (direction) => {
+        if (direction === 'next') {
+          if (currentDay < 6) setCurrentDay(currentDay + 1);
+          else if (currentWeek < 4) { setCurrentWeek(currentWeek + 1); setCurrentDay(1); }
+          else if (currentMonth < 12) { setCurrentMonth(currentMonth + 1); setCurrentWeek(1); setCurrentDay(1); }
+        } else {
+          if (currentDay > 1) setCurrentDay(currentDay - 1);
+          else if (currentWeek > 1) { setCurrentWeek(currentWeek - 1); setCurrentDay(6); }
+          else if (currentMonth > 1) { setCurrentMonth(currentMonth - 1); setCurrentWeek(4); setCurrentDay(6); }
+        }
+      };
+
+      const toggleNotes = (index) => setShowNotes(prev => ({ ...prev, [index]: !prev[index] }));
+
+      const phase = getCurrentPhase();
+      const workout = getCurrentWorkout();
+
+      const bgClass = darkMode ? 'bg-zinc-950' : 'bg-stone-100';
+      const textClass = darkMode ? 'text-zinc-100' : 'text-zinc-900';
+      const cardClass = darkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-stone-200';
+      const inputClass = darkMode ? 'bg-zinc-800 border-zinc-700 text-zinc-100' : 'bg-stone-50 border-stone-300 text-zinc-900';
+      const accentColor = darkMode ? 'text-purple-400' : 'text-purple-600';
+      const accentBg = 'bg-purple-500';
+
+      return (
+        <div className={`min-h-screen ${bgClass} ${textClass}`} style={{fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'}}>
+          {/* Header */}
+          <header className={`sticky top-0 z-50 ${cardClass} border-b`} style={{backdropFilter: 'blur(12px)'}}>
+            <div className="flex items-center justify-between px-4 py-3">
+              <button onClick={() => setShowMenu(!showMenu)} className="p-2 -ml-2 rounded-lg" style={{WebkitTapHighlightColor: 'transparent'}}>
+                {showMenu ? <X size={24} /> : <Menu size={24} />}
+              </button>
+              <div className="flex items-center gap-2">
+                <Dumbbell className={accentColor} size={24} />
+                <div className="text-center">
+                  <span className="font-bold block text-sm">IRON PROTOCOL</span>
+                  <span className={`text-xs ${accentColor}`}>Planet Fitness Edition</span>
+                </div>
+              </div>
+              <button onClick={() => setDarkMode(!darkMode)} className="p-2 -mr-2 rounded-lg">
+                {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+              </button>
+            </div>
+            {savedIndicator && (
+              <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 px-3 py-1 bg-emerald-500 text-white text-sm rounded-full flex items-center gap-1">
+                <Check size={14} /> Saved
+              </div>
+            )}
+          </header>
+
+          {/* Menu Overlay */}
+          {showMenu && (
+            <div className={`fixed inset-0 z-40 ${darkMode ? 'bg-zinc-950' : 'bg-stone-100'}`} style={{opacity: 0.98}}>
+              <div className="pt-20 px-6">
+                <nav className="space-y-2">
+                  {[
+                    { id: 'workout', icon: Dumbbell, label: "Today's Workout" },
+                    { id: 'calendar', icon: Calendar, label: 'Calendar' },
+                    { id: 'progress', icon: TrendingUp, label: 'Progress' },
+                  ].map(item => (
+                    <button key={item.id} onClick={() => { setView(item.id); setShowMenu(false); }}
+                      className={`w-full flex items-center gap-4 px-4 py-4 rounded-xl ${view === item.id ? `${accentBg} text-white` : ''}`}>
+                      <item.icon size={24} />
+                      <span className="text-lg font-medium">{item.label}</span>
+                    </button>
+                  ))}
+                </nav>
+                <div className={`mt-8 p-4 rounded-xl ${cardClass} border`}>
+                  <h3 className={`text-sm font-semibold ${accentColor} mb-2`}>CURRENT PHASE</h3>
+                  <p className="font-bold text-lg">{phase?.name}</p>
+                  <p className={`text-sm mt-1 ${darkMode ? 'text-zinc-400' : 'text-stone-500'}`}>{phase?.description}</p>
+                  <div className="flex gap-4 mt-3 text-sm">
+                    <span className="flex items-center gap-1"><Target size={14} /> {phase?.repRange}</span>
+                  </div>
+                  <div className="flex gap-4 mt-1 text-sm">
+                    <span className="flex items-center gap-1"><Clock size={14} /> {phase?.rest}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Main Content */}
+          <main className="px-4 py-4 pb-24">
+            {view === 'workout' && workout && (
+              <>
+                {/* Day Navigation */}
+                <div className="flex items-center justify-between mb-4">
+                  <button onClick={() => navigateDay('prev')} className="p-2 rounded-lg">
+                    <ChevronLeft size={24} />
+                  </button>
+                  <div className="text-center">
+                    <div className={`text-xs uppercase tracking-wider ${darkMode ? 'text-zinc-500' : 'text-stone-500'}`}>Month {currentMonth} • Week {currentWeek}</div>
+                    <div className="font-bold text-xl">{workout.name}</div>
+                    <div className={`text-sm ${accentColor}`}>{workout.focus}</div>
+                  </div>
+                  <button onClick={() => navigateDay('next')} className="p-2 rounded-lg">
+                    <ChevronRight size={24} />
+                  </button>
+                </div>
+
+                {/* Phase Banner */}
+                <div className={`mb-4 p-3 rounded-xl border ${darkMode ? 'bg-purple-500/10 border-purple-500/20' : 'bg-purple-100 border-purple-200'}`}>
+                  <div className="flex items-center gap-2">
+                    <Flame className={accentColor} size={18} />
+                    <span className={`text-sm font-semibold ${accentColor}`}>{phase?.name}</span>
+                  </div>
+                  <p className={`text-xs mt-1 ${darkMode ? 'text-zinc-400' : 'text-stone-600'}`}>{programData.months[currentMonth]?.emphasis}</p>
+                </div>
+
+                {/* Exercises */}
+                <div className="space-y-3">
+                  {workout.exercises.map((exercise, exIndex) => (
+                    <div key={exIndex} className={`${cardClass} border rounded-xl overflow-hidden`}>
+                      <div className={`px-4 py-3 ${darkMode ? 'bg-zinc-800/50' : 'bg-stone-50'}`}>
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <h3 className="font-semibold">{exercise.name}</h3>
+                            <p className={`text-sm ${darkMode ? 'text-zinc-400' : 'text-stone-500'}`}>{exercise.sets} × {exercise.reps}</p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs px-2 py-1 rounded-full ${darkMode ? 'bg-zinc-700 text-zinc-300' : 'bg-stone-200 text-stone-600'}`}>{exercise.target}</span>
+                            {exercise.notes && (
+                              <button onClick={() => toggleNotes(exIndex)} className={`p-1 rounded ${showNotes[exIndex] ? accentColor : darkMode ? 'text-zinc-500' : 'text-stone-400'}`}>
+                                <Info size={16} />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                        {showNotes[exIndex] && exercise.notes && (
+                          <div className={`mt-2 text-xs p-2 rounded ${darkMode ? 'text-purple-300 bg-purple-500/10' : 'text-purple-700 bg-purple-100'}`}>
+                            💡 {exercise.notes}
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-4">
+                        <div className="grid grid-cols-4 gap-2 mb-2 text-xs text-center">
+                          <span className={darkMode ? 'text-zinc-500' : 'text-stone-400'}>Set</span>
+                          <span className={darkMode ? 'text-zinc-500' : 'text-stone-400'}>Weight</span>
+                          <span className={darkMode ? 'text-zinc-500' : 'text-stone-400'}>Reps</span>
+                          <span className={darkMode ? 'text-zinc-500' : 'text-stone-400'}>Done</span>
+                        </div>
+                        {Array.from({ length: exercise.sets }, (_, setIndex) => (
+                          <div key={setIndex} className="grid grid-cols-4 gap-2 mb-2 items-center">
+                            <span className={`text-center text-sm font-medium ${darkMode ? 'text-zinc-400' : 'text-stone-500'}`}>{setIndex + 1}</span>
+                            <input type="number" inputMode="numeric" pattern="[0-9]*" placeholder="lbs" value={getLog(exIndex, setIndex, 'weight')} onChange={(e) => updateLog(exIndex, setIndex, 'weight', e.target.value)}
+                              className={`w-full px-2 py-2 rounded-lg text-center text-sm border ${inputClass} outline-none`} />
+                            <input type="number" inputMode="numeric" pattern="[0-9]*" placeholder="reps" value={getLog(exIndex, setIndex, 'reps')} onChange={(e) => updateLog(exIndex, setIndex, 'reps', e.target.value)}
+                              className={`w-full px-2 py-2 rounded-lg text-center text-sm border ${inputClass} outline-none`} />
+                            <button onClick={() => updateLog(exIndex, setIndex, 'completed', !getLog(exIndex, setIndex, 'completed'))}
+                              className={`w-full h-9 rounded-lg flex items-center justify-center ${getLog(exIndex, setIndex, 'completed') ? 'bg-emerald-500 text-white' : `${darkMode ? 'bg-zinc-800 border-zinc-700' : 'bg-stone-100 border-stone-300'} border`}`}>
+                              {getLog(exIndex, setIndex, 'completed') && <Check size={18} />}
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {view === 'calendar' && (
+              <div className="space-y-4">
+                <h2 className="text-xl font-bold mb-4">Program Calendar</h2>
+                <div className="grid grid-cols-4 gap-2 mb-6">
+                  {[1,2,3,4,5,6,7,8,9,10,11,12].map(month => (
+                    <button key={month} onClick={() => { setCurrentMonth(month); setCurrentWeek(1); setCurrentDay(1); setView('workout'); }}
+                      className={`p-3 rounded-xl text-center ${month === currentMonth ? `${accentBg} text-white font-bold` : `${cardClass} border`}`}>
+                      <div className="text-xs opacity-60">Month</div>
+                      <div className="text-lg font-bold">{month}</div>
+                    </button>
+                  ))}
+                </div>
+                <div className={`p-4 rounded-xl ${cardClass} border`}>
+                  <h3 className="font-semibold mb-3">Month {currentMonth}</h3>
+                  <p className={`text-sm mb-3 ${darkMode ? 'text-zinc-400' : 'text-stone-500'}`}>{programData.months[currentMonth]?.emphasis}</p>
+                  <div className="grid grid-cols-4 gap-2">
+                    {[1,2,3,4].map(week => (
+                      <button key={week} onClick={() => { setCurrentWeek(week); setCurrentDay(1); setView('workout'); }}
+                        className={`p-3 rounded-lg text-center ${week === currentWeek ? `${accentBg} text-white` : `${darkMode ? 'bg-zinc-800' : 'bg-stone-100'}`}`}>
+                        Week {week}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className={`p-4 rounded-xl ${cardClass} border`}>
+                  <h3 className="font-semibold mb-3">Week {currentWeek} Days</h3>
+                  <div className="space-y-2">
+                    {Object.entries(programData.months[currentMonth]?.days || {}).map(([dayNum, dayData]) => (
+                      <button key={dayNum} onClick={() => { setCurrentDay(parseInt(dayNum)); setView('workout'); }}
+                        className={`w-full p-3 rounded-lg text-left flex justify-between items-center ${parseInt(dayNum) === currentDay ? `${accentBg} text-white` : `${darkMode ? 'bg-zinc-800' : 'bg-stone-100'}`}`}>
+                        <span className="font-medium">{dayData.name}</span>
+                        <span className={`text-sm ${parseInt(dayNum) === currentDay ? 'text-purple-100' : 'opacity-60'}`}>{dayData.focus}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {view === 'progress' && (
+              <div className="space-y-4">
+                <h2 className="text-xl font-bold mb-4">Progress Tracking</h2>
+                <div className={`p-4 rounded-xl ${cardClass} border`}>
+                  <h3 className="font-semibold mb-3 flex items-center gap-2"><TrendingUp className={accentColor} size={20} />Workout Completion</h3>
+                  <div className="space-y-3">
+                    {[1,2,3,4,5,6,7,8,9,10,11,12].map(month => {
+                      const totalExercises = Object.values(programData.months[month]?.days || {}).reduce((sum, day) => sum + (day.exercises?.length || 0) * 4, 0) * 4;
+                      let completedSets = 0;
+                      Object.keys(workoutLogs).forEach(key => {
+                        if (key.startsWith(`${month}-`)) {
+                          Object.values(workoutLogs[key]?.sets || {}).forEach(set => { if (set.completed) completedSets++; });
+                        }
+                      });
+                      const percentage = totalExercises > 0 ? Math.round((completedSets / totalExercises) * 100) : 0;
+                      return (
+                        <div key={month}>
+                          <div className="flex justify-between text-sm mb-1">
+                            <span>Month {month}</span>
+                            <span className={accentColor}>{percentage}%</span>
+                          </div>
+                          <div className={`h-2 rounded-full ${darkMode ? 'bg-zinc-800' : 'bg-stone-200'}`}>
+                            <div className={`h-full rounded-full ${accentBg}`} style={{ width: `${percentage}%`, transition: 'width 0.5s' }} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+                <div className={`p-4 rounded-xl ${cardClass} border`}>
+                  <h3 className="font-semibold mb-3">Quick Stats</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className={`p-3 rounded-lg ${darkMode ? 'bg-zinc-800' : 'bg-stone-100'}`}>
+                      <div className={`text-2xl font-bold ${accentColor}`}>{Object.keys(workoutLogs).length}</div>
+                      <div className="text-sm opacity-60">Exercises Logged</div>
+                    </div>
+                    <div className={`p-3 rounded-lg ${darkMode ? 'bg-zinc-800' : 'bg-stone-100'}`}>
+                      <div className={`text-2xl font-bold ${accentColor}`}>Month {currentMonth}</div>
+                      <div className="text-sm opacity-60">Current Progress</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </main>
+
+          {/* Bottom Navigation */}
+          <nav className={`fixed bottom-0 left-0 right-0 ${cardClass} border-t safe-area-pb`}>
+            <div className="flex justify-around py-2 pb-4">
+              {[
+                { id: 'workout', icon: Dumbbell, label: 'Workout' },
+                { id: 'calendar', icon: Calendar, label: 'Calendar' },
+                { id: 'progress', icon: TrendingUp, label: 'Progress' },
+              ].map(item => (
+                <button key={item.id} onClick={() => setView(item.id)}
+                  className={`flex flex-col items-center py-2 px-4 rounded-lg ${view === item.id ? accentColor : `${darkMode ? 'text-zinc-500' : 'text-stone-400'}`}`}>
+                  <item.icon size={24} />
+                  <span className="text-xs mt-1">{item.label}</span>
+                </button>
+              ))}
+            </div>
+          </nav>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<WorkoutTrackerApp />);
+  </script>
+</body>
+</html>
