@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#09090b">
+  <title>Iron Protocol</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { -webkit-tap-highlight-color: transparent; }
+    body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #09090b; }
+    input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    input[type="number"] { -moz-appearance: textfield; }
+    input[type="password"] { letter-spacing: 0.3em; }
+    .safe-bottom { padding-bottom: max(env(safe-area-inset-bottom), 16px); }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+const { useState, useEffect } = React;
+
+const hashPin = (pin) => {
+let h = 0;
+for (let i = 0; i < pin.length; i++) h = ((h << 5) - h) + pin.charCodeAt(i) & 0xffffffff;
+return h.toString();
+};
+
+const userPins = {
+greg: hashPin(‘1234’),
+ricki: hashPin(‘5678’),
+dalton: hashPin(‘0000’)
+};
+
+const DB = ‘IronProtocolDB_v8’;
+const openDB = () => new Promise((res, rej) => {
+const r = indexedDB.open(DB, 1);
+r.onerror = () => rej(r.error);
+r.onsuccess = () => res(r.result);
+r.onupgradeneeded = e => e.target.result.createObjectStore(‘data’, { keyPath: ‘id’ });
+});
+const save = async (id, data) => {
+const db = await openDB();
+return new Promise(res => {
+const tx = db.transaction(‘data’, ‘readwrite’);
+tx.objectStore(‘data’).put({ id, …data, ts: Date.now() });
+tx.oncomplete = () => res(true);
+});
+};
+const load = async (id) => {
+const db = await openDB();
+return new Promise(res => {
+const r = db.transaction(‘data’, ‘readonly’).objectStore(‘data’).get(id);
+r.onsuccess = () => res(r.result);
+});
+};
+
+const I = {
+Dumbbell: ({s=24,c=””}) => <svg className={c} width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m6.5 6.5 11 11M21 21l-1-1M3 3l1 1M18 22l4-4M2 6l4-4M3 10l7-7M14 21l7-7"/></svg>,
+Pill: ({s=24,c=””}) => <svg className={c} width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>,
+Check: ({s=24}) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"/></svg>,
+ChevL: ({s=24}) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m15 18-6-6 6-6"/></svg>,
+ChevR: ({s=24}) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m9 18 6-6-6-6"/></svg>,
+Calendar: ({s=24}) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>,
+User: ({s=24}) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+LogOut: ({s=24}) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>,
+Lock: ({s=24}) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>,
+Sun: ({s=24}) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>,
+Syringe: ({s=24,c=””}) => <svg className={c} width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m18 2 4 4M17 7l3-3M19 9L8.7 19.3c-1 1-2.5 1-3.4 0l-.6-.6c-1-1-1-2.5 0-3.4L15 5M9 11l4 4M5 19l-3 3M14 4l6 6"/></svg>,
+};
+
+const protocols = {
+greg: {
+daily: [
+{ id: ‘tesa’, name: ‘Tesamorelin’, dose: ‘80 units’, type: ‘peptide’ },
+{ id: ‘ipa’, name: ‘Ipamorelin’, dose: ‘4 units’, type: ‘peptide’ },
+{ id: ‘bpc’, name: ‘BPC-157’, dose: ‘10 units’, type: ‘peptide’ },
+{ id: ‘5amino’, name: ‘5-Amino-1MQ’, dose: ‘100mg (oral)’, type: ‘supp’ },
+{ id: ‘creatine’, name: ‘Creatine’, dose: ‘5g’, type: ‘supp’ },
+],
+weekly: [
+{ id: ‘trt’, name: ‘TRT’, dose: ‘80mg’, days: [2,4], type: ‘injection’ },
+{ id: ‘tb500’, name: ‘TB-500’, dose: ‘40 units’, days: [2,4], type: ‘peptide’ },
+{ id: ‘tirz’, name: ‘Tirzepatide’, dose: ‘2 units’, days: [4], type: ‘peptide’ },
+]
+},
+ricki: {
+daily: [
+{ id: ‘tesa’, name: ‘Tesamorelin’, dose: ‘60 units’, type: ‘peptide’ },
+{ id: ‘ipa’, name: ‘Ipamorelin’, dose: ‘3 units’, type: ‘peptide’ },
+{ id: ‘bpc’, name: ‘BPC-157’, dose: ‘8 units’, type: ‘peptide’ },
+{ id: ‘5amino’, name: ‘5-Amino-1MQ’, dose: ‘50mg (oral)’, type: ‘supp’ },
+{ id: ‘creatine’, name: ‘Creatine’, dose: ‘5g’, type: ‘supp’ },
+],
+weekly: [
+{ id: ‘tirz’, name: ‘Tirzepatide’, dose: ‘1.5 units’, days: [4], type: ‘peptide’ },
+]
+},
+dalton: { daily: [], weekly: [] }
+};
+
+const reconstitution = [
+{ name: ‘Tesamorelin’, vial: ‘5mg’, water: ‘2mL’, conc: ‘25mcg/unit’ },
+{ name: ‘Ipamorelin’, vial: ‘10mg’, water: ‘2mL’, conc: ‘50mcg/unit’ },
+{ name: ‘BPC-157’, vial: ‘5mg’, water: ‘2mL’, conc: ‘25mcg/unit’ },
+{ name: ‘TB-500’, vial: ‘10mg’, water: ‘2mL’, conc: ‘50mcg/unit’ },
+{ name: ‘Tirzepatide’, vial: ‘15mg’, water: ‘1.5mL’, conc: ‘0.1mg/unit’ },
+];
+
+const dayNames = [‘Sunday’,‘Monday’,‘Tuesday’,‘Wednesday’,‘Thursday’,‘Friday’,‘Saturday’];
+const dayNamesShort = [‘Sun’,‘Mon’,‘Tue’,‘Wed’,‘Thu’,‘Fri’,‘Sat’];
+
+// Workouts by day of week: 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
+const workouts = {
+1: { name: ‘Push A’, focus: ‘Chest/Shoulders/Triceps’, exercises: [
+{ name: ‘Incline DB Press’, sets: 4, reps: ‘10-12’, notes: ‘30-45°’ },
+{ name: ‘Smith Flat Press’, sets: 3, reps: ‘12’, notes: ‘Control negative’ },
+{ name: ‘Incline DB Flyes’, sets: 3, reps: ‘12’, notes: ‘Deep stretch’ },
+{ name: ‘Seated DB OHP’, sets: 4, reps: ‘10’, notes: ‘Core tight’ },
+{ name: ‘OH DB Extension’, sets: 3, reps: ‘12’, notes: ‘Single DB’ },
+{ name: ‘Skull Crushers’, sets: 3, reps: ‘12’, notes: ‘Behind head’ }
+]},
+2: { name: ‘Pull A’, focus: ‘Back/Biceps/Rear Delts’, exercises: [
+{ name: ‘Wide Lat Pulldown’, sets: 4, reps: ‘10-12’, notes: ‘To chest’ },
+{ name: ‘Seated Cable Row’, sets: 4, reps: ‘12’, notes: ‘Wide grip’ },
+{ name: ‘Rear Delt Machine’, sets: 4, reps: ‘15’, notes: ‘Slow’ },
+{ name: ‘Face Pulls’, sets: 3, reps: ‘15’, notes: ‘High cable’ },
+{ name: ‘DB Curls’, sets: 3, reps: ‘12’, notes: ‘Alternating’ },
+{ name: ‘Incline DB Curl’, sets: 3, reps: ‘12’, notes: ‘45° bench’ }
+]},
+3: { name: ‘Legs A’, focus: ‘Quad/Hamstring’, exercises: [
+{ name: ‘Leg Press’, sets: 4, reps: ‘12’, notes: ‘Feet middle’ },
+{ name: ‘Smith RDL’, sets: 4, reps: ‘10’, notes: ‘Hip hinge’ },
+{ name: ‘Walking Lunges’, sets: 3, reps: ‘12 each’, notes: ‘Long strides’ },
+{ name: ‘Lying Leg Curl’, sets: 4, reps: ‘12’, notes: ‘Squeeze’ },
+{ name: ‘Calf Raises’, sets: 4, reps: ‘15’, notes: ‘Full ROM’ },
+{ name: ‘Plank’, sets: 3, reps: ‘45 sec’, notes: ‘Tight core’ }
+]},
+4: { name: ‘Push B’, focus: ‘Chest/Shoulders/Triceps’, exercises: [
+{ name: ‘Smith Incline Press’, sets: 4, reps: ‘10’, notes: ‘30°’ },
+{ name: ‘DB Bench Press’, sets: 3, reps: ‘12’, notes: ‘Full ROM’ },
+{ name: ‘Cable Flye Low-High’, sets: 3, reps: ‘15’, notes: ‘Cross top’ },
+{ name: ‘Cable Lateral Raise’, sets: 4, reps: ‘12’, notes: ‘Lean away’ },
+{ name: ‘Close Grip Smith’, sets: 3, reps: ‘10’, notes: ‘Shoulder width’ },
+{ name: ‘Cable Pushdowns’, sets: 3, reps: ‘15’, notes: ‘Rope’ }
+]},
+5: { name: ‘Pull B’, focus: ‘Back/Biceps’, exercises: [
+{ name: ‘Assisted Pull-ups’, sets: 4, reps: ‘8-10’, notes: ‘Chin grip’ },
+{ name: ‘Single Arm DB Row’, sets: 4, reps: ‘10 each’, notes: ‘Knee on bench’ },
+{ name: ‘Straight Arm Pulldown’, sets: 3, reps: ‘12’, notes: ‘Arms straight’ },
+{ name: ‘Reverse Pec Deck’, sets: 3, reps: ‘15’, notes: ‘Face pad’ },
+{ name: ‘Hammer Curls’, sets: 3, reps: ‘12’, notes: ‘Neutral’ },
+{ name: ‘Cable Curl’, sets: 3, reps: ‘12’, notes: ‘Low cable’ }
+]},
+6: { name: ‘Active Recovery’, focus: ‘Cardio/Mobility’, exercises: [
+{ name: ‘Incline Walk’, sets: 1, reps: ‘45-60 min’, notes: ‘3-3.5 mph, 5-10%’ },
+{ name: ‘Hip Circles’, sets: 2, reps: ‘10 each’, notes: ‘Both ways’ },
+{ name: ‘Cat-Cow’, sets: 2, reps: ‘10’, notes: ‘Slow’ },
+{ name: ‘World's Greatest Stretch’, sets: 2, reps: ‘5 each’, notes: ‘Lunge+rotate’ }
+]},
+0: { name: ‘Rest Day’, focus: ‘Recovery’, exercises: [] }
+};
+
+const dateKey = d => d.toISOString().split(‘T’)[0];
+const getWeekKey = (date) => {
+const d = new Date(date);
+d.setHours(0, 0, 0, 0);
+d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+const yearStart = new Date(d.getFullYear(), 0, 1);
+const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+return `${d.getFullYear()}-W${weekNo}`;
+};
+
+function Login({ onLogin }) {
+const [step, setStep] = useState(‘select’);
+const [user, setUser] = useState(null);
+const [pin, setPin] = useState(’’);
+const [error, setError] = useState(’’);
+
+const select = n => { setUser(n); setStep(‘pin’); setPin(’’); setError(’’); };
+
+const submit = e => {
+e.preventDefault();
+if (pin.length !== 4) { setError(‘Enter 4 digits’); return; }
+if (hashPin(pin) === userPins[user]) onLogin(user);
+else { setError(‘Wrong PIN’); setPin(’’); }
+};
+
+return (
+<div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col items-center justify-center p-6">
+<div className="flex items-center gap-3 mb-8">
+<I.Dumbbell s={40} c=“text-purple-400”/>
+<div><h1 className="text-2xl font-bold">IRON PROTOCOL</h1><p className="text-purple-400 text-sm">Planet Fitness Edition</p></div>
+</div>
+
+```
+  {step === 'select' ? (
+    <div className="w-full max-w-xs bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
+      <h2 className="text-lg font-semibold mb-4 text-center">Who's Training?</h2>
+      <div className="space-y-2">
+        {['Greg','Ricki','Dalton'].map(n => (
+          <button key={n} onClick={() => select(n.toLowerCase())} className="w-full py-4 bg-purple-600 hover:bg-purple-500 rounded-lg font-semibold flex items-center justify-center gap-2">
+            <I.User s={20}/> {n}
+          </button>
+        ))}
+      </div>
+      <p className="text-xs text-zinc-500 text-center mt-4 flex items-center justify-center gap-1"><I.Lock s={12}/> PIN protected</p>
+    </div>
+  ) : (
+    <div className="w-full max-w-xs bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
+      <button onClick={() => setStep('select')} className="text-zinc-400 hover:text-white mb-4 flex items-center gap-1 text-sm"><I.ChevL s={16}/> Back</button>
+      <div className="text-center mb-6">
+        <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-3"><I.User s={32}/></div>
+        <h2 className="text-xl font-bold capitalize">{user}</h2>
+        <p className="text-zinc-400 text-sm">Enter 4-digit PIN</p>
+      </div>
+      <form onSubmit={submit}>
+        <input type="password" value={pin} onChange={e => { setPin(e.target.value.replace(/\D/g,'').slice(0,4)); setError(''); }}
+          placeholder="••••" className="w-full px-4 py-4 text-center text-2xl bg-zinc-800 border border-zinc-700 rounded-lg outline-none focus:ring-2 focus:ring-purple-500 mb-4"
+          inputMode="numeric" autoFocus maxLength={4}/>
+        {error && <p className="text-red-400 text-sm text-center mb-4">{error}</p>}
+        <button type="submit" disabled={pin.length !== 4}
+          className={`w-full py-3 rounded-lg font-semibold flex items-center justify-center gap-2 ${pin.length === 4 ? 'bg-purple-600 hover:bg-purple-500' : 'bg-zinc-700 text-zinc-400'}`}>
+          <I.Lock s={18}/> Unlock
+        </button>
+      </form>
+    </div>
+  )}
+</div>
+```
+
+);
+}
+
+function App() {
+const [user, setUser] = useState(null);
+const [view, setView] = useState(‘workout’);
+const [logs, setLogs] = useState({});
+const [suppLogs, setSuppLogs] = useState({});
+const [selectedDate, setSelectedDate] = useState(new Date());
+const [loading, setLoading] = useState(true);
+const [saved, setSaved] = useState(false);
+
+const currentDayOfWeek = selectedDate.getDay();
+
+useEffect(() => {
+const s = localStorage.getItem(‘iron_session’);
+if (s) {
+try {
+const { user: u, ts } = JSON.parse(s);
+if (Date.now() - ts < 24*60*60*1000) { loadUser(u); return; }
+} catch {}
+}
+setLoading(false);
+}, []);
+
+const loadUser = async n => {
+const d = await load(n);
+if (d) { setLogs(d.logs||{}); setSuppLogs(d.suppLogs||{}); }
+setUser(n);
+localStorage.setItem(‘iron_session’, JSON.stringify({ user: n, ts: Date.now() }));
+setLoading(false);
+};
+
+useEffect(() => { if (user) save(user, { logs, suppLogs }); }, [logs, suppLogs, user]);
+
+const logout = () => { localStorage.removeItem(‘iron_session’); setUser(null); setLogs({}); setSuppLogs({}); };
+const flash = () => { setSaved(true); setTimeout(() => setSaved(false), 1200); };
+
+const lk = (date, dayOfWeek, exerciseIdx) => `${getWeekKey(date)}-${dayOfWeek}-${exerciseIdx}`;
+
+const upLog = (e,s,f,v) => {
+setLogs(p => ({
+…p,
+[lk(selectedDate, currentDayOfWeek, e)]: {
+…(p[lk(selectedDate, currentDayOfWeek, e)]||{sets:{}}),
+sets: {
+…(p[lk(selectedDate, currentDayOfWeek, e)]?.sets||{}),
+[s]: {
+…(p[lk(selectedDate, currentDayOfWeek, e)]?.sets?.[s]||{}),
+[f]: v
+}
+}
+}
+}));
+flash();
+};
+
+const getLog = (e,s,f) => logs[lk(selectedDate, currentDayOfWeek, e)]?.sets?.[s]?.[f] || ‘’;
+
+const togSupp = id => { setSuppLogs(p => ({ …p, [`${dateKey(selectedDate)}-${id}`]: !p[`${dateKey(selectedDate)}-${id}`] })); flash(); };
+const suppDone = id => suppLogs[`${dateKey(selectedDate)}-${id}`] || false;
+
+const navDay = (dir) => {
+const newDate = new Date(selectedDate);
+newDate.setDate(newDate.getDate() + dir);
+setSelectedDate(newDate);
+};
+
+const goToday = () => setSelectedDate(new Date());
+const isToday = dateKey(selectedDate) === dateKey(new Date());
+
+if (loading) return <div className="min-h-screen bg-zinc-950 flex items-center justify-center"><I.Dumbbell s={48} c=“text-purple-400 animate-pulse”/></div>;
+if (!user) return <Login onLogin={loadUser}/>;
+
+const proto = protocols[user] || { daily: [], weekly: [] };
+const todayWeekly = proto.weekly.filter(i => i.days.includes(currentDayOfWeek));
+const hasSupps = proto.daily.length > 0 || proto.weekly.length > 0;
+const wo = workouts[currentDayOfWeek];
+
+// Day pills order: Mon-Sun
+const dayOrder = [1,2,3,4,5,6,0];
+
+return (
+<div className="min-h-screen bg-zinc-950 text-zinc-100">
+<header className="sticky top-0 z-50 bg-zinc-900/95 backdrop-blur border-b border-zinc-800 px-4 py-3">
+<div className="flex items-center justify-between">
+<div className="flex items-center gap-2">
+<I.Dumbbell s={24} c=“text-purple-400”/>
+<div><span className="font-bold text-sm">IRON PROTOCOL</span><span className="text-purple-400 text-xs ml-2 capitalize flex items-center gap-1"><I.Lock s={10}/>{user}</span></div>
+</div>
+<button onClick={logout} className="p-2 text-zinc-400 hover:text-red-400"><I.LogOut s={18}/></button>
+</div>
+{saved && <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1 bg-emerald-500 text-sm rounded-full flex items-center gap-1"><I.Check s={14}/> Saved</div>}
+</header>
+
+```
+  <main className="px-4 py-4 pb-28">
+    {view === 'workout' && (
+      <>
+        <div className="flex items-center justify-between mb-4">
+          <button onClick={() => navDay(-1)} className="p-2 hover:bg-zinc-800 rounded-lg"><I.ChevL/></button>
+          <div className="text-center flex-1">
+            <div className="font-bold text-2xl text-purple-400">{dayNames[currentDayOfWeek]}</div>
+            <div className="text-sm text-zinc-400">{selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+            {!isToday && <button onClick={goToday} className="text-xs text-purple-400 underline mt-1">Go to Today</button>}
+          </div>
+          <button onClick={() => navDay(1)} className="p-2 hover:bg-zinc-800 rounded-lg"><I.ChevR/></button>
+        </div>
+
+        <div className="flex justify-between mb-4 gap-1">
+          {dayOrder.map(d => {
+            const isSelected = d === currentDayOfWeek;
+            const dayDate = new Date(selectedDate);
+            dayDate.setDate(dayDate.getDate() + (d - currentDayOfWeek + (d < currentDayOfWeek && d !== 0 ? 0 : 0)));
+            const diff = d - currentDayOfWeek;
+            const actualDate = new Date(selectedDate);
+            actualDate.setDate(actualDate.getDate() + diff);
+            const isTodayPill = dateKey(actualDate) === dateKey(new Date());
+            
+            return (
+              <button 
+                key={d} 
+                onClick={() => {
+                  const newDate = new Date(selectedDate);
+                  newDate.setDate(newDate.getDate() + (d - currentDayOfWeek));
+                  setSelectedDate(newDate);
+                }}
+                className={`flex-1 py-2 rounded-lg text-center text-xs font-medium transition-all
+                  ${isSelected ? 'bg-purple-600 text-white' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'}
+                  ${isTodayPill && !isSelected ? 'ring-2 ring-purple-400' : ''}`}
+              >
+                {dayNamesShort[d]}
+              </button>
+            );
+          })}
+        </div>
+
+        {wo && wo.exercises.length > 0 ? (
+          <>
+            <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 mb-4">
+              <div className="font-bold text-xl">{wo.name}</div>
+              <div className="text-sm text-purple-400">{wo.focus}</div>
+            </div>
+            <div className="space-y-3">
+              {wo.exercises.map((ex,i) => (
+                <div key={i} className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
+                  <div className="px-4 py-3 bg-zinc-800/50 flex justify-between items-start">
+                    <div><h3 className="font-semibold">{ex.name}</h3><p className="text-sm text-zinc-400">{ex.sets} × {ex.reps}</p></div>
+                    {ex.notes && <span className="text-xs bg-zinc-700 px-2 py-1 rounded-full">{ex.notes}</span>}
+                  </div>
+                  <div className="p-4">
+                    <div className="grid grid-cols-4 gap-2 mb-2 text-xs text-zinc-500 text-center"><span>Set</span><span>Wt</span><span>Reps</span><span>✓</span></div>
+                    {Array.from({length:ex.sets},(_,s) => (
+                      <div key={s} className="grid grid-cols-4 gap-2 mb-2 items-center">
+                        <span className="text-center text-sm text-zinc-400">{s+1}</span>
+                        <input type="number" inputMode="numeric" placeholder="lbs" value={getLog(i,s,'wt')} onChange={e=>upLog(i,s,'wt',e.target.value)} className="w-full px-2 py-2 rounded-lg text-center text-sm bg-zinc-800 border border-zinc-700 outline-none"/>
+                        <input type="number" inputMode="numeric" placeholder="#" value={getLog(i,s,'rp')} onChange={e=>upLog(i,s,'rp',e.target.value)} className="w-full px-2 py-2 rounded-lg text-center text-sm bg-zinc-800 border border-zinc-700 outline-none"/>
+                        <button onClick={()=>upLog(i,s,'dn',!getLog(i,s,'dn'))} className={`w-full h-9 rounded-lg flex items-center justify-center ${getLog(i,s,'dn')?'bg-emerald-500':'bg-zinc-800 border border-zinc-700'}`}>{getLog(i,s,'dn')&&<I.Check s={18}/>}</button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-8 text-center">
+            <div className="text-4xl mb-4">😴</div>
+            <div className="font-bold text-xl mb-2">Rest Day</div>
+            <div className="text-zinc-400">Recovery is part of the process. Take it easy today!</div>
+          </div>
+        )}
+      </>
+    )}
+
+    {view === 'supplements' && (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-bold">Today's Protocol</h2>
+          {!isToday && <button onClick={goToday} className="text-sm text-purple-400 underline">Go to Today</button>}
+        </div>
+        <p className="text-sm text-zinc-400">{dayNames[currentDayOfWeek]}, {selectedDate.toLocaleDateString()}</p>
+        
+        <div className="flex justify-between gap-1">
+          {dayOrder.map(d => {
+            const isSelected = d === currentDayOfWeek;
+            const diff = d - currentDayOfWeek;
+            const actualDate = new Date(selectedDate);
+            actualDate.setDate(actualDate.getDate() + diff);
+            const isTodayPill = dateKey(actualDate) === dateKey(new Date());
+            
+            return (
+              <button 
+                key={d} 
+                onClick={() => {
+                  const newDate = new Date(selectedDate);
+                  newDate.setDate(newDate.getDate() + (d - currentDayOfWeek));
+                  setSelectedDate(newDate);
+                }}
+                className={`flex-1 py-2 rounded-lg text-center text-xs font-medium transition-all
+                  ${isSelected ? 'bg-purple-600 text-white' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'}
+                  ${isTodayPill && !isSelected ? 'ring-2 ring-purple-400' : ''}`}
+              >
+                {dayNamesShort[d]}
+              </button>
+            );
+          })}
+        </div>
+
+        {!hasSupps ? (
+          <div className="text-center py-12 text-zinc-500"><I.Pill s={48} c="mx-auto mb-4 opacity-50"/><p>No supplements for this account</p></div>
+        ) : (
+          <>
+            {proto.daily.length > 0 && (
+              <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
+                <div className="px-4 py-3 bg-zinc-800/50 border-b border-zinc-800 flex items-center gap-2"><I.Sun s={18} c="text-amber-400"/><span className="font-semibold">Daily - Morning (Fasted)</span></div>
+                <div className="divide-y divide-zinc-800">
+                  {proto.daily.map(it => (
+                    <button key={it.id} onClick={()=>togSupp(it.id)} className="w-full px-4 py-3 flex items-center justify-between hover:bg-zinc-800/50">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center ${suppDone(it.id)?'bg-emerald-500':'border-2 border-zinc-600'}`}>{suppDone(it.id)&&<I.Check s={14}/>}</div>
+                        <div className="text-left"><div className={suppDone(it.id)?'line-through text-zinc-500':'font-medium'}>{it.name}</div><div className="text-sm text-zinc-400 font-mono">{it.dose}</div></div>
+                      </div>
+                      <span className={`text-xs px-2 py-1 rounded ${it.type==='peptide'?'bg-blue-500/20 text-blue-400':'bg-green-500/20 text-green-400'}`}>{it.type}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            {todayWeekly.length > 0 && (
+              <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
+                <div className="px-4 py-3 bg-zinc-800/50 border-b border-zinc-800 flex items-center gap-2"><I.Syringe s={18} c="text-red-400"/><span className="font-semibold">{dayNames[currentDayOfWeek]} Injections</span></div>
+                <div className="divide-y divide-zinc-800">
+                  {todayWeekly.map(it => (
+                    <button key={it.id} onClick={()=>togSupp(it.id)} className="w-full px-4 py-3 flex items-center justify-between hover:bg-zinc-800/50">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center ${suppDone(it.id)?'bg-emerald-500':'border-2 border-zinc-600'}`}>{suppDone(it.id)&&<I.Check s={14}/>}</div>
+                        <div className="text-left"><div className={suppDone(it.id)?'line-through text-zinc-500':'font-medium'}>{it.name}</div><div className="text-sm text-zinc-400 font-mono">{it.dose}</div></div>
+                      </div>
+                      <span className={`text-xs px-2 py-1 rounded ${it.type==='injection'?'bg-red-500/20 text-red-400':'bg-purple-500/20 text-purple-400'}`}>{it.type}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
+              <h3 className="font-semibold mb-3">Weekly Schedule</h3>
+              <div className="space-y-2 text-sm">
+                {proto.weekly.map(it => <div key={it.id} className="flex justify-between"><span>{it.name} <span className="font-mono text-purple-400">({it.dose})</span></span><span className="text-zinc-500">{it.days.map(d=>dayNames[d].slice(0,3)).join(' & ')}</span></div>)}
+              </div>
+            </div>
+            
+            <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
+              <h3 className="font-semibold mb-3">Reconstitution Reference</h3>
+              <div className="space-y-2 text-xs">
+                <div className="grid grid-cols-4 text-zinc-500 border-b border-zinc-800 pb-2">
+                  <span>Peptide</span><span className="text-center">Vial</span><span className="text-center">Water</span><span className="text-right">Per Unit</span>
+                </div>
+                {reconstitution.map(r => (
+                  <div key={r.name} className="grid grid-cols-4 text-zinc-300">
+                    <span>{r.name}</span>
+                    <span className="text-center">{r.vial}</span>
+                    <span className="text-center">{r.water}</span>
+                    <span className="text-right font-mono text-purple-400">{r.conc}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    )}
+
+    {view === 'calendar' && (
+      <div className="space-y-4">
+        <h2 className="text-xl font-bold mb-4">Weekly Schedule</h2>
+        
+        <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
+          {dayOrder.map(d => {
+            const wo = workouts[d];
+            const today = new Date();
+            const isToday = d === today.getDay();
+            
+            return (
+              <button 
+                key={d} 
+                onClick={() => { 
+                  const newDate = new Date();
+                  const diff = d - today.getDay();
+                  newDate.setDate(newDate.getDate() + diff);
+                  setSelectedDate(newDate); 
+                  setView('workout'); 
+                }}
+                className={`w-full px-4 py-4 flex justify-between items-center border-b border-zinc-800 last:border-0 hover:bg-zinc-800/50 ${isToday ? 'bg-purple-600/20' : ''}`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold ${isToday ? 'bg-purple-600' : 'bg-zinc-800'}`}>
+                    {dayNamesShort[d]}
+                  </div>
+                  <div className="text-left">
+                    <div className="font-semibold">{wo.name}</div>
+                    <div className="text-sm text-zinc-400">{wo.focus}</div>
+                  </div>
+                </div>
+                {isToday && <span className="text-xs bg-purple-600 px-2 py-1 rounded-full">Today</span>}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
+          <h3 className="font-semibold mb-3">Injection Days</h3>
+          <div className="space-y-2 text-sm">
+            <div className="flex items-center gap-2">
+              <span className="w-16 text-zinc-500">Tue & Thu</span>
+              <span>TRT + TB-500</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-16 text-zinc-500">Thu</span>
+              <span>Tirzepatide</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+  </main>
+
+  <nav className="fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-800 safe-bottom">
+    <div className="flex justify-around py-2">
+      {[{id:'workout',icon:I.Dumbbell,label:'Workout'},{id:'supplements',icon:I.Pill,label:'Supplements'},{id:'calendar',icon:I.Calendar,label:'Calendar'}].map(t => (
+        <button key={t.id} onClick={()=>setView(t.id)} className={`flex flex-col items-center py-2 px-4 ${view===t.id?'text-purple-400':'text-zinc-500'}`}><t.icon s={24}/><span className="text-xs mt-1">{t.label}</span></button>
+      ))}
+    </div>
+  </nav>
+</div>
+```
+
+);
+}
+
+ReactDOM.createRoot(document.getElementById(‘root’)).render(<App/>);
+</script>
+
+</body>
+</html>
