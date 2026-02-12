@@ -1,9 +1,9 @@
-html<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#09090b">
   <title>Iron Protocol</title>
@@ -12,571 +12,443 @@ html<!DOCTYPE html>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    * { -webkit-tap-highlight-color: transparent; }
-    body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #09090b; }
-    input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-    input[type="number"] { -moz-appearance: textfield; }
-    input[type="password"] { letter-spacing: 0.3em; }
-    .safe-bottom { padding-bottom: max(env(safe-area-inset-bottom), 16px); }
+    *{-webkit-tap-highlight-color:transparent}body{margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#09090b}
+    input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+    input[type="number"]{-moz-appearance:textfield}input[type="password"]{letter-spacing:.3em}
+    .safe-bottom{padding-bottom:max(env(safe-area-inset-bottom),16px)}.no-sb::-webkit-scrollbar{display:none}.no-sb{-ms-overflow-style:none;scrollbar-width:none}
   </style>
 </head>
 <body>
-  <div id="root"></div>
-  <script type="text/babel">
-const { useState, useEffect } = React;
+<div id="root"></div>
+<script type="text/babel">
+const{useState,useEffect,useMemo,useCallback}=React;
+const hashPin=p=>{let h=0;for(let i=0;i<p.length;i++)h=((h<<5)-h)+p.charCodeAt(i)&0xffffffff;return h.toString()};
+const UP={greg:hashPin('1234'),ricki:hashPin('5678'),dalton:hashPin('0000'),denver:hashPin('2626')};
+const DB='IronProtocolDB_v9';
+const odb=()=>new Promise((res,rej)=>{const r=indexedDB.open(DB,1);r.onerror=()=>rej(r.error);r.onsuccess=()=>res(r.result);r.onupgradeneeded=e=>e.target.result.createObjectStore('data',{keyPath:'id'})});
+const sv=async(id,d)=>{try{const db=await odb();return new Promise(r=>{const t=db.transaction('data','readwrite');t.objectStore('data').put({id,...d,ts:Date.now()});t.oncomplete=()=>r(true)})}catch(e){return false}};
+const ld=async id=>{try{const db=await odb();return new Promise(r=>{const q=db.transaction('data','readonly').objectStore('data').get(id);q.onsuccess=()=>r(q.result)})}catch(e){return null}};
 
-const hashPin = (pin) => {
-  let h = 0;
-  for (let i = 0; i < pin.length; i++) h = ((h << 5) - h) + pin.charCodeAt(i) & 0xffffffff;
-  return h.toString();
+const I={
+  Dumbbell:({s=24,c=""})=><svg className={c} width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m6.5 6.5 11 11M21 21l-1-1M3 3l1 1M18 22l4-4M2 6l4-4M3 10l7-7M14 21l7-7"/></svg>,
+  Pill:({s=24,c=""})=><svg className={c} width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>,
+  Check:({s=20})=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>,
+  Cal:({s=24})=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>,
+  Out:({s=20})=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>,
+  Home:({s=20})=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
+  Bld:({s=20})=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="16" height="20" x="4" y="2" rx="2"/><path d="M9 22v-4h6v4M8 6h.01M16 6h.01M12 6h.01M12 10h.01M12 14h.01M16 10h.01M16 14h.01M8 10h.01M8 14h.01"/></svg>,
+  Inf:({s=16})=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>,
+  Plus:({s=20})=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>,
+  X:({s=20})=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>,
+  Lib:({s=24})=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="M8 7h6M8 11h8"/></svg>,
+  Rst:({s=16})=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>,
+  Up:({s=16})=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m18 15-6-6-6 6"/></svg>,
+  Dn:({s=16})=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m6 9 6 6 6-6"/></svg>,
 };
 
-const userPins = {
-  greg: hashPin('1234'),
-  ricki: hashPin('5678'),
-  dalton: hashPin('0000')
+// ===== EXERCISE LIBRARY =====
+const EL={
+'Chest':[
+{name:'DB Bench Press',sets:3,reps:'10-12',notes:'Flat bench, full ROM'},
+{name:'Incline DB Press',sets:3,reps:'12',notes:'30 degree incline'},
+{name:'Smith Flat Bench',sets:3,reps:'12',notes:'Control negative'},
+{name:'Smith Incline Press',sets:4,reps:'10',notes:'Low incline 30 deg'},
+{name:'DB Flat Press',sets:3,reps:'12',notes:'Squeeze top'},
+{name:'Incline DB Flyes',sets:3,reps:'12',notes:'Deep stretch'},
+{name:'Cable Crossover',sets:3,reps:'15',notes:'Squeeze at peak'},
+{name:'Cable Flye',sets:3,reps:'12',notes:'Mid-height cables'},
+{name:'Pec Deck',sets:3,reps:'15',notes:'Full ROM'},
+{name:'Push-ups',sets:3,reps:'12-15',notes:'Full ROM, knees OK'},
+{name:'Incline Push-up',sets:3,reps:'12',notes:'Hands on chair'},
+{name:'Decline Push-up',sets:3,reps:'10',notes:'Feet elevated'},
+{name:'Diamond Push-up',sets:3,reps:'8-10',notes:'Hands together'},
+{name:'Close Grip Push-up',sets:3,reps:'10',notes:'Shoulder width'},
+{name:'Dip Machine',sets:3,reps:'12',notes:'Lean forward for chest'},
+{name:'Barbell Bench Press',sets:4,reps:'8-10',notes:'BB or smith'},
+],
+'Back / Lats':[
+{name:'Wide Lat Pulldown',sets:4,reps:'10-12',notes:'To chest'},
+{name:'Close Grip Pulldown',sets:4,reps:'10-12',notes:'V-bar'},
+{name:'Lat Pulldown',sets:4,reps:'12',notes:'Wide grip'},
+{name:'Seated Cable Row',sets:4,reps:'12',notes:'Squeeze back'},
+{name:'Single Arm DB Row',sets:3,reps:'10 each',notes:'Full stretch'},
+{name:'Chest Supported Row',sets:4,reps:'12',notes:'Machine'},
+{name:'Smith Row',sets:3,reps:'10',notes:'Overhand wide'},
+{name:'Straight Arm Pulldown',sets:3,reps:'12',notes:'Rope'},
+{name:'Barbell Row',sets:4,reps:'8-10',notes:'Overhand'},
+{name:'Pull-ups',sets:4,reps:'AMRAP',notes:'Wide grip'},
+{name:'Inverted Row (Table)',sets:4,reps:'10-12',notes:'Under sturdy table'},
+{name:'Superman',sets:4,reps:'12',notes:'Hold top 2 sec'},
+{name:'Reverse Snow Angel',sets:3,reps:'10',notes:'Prone, arms sweep'},
+{name:'Prone Y-T-W',sets:3,reps:'8 each',notes:'Face down letters'},
+{name:'Doorway Row',sets:3,reps:'12 each',notes:'Lean back from frame'},
+{name:'Deadlift',sets:4,reps:'6-8',notes:'Conventional'},
+{name:'Smith RDL',sets:4,reps:'10',notes:'Hip hinge'},
+],
+'Shoulders':[
+{name:'DB Shoulder Press',sets:4,reps:'10',notes:'Seated, palms forward'},
+{name:'Seated DB OHP',sets:4,reps:'10',notes:'Full ROM'},
+{name:'Smith OHP',sets:4,reps:'10',notes:'Seated'},
+{name:'Cable Lateral Raise',sets:3,reps:'15',notes:'Light and slow'},
+{name:'Lateral Raise',sets:3,reps:'12-15',notes:'Light DB'},
+{name:'DB Front Raise',sets:3,reps:'12',notes:'Alternating'},
+{name:'Pike Push-up',sets:4,reps:'8-10',notes:'Hips high'},
+{name:'Arnold Press',sets:3,reps:'10',notes:'Rotate palms'},
+{name:'Lateral Arm Circles',sets:3,reps:'15 each way',notes:'Water bottles'},
+],
+'Rear Delts':[
+{name:'Face Pulls',sets:3,reps:'15',notes:'High cable, pull to ears'},
+{name:'Rear Delt Machine',sets:4,reps:'15',notes:'Slow squeeze'},
+{name:'Reverse Pec Deck',sets:3,reps:'15',notes:'Slow'},
+{name:'Rear Delt Fly',sets:3,reps:'12',notes:'DB bent over'},
+{name:'Band Pull-Apart',sets:3,reps:'15',notes:'Resistance band'},
+],
+'Biceps':[
+{name:'DB Curls',sets:3,reps:'12',notes:'Alternating'},
+{name:'Incline DB Curl',sets:3,reps:'12',notes:'45 deg bench'},
+{name:'Hammer Curls',sets:3,reps:'12',notes:'Neutral grip'},
+{name:'Cable Curl',sets:3,reps:'12',notes:'EZ bar cable'},
+{name:'Barbell Curl',sets:3,reps:'10-12',notes:'EZ bar'},
+{name:'Concentration Curl',sets:3,reps:'10 each',notes:'Seated'},
+{name:'Towel Curl',sets:3,reps:'10',notes:'Step on towel (home)'},
+{name:'DB Hammer Curl',sets:3,reps:'12',notes:'Standing'},
+],
+'Triceps':[
+{name:'Tricep Pushdown',sets:3,reps:'12',notes:'Rope attachment'},
+{name:'OH DB Extension',sets:3,reps:'12',notes:'Long head focus'},
+{name:'Overhead Tricep Ext',sets:3,reps:'12',notes:'Cable or DB'},
+{name:'Skull Crushers',sets:3,reps:'12',notes:'EZ bar or DB'},
+{name:'Tricep Dips (Chair)',sets:3,reps:'12',notes:'Hands on chair edge'},
+{name:'Dips',sets:3,reps:'AMRAP',notes:'BW or weighted'},
+{name:'Close Grip Bench',sets:3,reps:'8-10',notes:'Narrow grip'},
+{name:'Kickbacks',sets:3,reps:'12',notes:'DB, squeeze top'},
+],
+'Quads':[
+{name:'Leg Press',sets:4,reps:'12',notes:'Feet mid platform'},
+{name:'Goblet Squat',sets:4,reps:'12',notes:'DB at chest, deep'},
+{name:'Smith Squat',sets:3,reps:'10',notes:'Feet slightly forward'},
+{name:'Barbell Squat',sets:4,reps:'8-10',notes:'BB or Smith'},
+{name:'Front Squat',sets:3,reps:'10',notes:'Upright torso'},
+{name:'Walking Lunges',sets:3,reps:'12 each',notes:'DB in hands'},
+{name:'Leg Extension',sets:3,reps:'12-15',notes:'Slow negative'},
+{name:'Bulgarian Split Squat',sets:3,reps:'10 each',notes:'Rear foot bench'},
+{name:'Bodyweight Squat',sets:4,reps:'15-20',notes:'Deep, 3 sec down'},
+{name:'Jump Squat',sets:3,reps:'10',notes:'Land soft'},
+{name:'Wall Sit',sets:3,reps:'30-45 sec',notes:'Thighs parallel'},
+{name:'Step-ups (Chair)',sets:3,reps:'12 each',notes:'Full step drive'},
+{name:'Curtsy Lunge',sets:3,reps:'12 each',notes:'Cross behind'},
+{name:'Reverse Lunge',sets:3,reps:'12 each',notes:'Step back'},
+{name:'Pistol Squat Negative',sets:3,reps:'5 each',notes:'Hold balance'},
+],
+'Hamstrings':[
+{name:'Romanian Deadlift',sets:4,reps:'10',notes:'DB or BB hinge'},
+{name:'Smith RDL',sets:4,reps:'10',notes:'Hip hinge'},
+{name:'DB Romanian Deadlift',sets:3,reps:'10',notes:'Hip hinge'},
+{name:'Lying Leg Curl',sets:3,reps:'12',notes:'Slow negative'},
+{name:'Seated Leg Curl',sets:3,reps:'12',notes:'Squeeze top'},
+{name:'Single Leg RDL (BW)',sets:4,reps:'10 each',notes:'Touch floor slow'},
+{name:'Nordic Curl Negative',sets:3,reps:'5',notes:'Anchor feet slow lower'},
+{name:'Good Mornings',sets:3,reps:'12',notes:'Light weight hinge'},
+],
+'Glutes':[
+{name:'Barbell Hip Thrust',sets:4,reps:'10-12',notes:'Pause at top'},
+{name:'Hip Thrust (Smith)',sets:4,reps:'12',notes:'Pause at top'},
+{name:'Hip Thrust',sets:3,reps:'12',notes:'Smith or BB'},
+{name:'Cable Pull-Through',sets:3,reps:'12',notes:'Rope squeeze'},
+{name:'Cable Kickback',sets:3,reps:'12 each',notes:'Squeeze top'},
+{name:'Abductor Machine',sets:3,reps:'15',notes:'Squeeze out'},
+{name:'Adductor Machine',sets:3,reps:'15',notes:'Control'},
+{name:'Single Leg Glute Bridge',sets:4,reps:'12 each',notes:'Pause 2 sec'},
+{name:'Glute Bridge March',sets:3,reps:'10 each',notes:'Bridge lift knee'},
+{name:'Donkey Kicks',sets:3,reps:'15 each',notes:'Slow squeeze'},
+{name:'Fire Hydrants',sets:3,reps:'15 each',notes:'Hips square'},
+{name:'Sumo Squat Pulse',sets:3,reps:'20',notes:'Wide stance pulse'},
+{name:'Single Leg Hip Thrust',sets:3,reps:'10 each',notes:'BW or plate'},
+],
+'Calves':[
+{name:'Calf Raises',sets:4,reps:'15',notes:'Full ROM'},
+{name:'Standing Calf Raises',sets:4,reps:'15',notes:'Machine or Smith'},
+{name:'Seated Calf Raises',sets:4,reps:'15',notes:'Machine'},
+{name:'Calf Raise (Stair)',sets:4,reps:'15',notes:'Hang heels off edge'},
+],
+'Core / Abs':[
+{name:'Plank',sets:3,reps:'30-45 sec',notes:'Squeeze tight'},
+{name:'Side Plank',sets:3,reps:'20-30 sec ea',notes:'Stack feet'},
+{name:'Dead Bug',sets:3,reps:'12 each',notes:'Low back flat'},
+{name:'Bird Dog',sets:3,reps:'10 each',notes:'Slow extend'},
+{name:'Cable Crunch',sets:3,reps:'15',notes:'Exhale hard'},
+{name:'Hanging Knee Raise',sets:3,reps:'12',notes:'Control swing'},
+{name:'Hanging Leg Raise',sets:3,reps:'10',notes:'Slow'},
+{name:'Pallof Press',sets:3,reps:'10-12 each',notes:'Cable slow'},
+{name:'Cable Woodchop',sets:3,reps:'12 each',notes:'High to low'},
+{name:'Reverse Crunch',sets:3,reps:'15',notes:'Slow'},
+{name:'Russian Twist',sets:3,reps:'12-15 each',notes:'DB or plate'},
+{name:'Bicycle Crunch',sets:3,reps:'15 each',notes:'Slow controlled'},
+{name:'Leg Raise',sets:3,reps:'12',notes:'Lying slow'},
+{name:'Ab Wheel/Rollout',sets:3,reps:'10',notes:'Knees or toes'},
+{name:'Mountain Climber',sets:3,reps:'15 each',notes:'Slow controlled'},
+{name:'Farmer Carries',sets:3,reps:'40 yards',notes:'Heavy DB'},
+],
+'Mobility / Recovery':[
+{name:'Brisk Walk',sets:1,reps:'30-45 min',notes:'Moderate pace'},
+{name:'Walk',sets:1,reps:'20-30 min',notes:'Brisk pace'},
+{name:'Treadmill Incline Walk',sets:1,reps:'20-30 min',notes:'10-15% incline'},
+{name:'Hip Circles',sets:2,reps:'10 each way',notes:'Both directions'},
+{name:'Hip 90/90 Stretch',sets:2,reps:'30 sec each',notes:'Rotate sides'},
+{name:'Cat-Cow',sets:2,reps:'10',notes:'Slow breath'},
+{name:'Worlds Greatest Stretch',sets:2,reps:'5 each',notes:'Hold 5 sec'},
+{name:'Pigeon Stretch',sets:2,reps:'30 sec each',notes:'Relax into it'},
+{name:'Shoulder Dislocates',sets:2,reps:'10',notes:'Band or stick'},
+{name:'Foam Rolling',sets:1,reps:'10 min',notes:'Full body'},
+{name:'Yoga Flow',sets:1,reps:'10-15 min',notes:'Sun salutations'},
+],
+};
+const MG=Object.keys(EL);
+
+// ===== SUPPLEMENTS =====
+const SP={
+  greg:{daily:[{name:'Tesamorelin',dose:'80 units',time:'Morning',type:'injection'},{name:'Ipamorelin',dose:'5-6 units',time:'Morning',type:'injection'},{name:'BPC-157',dose:'10-20 units',time:'Morning',type:'injection'},{name:'5-Amino-1MQ',dose:'100mg',time:'Morning',type:'oral'},{name:'Creatine',dose:'5g',time:'Morning',type:'oral'}],weekly:[{name:'TRT',dose:'80mg',days:[2,4],time:'Morning',type:'injection'},{name:'TB-500',dose:'40-50 units',days:[2,4],time:'Morning',type:'injection'},{name:'Retatrutide',dose:'2.5 units',days:[4],time:'Morning',type:'injection'}]},
+  ricki:{daily:[{name:'Tesamorelin',dose:'40-60 units',time:'Morning',type:'injection'},{name:'Ipamorelin',dose:'2-3 units',time:'Morning',type:'injection'},{name:'BPC-157',dose:'6-10 units',time:'Morning',type:'injection'},{name:'5-Amino-1MQ',dose:'50mg',time:'Morning',type:'oral'},{name:'Creatine',dose:'3-5g',time:'Morning',type:'oral'}],weekly:[{name:'Retatrutide',dose:'2 units',days:[4],time:'Morning',type:'injection'}]},
+  dalton:{daily:[],weekly:[]},denver:{daily:[],weekly:[]},
 };
 
-const DB = 'IronProtocolDB_v8';
-const openDB = () => new Promise((res, rej) => {
-  const r = indexedDB.open(DB, 1);
-  r.onerror = () => rej(r.error);
-  r.onsuccess = () => res(r.result);
-  r.onupgradeneeded = e => e.target.result.createObjectStore('data', { keyPath: 'id' });
-});
-const save = async (id, data) => {
-  const db = await openDB();
-  return new Promise(res => {
-    const tx = db.transaction('data', 'readwrite');
-    tx.objectStore('data').put({ id, ...data, ts: Date.now() });
-    tx.oncomplete = () => res(true);
-  });
-};
-const load = async (id) => {
-  const db = await openDB();
-  return new Promise(res => {
-    const r = db.transaction('data', 'readonly').objectStore('data').get(id);
-    r.onsuccess = () => res(r.result);
-  });
+// ===== DEFAULT PROGRAMS =====
+const DG={
+1:{name:'Push A',focus:'Chest/Shoulders/Triceps',exercises:[{name:'Incline DB Press',sets:4,reps:'10-12',muscle:'Chest',notes:'30-45 deg'},{name:'Smith Flat Bench',sets:3,reps:'12',muscle:'Chest',notes:'Control neg'},{name:'Incline DB Flyes',sets:3,reps:'12',muscle:'Chest',notes:'Deep stretch'},{name:'Cable Crossover',sets:3,reps:'15',muscle:'Chest',notes:'Squeeze peak'},{name:'Seated DB OHP',sets:4,reps:'10',muscle:'Shoulders',notes:'Full ROM'},{name:'Cable Lateral Raise',sets:3,reps:'15',muscle:'Shoulders',notes:'Light slow'},{name:'Tricep Pushdown',sets:3,reps:'12',muscle:'Triceps',notes:'Rope'},{name:'OH DB Extension',sets:3,reps:'12',muscle:'Triceps',notes:'Long head'},{name:'Cable Crunch',sets:3,reps:'15',muscle:'Core',notes:'Exhale hard'},{name:'Plank',sets:3,reps:'45 sec',muscle:'Core',notes:'Tight'}]},
+2:{name:'Pull A',focus:'Back/Biceps/Rear Delts',exercises:[{name:'Wide Lat Pulldown',sets:4,reps:'10-12',muscle:'Back',notes:'To chest'},{name:'Seated Cable Row',sets:4,reps:'12',muscle:'Back',notes:'Wide grip'},{name:'Single Arm DB Row',sets:3,reps:'10 each',muscle:'Back',notes:'Full stretch'},{name:'Rear Delt Machine',sets:4,reps:'15',muscle:'Rear Delts',notes:'Slow'},{name:'Face Pulls',sets:3,reps:'15',muscle:'Rear Delts',notes:'High cable'},{name:'DB Curls',sets:3,reps:'12',muscle:'Biceps',notes:'Alternating'},{name:'Incline DB Curl',sets:3,reps:'12',muscle:'Biceps',notes:'45 deg'},{name:'Hanging Knee Raise',sets:3,reps:'12',muscle:'Core',notes:'Control'},{name:'Pallof Press',sets:3,reps:'12 each',muscle:'Core',notes:'Cable'}]},
+3:{name:'Legs A',focus:'Quad/Ham/Glutes',exercises:[{name:'Leg Press',sets:4,reps:'12',muscle:'Quads',notes:'Feet mid'},{name:'Smith RDL',sets:4,reps:'10',muscle:'Hamstrings',notes:'Hip hinge'},{name:'Walking Lunges',sets:3,reps:'12 each',muscle:'Quads/Glutes',notes:'Long stride'},{name:'Lying Leg Curl',sets:4,reps:'12',muscle:'Hamstrings',notes:'Squeeze'},{name:'Leg Extension',sets:3,reps:'15',muscle:'Quads',notes:'Slow neg'},{name:'Calf Raises',sets:4,reps:'15',muscle:'Calves',notes:'Full ROM'},{name:'Dead Bug',sets:3,reps:'12 each',muscle:'Core',notes:'Back flat'},{name:'Bird Dog',sets:3,reps:'10 each',muscle:'Core',notes:'Balance'}]},
+4:{name:'Push B',focus:'Chest/Shoulders/Triceps',exercises:[{name:'Smith Incline Press',sets:4,reps:'10',muscle:'Chest',notes:'30 deg'},{name:'DB Flat Press',sets:3,reps:'12',muscle:'Chest',notes:'Squeeze top'},{name:'Pec Deck',sets:3,reps:'15',muscle:'Chest',notes:'Full ROM'},{name:'Smith OHP',sets:4,reps:'10',muscle:'Shoulders',notes:'Seated'},{name:'DB Front Raise',sets:3,reps:'12',muscle:'Shoulders',notes:'Alternating'},{name:'Cable Lateral Raise',sets:3,reps:'15',muscle:'Shoulders',notes:'Behind body'},{name:'Skull Crushers',sets:3,reps:'12',muscle:'Triceps',notes:'EZ or DB'},{name:'Dip Machine',sets:3,reps:'12',muscle:'Triceps',notes:'Lean fwd=chest'},{name:'Ab Wheel/Rollout',sets:3,reps:'10',muscle:'Core',notes:'Knees'},{name:'Side Plank',sets:3,reps:'30 sec ea',muscle:'Core',notes:'Stack feet'}]},
+5:{name:'Pull B',focus:'Back/Biceps/Rear Delts',exercises:[{name:'Close Grip Pulldown',sets:4,reps:'10-12',muscle:'Back',notes:'V-bar'},{name:'Chest Supported Row',sets:4,reps:'12',muscle:'Back',notes:'Machine'},{name:'Straight Arm Pulldown',sets:3,reps:'12',muscle:'Back',notes:'Rope'},{name:'Smith Row',sets:3,reps:'10',muscle:'Back',notes:'Overhand'},{name:'Reverse Pec Deck',sets:3,reps:'15',muscle:'Rear Delts',notes:'Slow'},{name:'Hammer Curls',sets:3,reps:'12',muscle:'Biceps',notes:'Standing'},{name:'Cable Curl',sets:3,reps:'12',muscle:'Biceps',notes:'EZ cable'},{name:'Cable Woodchop',sets:3,reps:'12 each',muscle:'Core',notes:'High to low'},{name:'Reverse Crunch',sets:3,reps:'15',muscle:'Core',notes:'Slow'}]},
+6:{name:'Active Recovery',focus:'Walking/Mobility',exercises:[{name:'Brisk Walk',sets:1,reps:'30-45 min',muscle:'Cardio',notes:'Moderate'},{name:'Hip Circles',sets:2,reps:'10 each',muscle:'Mobility',notes:'Both dirs'},{name:'Cat-Cow',sets:2,reps:'10',muscle:'Spine',notes:'Slow'},{name:'Worlds Greatest Stretch',sets:2,reps:'5 each',muscle:'Full Body',notes:'Hold 5s'},{name:'Shoulder Dislocates',sets:2,reps:'10',muscle:'Shoulders',notes:'Band'},{name:'Foam Rolling',sets:1,reps:'10 min',muscle:'Recovery',notes:'Full body'}]},
 };
 
-const I = {
-  Dumbbell: ({s=24,c=""}) => <svg className={c} width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m6.5 6.5 11 11M21 21l-1-1M3 3l1 1M18 22l4-4M2 6l4-4M3 10l7-7M14 21l7-7"/></svg>,
-  Pill: ({s=24,c=""}) => <svg className={c} width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>,
-  Check: ({s=24}) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"/></svg>,
-  ChevL: ({s=24}) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m15 18-6-6 6-6"/></svg>,
-  ChevR: ({s=24}) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m9 18 6-6-6-6"/></svg>,
-  Calendar: ({s=24}) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>,
-  User: ({s=24}) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
-  LogOut: ({s=24}) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>,
-  Lock: ({s=24}) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>,
-  Sun: ({s=24}) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>,
-  Syringe: ({s=24,c=""}) => <svg className={c} width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m18 2 4 4M17 7l3-3M19 9L8.7 19.3c-1 1-2.5 1-3.4 0l-.6-.6c-1-1-1-2.5 0-3.4L15 5M9 11l4 4M5 19l-3 3M14 4l6 6"/></svg>,
+const DR={
+1:{name:'Lower Body A',focus:'Glutes/Hamstrings',exercises:[{name:'Hip Thrust (Smith)',sets:4,reps:'12',muscle:'Glutes',notes:'Pause top'},{name:'Romanian Deadlift',sets:4,reps:'10',muscle:'Hamstrings',notes:'DB hinge'},{name:'Bulgarian Split Squat',sets:3,reps:'10 each',muscle:'Glutes/Quads',notes:'Rear foot bench'},{name:'Cable Kickback',sets:3,reps:'12 each',muscle:'Glutes',notes:'Squeeze'},{name:'Lying Leg Curl',sets:3,reps:'12',muscle:'Hamstrings',notes:'Slow neg'},{name:'Calf Raises',sets:3,reps:'15',muscle:'Calves',notes:'Full ROM'},{name:'Plank',sets:3,reps:'45 sec',muscle:'Core',notes:'Tight'},{name:'Dead Bug',sets:3,reps:'10 each',muscle:'Core',notes:'Slow'}]},
+2:{name:'Upper Body A',focus:'Back/Shoulders',exercises:[{name:'Lat Pulldown',sets:4,reps:'12',muscle:'Back',notes:'To chest'},{name:'Seated Cable Row',sets:3,reps:'12',muscle:'Back',notes:'Squeeze'},{name:'DB Shoulder Press',sets:3,reps:'10',muscle:'Shoulders',notes:'Seated'},{name:'Face Pulls',sets:3,reps:'15',muscle:'Rear Delts',notes:'High cable'},{name:'Lateral Raise',sets:3,reps:'12',muscle:'Shoulders',notes:'Light'},{name:'DB Curls',sets:3,reps:'12',muscle:'Biceps',notes:'Alternating'},{name:'Cable Crunch',sets:3,reps:'15',muscle:'Core',notes:'Exhale'}]},
+3:{name:'Lower Body B',focus:'Quads/Glutes',exercises:[{name:'Leg Press',sets:4,reps:'12',muscle:'Quads',notes:'Feet low'},{name:'Smith Squat',sets:3,reps:'10',muscle:'Quads',notes:'Feet fwd'},{name:'Walking Lunges',sets:3,reps:'12 each',muscle:'Quads/Glutes',notes:'DB'},{name:'Leg Extension',sets:3,reps:'15',muscle:'Quads',notes:'Slow neg'},{name:'Abductor Machine',sets:3,reps:'15',muscle:'Glutes',notes:'Squeeze'},{name:'Adductor Machine',sets:3,reps:'15',muscle:'Inner Thigh',notes:'Control'},{name:'Hanging Knee Raise',sets:3,reps:'12',muscle:'Core',notes:'Slow'}]},
+4:{name:'Upper Body B',focus:'Chest/Arms',exercises:[{name:'DB Bench Press',sets:3,reps:'12',muscle:'Chest',notes:'Flat'},{name:'Incline DB Press',sets:3,reps:'12',muscle:'Chest',notes:'30 deg'},{name:'Pec Deck',sets:3,reps:'12',muscle:'Chest',notes:'Squeeze'},{name:'Tricep Pushdown',sets:3,reps:'12',muscle:'Triceps',notes:'Rope'},{name:'DB Hammer Curl',sets:3,reps:'12',muscle:'Biceps',notes:'Standing'},{name:'Rear Delt Machine',sets:3,reps:'15',muscle:'Rear Delts',notes:'Slow'},{name:'Pallof Press',sets:3,reps:'10 each',muscle:'Core',notes:'Cable'}]},
+5:{name:'Full Body',focus:'Compounds',exercises:[{name:'Smith Squat',sets:3,reps:'10',muscle:'Legs',notes:'Moderate'},{name:'Hip Thrust (Smith)',sets:3,reps:'12',muscle:'Glutes',notes:'Smith'},{name:'Lat Pulldown',sets:3,reps:'12',muscle:'Back',notes:'Close grip'},{name:'DB Bench Press',sets:3,reps:'12',muscle:'Chest',notes:'Flat'},{name:'DB Shoulder Press',sets:3,reps:'10',muscle:'Shoulders',notes:'Seated'},{name:'Plank',sets:3,reps:'45 sec',muscle:'Core',notes:''},{name:'Russian Twist',sets:3,reps:'15 each',muscle:'Core',notes:'DB'}]},
+6:{name:'Active Recovery',focus:'Walking/Stretch',exercises:[{name:'Walk',sets:1,reps:'30-45 min',muscle:'Cardio',notes:'Moderate'},{name:'Hip Circles',sets:2,reps:'10 each',muscle:'Mobility',notes:''},{name:'Cat-Cow',sets:2,reps:'10',muscle:'Spine',notes:'Slow'},{name:'Foam Rolling',sets:1,reps:'10 min',muscle:'Recovery',notes:'Full body'}]},
 };
 
-const protocols = {
-  greg: {
-    daily: [
-      { id: 'tesa', name: 'Tesamorelin', dose: '80 units', type: 'peptide' },
-      { id: 'ipa', name: 'Ipamorelin', dose: '4 units', type: 'peptide' },
-      { id: 'bpc', name: 'BPC-157', dose: '10 units', type: 'peptide' },
-      { id: '5amino', name: '5-Amino-1MQ', dose: '100mg (oral)', type: 'supp' },
-      { id: 'creatine', name: 'Creatine', dose: '5g', type: 'supp' },
-    ],
-    weekly: [
-      { id: 'trt', name: 'TRT', dose: '80mg', days: [2,4], type: 'injection' },
-      { id: 'tb500', name: 'TB-500', dose: '40 units', days: [2,4], type: 'peptide' },
-      { id: 'tirz', name: 'Tirzepatide', dose: '2 units', days: [4], type: 'peptide' },
-    ]
-  },
-  ricki: {
-    daily: [
-      { id: 'tesa', name: 'Tesamorelin', dose: '60 units', type: 'peptide' },
-      { id: 'ipa', name: 'Ipamorelin', dose: '3 units', type: 'peptide' },
-      { id: 'bpc', name: 'BPC-157', dose: '8 units', type: 'peptide' },
-      { id: '5amino', name: '5-Amino-1MQ', dose: '50mg (oral)', type: 'supp' },
-      { id: 'creatine', name: 'Creatine', dose: '5g', type: 'supp' },
-    ],
-    weekly: [
-      { id: 'tirz', name: 'Tirzepatide', dose: '1.5 units', days: [4], type: 'peptide' },
-    ]
-  },
-  dalton: { daily: [], weekly: [] }
+const DD={
+1:{name:'Push',focus:'Chest/Shoulders/Triceps',exercises:[{name:'Barbell Bench Press',sets:4,reps:'8-10',muscle:'Chest',notes:'BB or DB'},{name:'Incline DB Press',sets:3,reps:'10',muscle:'Chest',notes:'30 deg'},{name:'Smith OHP',sets:4,reps:'8-10',muscle:'Shoulders',notes:''},{name:'Lateral Raise',sets:3,reps:'12-15',muscle:'Shoulders',notes:'Light'},{name:'Tricep Pushdown',sets:3,reps:'12',muscle:'Triceps',notes:'Rope'},{name:'Dips',sets:3,reps:'AMRAP',muscle:'Triceps',notes:'BW or weighted'}]},
+2:{name:'Pull',focus:'Back/Biceps',exercises:[{name:'Pull-ups',sets:4,reps:'AMRAP',muscle:'Back',notes:'Wide'},{name:'Barbell Row',sets:4,reps:'8-10',muscle:'Back',notes:'Overhand'},{name:'Lat Pulldown',sets:3,reps:'12',muscle:'Back',notes:'Close grip'},{name:'Face Pulls',sets:3,reps:'15',muscle:'Rear Delts',notes:'Cable'},{name:'Barbell Curl',sets:3,reps:'10-12',muscle:'Biceps',notes:'EZ bar'},{name:'Hammer Curls',sets:3,reps:'12',muscle:'Biceps',notes:'DB'}]},
+3:{name:'Legs',focus:'Quads/Ham/Glutes',exercises:[{name:'Barbell Squat',sets:4,reps:'8-10',muscle:'Quads',notes:'BB or Smith'},{name:'Romanian Deadlift',sets:4,reps:'10',muscle:'Hamstrings',notes:'Hinge'},{name:'Leg Press',sets:3,reps:'12',muscle:'Quads',notes:'Full depth'},{name:'Walking Lunges',sets:3,reps:'12 each',muscle:'Glutes',notes:'DB'},{name:'Lying Leg Curl',sets:3,reps:'12',muscle:'Hamstrings',notes:''},{name:'Calf Raises',sets:4,reps:'15',muscle:'Calves',notes:'Full ROM'}]},
+4:{name:'Upper',focus:'Strength',exercises:[{name:'Barbell Bench Press',sets:4,reps:'6-8',muscle:'Chest',notes:'Heavy'},{name:'Barbell Row',sets:4,reps:'6-8',muscle:'Back',notes:'Heavy'},{name:'DB Shoulder Press',sets:3,reps:'8-10',muscle:'Shoulders',notes:'Seated'},{name:'Pull-ups',sets:3,reps:'AMRAP',muscle:'Back',notes:'Weighted'},{name:'Close Grip Bench',sets:3,reps:'8-10',muscle:'Triceps',notes:'Narrow'},{name:'Barbell Curl',sets:3,reps:'8-10',muscle:'Biceps',notes:'Strict'}]},
+5:{name:'Legs B',focus:'Posterior Chain',exercises:[{name:'Deadlift',sets:4,reps:'6-8',muscle:'Posterior',notes:'Conventional'},{name:'Front Squat',sets:3,reps:'10',muscle:'Quads',notes:'Upright'},{name:'Hip Thrust',sets:3,reps:'12',muscle:'Glutes',notes:'BB'},{name:'Bulgarian Split Squat',sets:3,reps:'10 each',muscle:'Quads/Glutes',notes:'DB'},{name:'Lying Leg Curl',sets:3,reps:'12',muscle:'Hamstrings',notes:'Slow'},{name:'Farmer Carries',sets:3,reps:'40 yards',muscle:'Core',notes:'Heavy DB'}]},
+6:{name:'Rest/Cardio',focus:'Recovery',exercises:[{name:'Walk',sets:1,reps:'30-45 min',muscle:'Cardio',notes:'Easy'},{name:'Foam Rolling',sets:1,reps:'15 min',muscle:'Recovery',notes:'Full body'}]},
 };
 
-const reconstitution = [
-  { name: 'Tesamorelin', vial: '5mg', water: '2mL', conc: '25mcg/unit' },
-  { name: 'Ipamorelin', vial: '10mg', water: '2mL', conc: '50mcg/unit' },
-  { name: 'BPC-157', vial: '5mg', water: '2mL', conc: '25mcg/unit' },
-  { name: 'TB-500', vial: '10mg', water: '2mL', conc: '50mcg/unit' },
-  { name: 'Tirzepatide', vial: '15mg', water: '1.5mL', conc: '0.1mg/unit' },
-];
-
-const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-const dayNamesShort = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-
-const workouts = {
-  1: { name: 'Push A', focus: 'Chest/Shoulders/Triceps', exercises: [
-    { name: 'Incline DB Press', sets: 4, reps: '10-12', notes: '30-45' },
-    { name: 'Smith Flat Press', sets: 3, reps: '12', notes: 'Control negative' },
-    { name: 'Incline DB Flyes', sets: 3, reps: '12', notes: 'Deep stretch' },
-    { name: 'Seated DB OHP', sets: 4, reps: '10', notes: 'Core tight' },
-    { name: 'OH DB Extension', sets: 3, reps: '12', notes: 'Single DB' },
-    { name: 'Skull Crushers', sets: 3, reps: '12', notes: 'Behind head' }
-  ]},
-  2: { name: 'Pull A', focus: 'Back/Biceps/Rear Delts', exercises: [
-    { name: 'Wide Lat Pulldown', sets: 4, reps: '10-12', notes: 'To chest' },
-    { name: 'Seated Cable Row', sets: 4, reps: '12', notes: 'Wide grip' },
-    { name: 'Rear Delt Machine', sets: 4, reps: '15', notes: 'Slow' },
-    { name: 'Face Pulls', sets: 3, reps: '15', notes: 'High cable' },
-    { name: 'DB Curls', sets: 3, reps: '12', notes: 'Alternating' },
-    { name: 'Incline DB Curl', sets: 3, reps: '12', notes: '45 bench' }
-  ]},
-  3: { name: 'Legs A', focus: 'Quad/Hamstring', exercises: [
-    { name: 'Leg Press', sets: 4, reps: '12', notes: 'Feet middle' },
-    { name: 'Smith RDL', sets: 4, reps: '10', notes: 'Hip hinge' },
-    { name: 'Walking Lunges', sets: 3, reps: '12 each', notes: 'Long strides' },
-    { name: 'Lying Leg Curl', sets: 4, reps: '12', notes: 'Squeeze' },
-    { name: 'Calf Raises', sets: 4, reps: '15', notes: 'Full ROM' },
-    { name: 'Plank', sets: 3, reps: '45 sec', notes: 'Tight core' }
-  ]},
-  4: { name: 'Push B', focus: 'Chest/Shoulders/Triceps', exercises: [
-    { name: 'Smith Incline Press', sets: 4, reps: '10', notes: '30 deg' },
-    { name: 'DB Bench Press', sets: 3, reps: '12', notes: 'Full ROM' },
-    { name: 'Cable Flye Low-High', sets: 3, reps: '15', notes: 'Cross top' },
-    { name: 'Cable Lateral Raise', sets: 4, reps: '12', notes: 'Lean away' },
-    { name: 'Close Grip Smith', sets: 3, reps: '10', notes: 'Shoulder width' },
-    { name: 'Cable Pushdowns', sets: 3, reps: '15', notes: 'Rope' }
-  ]},
-  5: { name: 'Pull B', focus: 'Back/Biceps', exercises: [
-    { name: 'Assisted Pull-ups', sets: 4, reps: '8-10', notes: 'Chin grip' },
-    { name: 'Single Arm DB Row', sets: 4, reps: '10 each', notes: 'Knee on bench' },
-    { name: 'Straight Arm Pulldown', sets: 3, reps: '12', notes: 'Arms straight' },
-    { name: 'Reverse Pec Deck', sets: 3, reps: '15', notes: 'Face pad' },
-    { name: 'Hammer Curls', sets: 3, reps: '12', notes: 'Neutral' },
-    { name: 'Cable Curl', sets: 3, reps: '12', notes: 'Low cable' }
-  ]},
-  6: { name: 'Active Recovery', focus: 'Cardio/Mobility', exercises: [
-    { name: 'Incline Walk', sets: 1, reps: '45-60 min', notes: '3-3.5 mph' },
-    { name: 'Hip Circles', sets: 2, reps: '10 each', notes: 'Both ways' },
-    { name: 'Cat-Cow', sets: 2, reps: '10', notes: 'Slow' },
-    { name: 'Worlds Greatest Stretch', sets: 2, reps: '5 each', notes: 'Lunge rotate' }
-  ]},
-  0: { name: 'Rest Day', focus: 'Recovery', exercises: [] }
+const DVG={
+1:{name:'Lower Body A',focus:'Glutes & Hamstrings',exercises:[{name:'Barbell Hip Thrust',sets:4,reps:'10-12',muscle:'Glutes',notes:'Pause 2s top'},{name:'Romanian Deadlift',sets:4,reps:'10',muscle:'Hamstrings',notes:'DB or BB hinge'},{name:'Bulgarian Split Squat',sets:3,reps:'10 each',muscle:'Glutes/Quads',notes:'DB rear foot bench'},{name:'Cable Pull-Through',sets:3,reps:'12',muscle:'Glutes/Hams',notes:'Rope squeeze'},{name:'Lying Leg Curl',sets:3,reps:'12',muscle:'Hamstrings',notes:'Slow 3s neg'},{name:'Single Leg Hip Thrust',sets:3,reps:'10 each',muscle:'Glutes',notes:'BW or plate'},{name:'Dead Bug',sets:3,reps:'12 each',muscle:'Core',notes:'Back flat'},{name:'Plank',sets:3,reps:'30-45 sec',muscle:'Core',notes:'Squeeze'}]},
+2:{name:'Upper Body A',focus:'Push',exercises:[{name:'DB Bench Press',sets:4,reps:'10-12',muscle:'Chest',notes:'Full ROM'},{name:'Incline DB Press',sets:3,reps:'12',muscle:'Chest',notes:'30 deg'},{name:'Cable Flye',sets:3,reps:'12',muscle:'Chest',notes:'Mid cables'},{name:'DB Shoulder Press',sets:4,reps:'10',muscle:'Shoulders',notes:'Seated'},{name:'Lateral Raise',sets:3,reps:'12-15',muscle:'Shoulders',notes:'Light slow'},{name:'Tricep Pushdown',sets:3,reps:'12',muscle:'Triceps',notes:'Rope'},{name:'Overhead Tricep Ext',sets:3,reps:'12',muscle:'Triceps',notes:'Cable or DB'},{name:'Pallof Press',sets:3,reps:'10 each',muscle:'Core',notes:'Cable slow'}]},
+3:{name:'Lower Body B',focus:'Quads & Glutes',exercises:[{name:'Goblet Squat',sets:4,reps:'12',muscle:'Quads/Glutes',notes:'DB chest deep'},{name:'Leg Press',sets:4,reps:'12',muscle:'Quads',notes:'Feet low narrow'},{name:'Walking Lunges',sets:3,reps:'12 each',muscle:'Quads/Glutes',notes:'DB in hands'},{name:'Leg Extension',sets:3,reps:'12-15',muscle:'Quads',notes:'Slow neg squeeze'},{name:'Smith Squat',sets:3,reps:'10',muscle:'Quads',notes:'Feet forward'},{name:'Calf Raises',sets:4,reps:'15',muscle:'Calves',notes:'Full stretch'},{name:'Cable Crunch',sets:3,reps:'15',muscle:'Core',notes:'Exhale hard'},{name:'Side Plank',sets:3,reps:'20 sec each',muscle:'Core',notes:'Build up'}]},
+4:{name:'Upper Body B',focus:'Pull',exercises:[{name:'Lat Pulldown',sets:4,reps:'10-12',muscle:'Back',notes:'Wide to chest'},{name:'Seated Cable Row',sets:4,reps:'12',muscle:'Back',notes:'Close squeeze'},{name:'Single Arm DB Row',sets:3,reps:'10 each',muscle:'Back',notes:'Full stretch'},{name:'Face Pulls',sets:3,reps:'15',muscle:'Rear Delts',notes:'Pull to ears'},{name:'Rear Delt Fly',sets:3,reps:'12',muscle:'Rear Delts',notes:'DB bent over'},{name:'DB Curls',sets:3,reps:'12',muscle:'Biceps',notes:'Alternating'},{name:'Hammer Curls',sets:3,reps:'12',muscle:'Biceps',notes:'Neutral'},{name:'Hanging Knee Raise',sets:3,reps:'10',muscle:'Core',notes:'Control'}]},
+5:{name:'Full Body',focus:'Compound Strength',exercises:[{name:'Goblet Squat',sets:3,reps:'10',muscle:'Legs',notes:'Heavy DB'},{name:'DB Romanian Deadlift',sets:3,reps:'10',muscle:'Posterior',notes:'Hinge'},{name:'DB Bench Press',sets:3,reps:'10',muscle:'Chest',notes:'Full ROM'},{name:'Lat Pulldown',sets:3,reps:'12',muscle:'Back',notes:'Wide'},{name:'DB Shoulder Press',sets:3,reps:'10',muscle:'Shoulders',notes:'Seated'},{name:'Hip Thrust',sets:3,reps:'12',muscle:'Glutes',notes:'Smith or BB'},{name:'Plank',sets:3,reps:'30-45 sec',muscle:'Core',notes:''},{name:'Russian Twist',sets:3,reps:'12 each',muscle:'Core',notes:'DB'}]},
+6:{name:'Active Recovery',focus:'Mobility',exercises:[{name:'Treadmill Incline Walk',sets:1,reps:'20-30 min',muscle:'Cardio',notes:'10-15% incline'},{name:'Hip Circles',sets:2,reps:'10 each',muscle:'Mobility',notes:''},{name:'Cat-Cow',sets:2,reps:'10',muscle:'Spine',notes:'Slow'},{name:'Worlds Greatest Stretch',sets:2,reps:'5 each',muscle:'Full Body',notes:'Hold 5s'},{name:'Foam Rolling',sets:1,reps:'10 min',muscle:'Recovery',notes:'Quads glutes back'}]},
 };
 
-const dateKey = d => d.toISOString().split('T')[0];
-const getWeekKey = (date) => {
-  const d = new Date(date);
-  d.setHours(0, 0, 0, 0);
-  d.setDate(d.getDate() + 4 - (d.getDay() || 7));
-  const yearStart = new Date(d.getFullYear(), 0, 1);
-  const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-  return d.getFullYear() + '-W' + weekNo;
+const DVH={
+1:{name:'Lower Body A',focus:'Glutes & Hamstrings',exercises:[{name:'Single Leg Glute Bridge',sets:4,reps:'12 each',muscle:'Glutes',notes:'Pause 2s top'},{name:'Single Leg RDL (BW)',sets:4,reps:'10 each',muscle:'Hamstrings',notes:'Touch floor slow'},{name:'Reverse Lunge',sets:3,reps:'12 each',muscle:'Quads/Glutes',notes:'Step back deep'},{name:'Sumo Squat Pulse',sets:3,reps:'20',muscle:'Glutes',notes:'Wide stance pulse'},{name:'Donkey Kicks',sets:3,reps:'15 each',muscle:'Glutes',notes:'Slow squeeze'},{name:'Fire Hydrants',sets:3,reps:'15 each',muscle:'Glutes',notes:'Hips square'},{name:'Nordic Curl Negative',sets:3,reps:'5',muscle:'Hamstrings',notes:'Anchor feet'},{name:'Dead Bug',sets:3,reps:'12 each',muscle:'Core',notes:'Back flat'},{name:'Plank',sets:3,reps:'30-45 sec',muscle:'Core',notes:'Squeeze'}]},
+2:{name:'Upper Body A',focus:'Push',exercises:[{name:'Push-ups',sets:4,reps:'10-15',muscle:'Chest',notes:'Knees if needed'},{name:'Incline Push-up',sets:3,reps:'12',muscle:'Chest',notes:'Hands on chair'},{name:'Diamond Push-up',sets:3,reps:'8-10',muscle:'Triceps',notes:'Hands together'},{name:'Pike Push-up',sets:4,reps:'8-10',muscle:'Shoulders',notes:'Hips high'},{name:'Lateral Arm Circles',sets:3,reps:'15 each way',muscle:'Shoulders',notes:'Water bottles'},{name:'Tricep Dips (Chair)',sets:3,reps:'12',muscle:'Triceps',notes:'Chair edge'},{name:'Close Grip Push-up',sets:3,reps:'10',muscle:'Triceps',notes:'Shoulder width'},{name:'Bird Dog',sets:3,reps:'10 each',muscle:'Core',notes:'Slow'}]},
+3:{name:'Lower Body B',focus:'Quads & Glutes',exercises:[{name:'Bodyweight Squat',sets:4,reps:'15-20',muscle:'Quads',notes:'Deep 3s down'},{name:'Jump Squat',sets:3,reps:'10',muscle:'Quads/Power',notes:'Land soft'},{name:'Curtsy Lunge',sets:3,reps:'12 each',muscle:'Glutes',notes:'Cross behind'},{name:'Wall Sit',sets:3,reps:'30-45 sec',muscle:'Quads',notes:'Thighs parallel'},{name:'Step-ups (Chair)',sets:3,reps:'12 each',muscle:'Quads/Glutes',notes:'Drive up'},{name:'Calf Raise (Stair)',sets:4,reps:'15',muscle:'Calves',notes:'Hang heels'},{name:'Pistol Squat Negative',sets:3,reps:'5 each',muscle:'Quads',notes:'Hold balance'},{name:'Bicycle Crunch',sets:3,reps:'15 each',muscle:'Core',notes:'Slow'},{name:'Side Plank',sets:3,reps:'20 sec each',muscle:'Core',notes:'Build up'}]},
+4:{name:'Upper Body B',focus:'Pull',exercises:[{name:'Inverted Row (Table)',sets:4,reps:'10-12',muscle:'Back',notes:'Under sturdy table'},{name:'Superman',sets:4,reps:'12',muscle:'Back',notes:'Hold 2s'},{name:'Reverse Snow Angel',sets:3,reps:'10',muscle:'Back',notes:'Arms sweep'},{name:'Prone Y-T-W',sets:3,reps:'8 each',muscle:'Back/RC',notes:'Face down'},{name:'Doorway Row',sets:3,reps:'12 each',muscle:'Back',notes:'Lean from frame'},{name:'Towel Curl',sets:3,reps:'10',muscle:'Biceps',notes:'Step on towel'},{name:'Chin-up Negative',sets:3,reps:'5',muscle:'Back/Biceps',notes:'If bar avail'},{name:'Leg Raise',sets:3,reps:'12',muscle:'Core',notes:'Lying slow'}]},
+5:{name:'Full Body',focus:'Compound',exercises:[{name:'Bodyweight Squat',sets:3,reps:'15',muscle:'Legs',notes:'Deep'},{name:'Single Leg RDL (BW)',sets:3,reps:'10 each',muscle:'Hamstrings',notes:'Slow'},{name:'Push-ups',sets:3,reps:'12-15',muscle:'Chest',notes:'Full ROM'},{name:'Inverted Row (Table)',sets:3,reps:'10',muscle:'Back',notes:'Under table'},{name:'Pike Push-up',sets:3,reps:'8-10',muscle:'Shoulders',notes:'Hips high'},{name:'Glute Bridge March',sets:3,reps:'10 each',muscle:'Glutes/Core',notes:'Bridge lift knee'},{name:'Plank',sets:3,reps:'30-45 sec',muscle:'Core',notes:''},{name:'Mountain Climber',sets:3,reps:'15 each',muscle:'Core',notes:'Slow'}]},
+6:{name:'Active Recovery',focus:'Mobility',exercises:[{name:'Walk',sets:1,reps:'20-30 min',muscle:'Cardio',notes:'Brisk'},{name:'Hip 90/90 Stretch',sets:2,reps:'30 sec each',muscle:'Hips',notes:'Rotate'},{name:'Cat-Cow',sets:2,reps:'10',muscle:'Spine',notes:'Slow'},{name:'Pigeon Stretch',sets:2,reps:'30 sec each',muscle:'Hips',notes:'Relax'},{name:'Yoga Flow',sets:1,reps:'10-15 min',muscle:'Full Body',notes:'Sun salutations'}]},
 };
 
-function Login({ onLogin }) {
-  const [step, setStep] = useState('select');
-  const [user, setUser] = useState(null);
-  const [pin, setPin] = useState('');
-  const [error, setError] = useState('');
+const DP={greg:{standard:DG},ricki:{standard:DR},dalton:{standard:DD},denver:{gym:DVG,home:DVH}};
+const DN=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const DM={0:7,1:1,2:2,3:3,4:4,5:5,6:6};
+const isDual=u=>u==='denver';
 
-  const select = n => { setUser(n); setStep('pin'); setPin(''); setError(''); };
+function App(){
+  const[user,setUser]=useState(null);
+  const[pin,setPin]=useState('');
+  const[pinErr,setPE]=useState(false);
+  const[authed,setAuth]=useState(false);
+  const[view,setView]=useState('workout');
+  const[selDay,setSD]=useState(()=>DM[new Date().getDay()]);
+  const[wLogs,setWL]=useState({});
+  const[sLogs,setSL]=useState({});
+  const[gymMode,setGM]=useState(true);
+  const[showInf,setSI]=useState(null);
+  const[custProg,setCP]=useState({});
+  const[editMode,setEM]=useState(false);
+  const[libGrp,setLG]=useState('Chest');
+  const[addDay,setAD]=useState(null);
 
-  const submit = e => {
-    e.preventDefault();
-    if (pin.length !== 4) { setError('Enter 4 digits'); return; }
-    if (hashPin(pin) === userPins[user]) onLogin(user);
-    else { setError('Wrong PIN'); setPin(''); }
-  };
+  const td=new Date(),tdow=td.getDay(),dk=td.toISOString().split('T')[0];
+  const pk=useMemo(()=>user?(isDual(user)?(gymMode?`${user}_gym`:`${user}_home`):`${user}_standard`):'', [user,gymMode]);
+  const gDP=useCallback(()=>{if(!user)return{};if(isDual(user))return gymMode?DP[user].gym:DP[user].home;return DP[user].standard},[user,gymMode]);
+  const cP=useMemo(()=>custProg[pk]||gDP(),[custProg,pk,gDP]);
+  const cW=cP[selDay], exs=cW?cW.exercises:[];
 
-  return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col items-center justify-center p-6">
-      <div className="flex items-center gap-3 mb-8">
-        <I.Dumbbell s={40} c="text-purple-400"/>
-        <div><h1 className="text-2xl font-bold">IRON PROTOCOL</h1><p className="text-purple-400 text-sm">Planet Fitness Edition</p></div>
+  useEffect(()=>{if(!user)return;(async()=>{const w=await ld(`${user}_wl`);if(w?.l)setWL(w.l);const s=await ld(`${user}_sl`);if(s?.l)setSL(s.l);const p=await ld(`${user}_pr`);if(p?.gm!==undefined)setGM(p.gm);const c=await ld(`${user}_cp`);if(c?.p)setCP(c.p)})()},[user]);
+  useEffect(()=>{if(user)sv(`${user}_wl`,{l:wLogs})},[wLogs,user]);
+  useEffect(()=>{if(user)sv(`${user}_sl`,{l:sLogs})},[sLogs,user]);
+  useEffect(()=>{if(user)sv(`${user}_pr`,{gm:gymMode})},[gymMode,user]);
+  useEffect(()=>{if(user)sv(`${user}_cp`,{p:custProg})},[custProg,user]);
+
+  const doLogin=u=>{setUser(u);setPin('');setPE(false)};
+  const doAuth=()=>{if(hashPin(pin)===UP[user])setAuth(true);else{setPE(true);setPin('')}};
+  const doLogout=()=>{setUser(null);setAuth(false);setPin('');setWL({});setSL({});setCP({});setView('workout');setEM(false);setAD(null)};
+
+  const enC=()=>{if(!custProg[pk])setCP(p=>({...p,[pk]:JSON.parse(JSON.stringify(gDP()))}))};
+  const rmEx=(d,i)=>{enC();setCP(p=>{const g=JSON.parse(JSON.stringify(p[pk]||gDP()));g[d].exercises.splice(i,1);return{...p,[pk]:g}})};
+  const mvEx=(d,i,dir)=>{enC();setCP(p=>{const g=JSON.parse(JSON.stringify(p[pk]||gDP()));const a=g[d].exercises;const n=i+dir;if(n<0||n>=a.length)return p;[a[i],a[n]]=[a[n],a[i]];return{...p,[pk]:g}})};
+  const addEx=(d,ex)=>{enC();setCP(p=>{const g=JSON.parse(JSON.stringify(p[pk]||gDP()));g[d].exercises.push({...ex,muscle:libGrp});return{...p,[pk]:g}})};
+  const rstDay=d=>{const def=gDP();setCP(p=>{const g=JSON.parse(JSON.stringify(p[pk]||def));g[d]=JSON.parse(JSON.stringify(def[d]));return{...p,[pk]:g}})};
+  const rstAll=()=>setCP(p=>{const n={...p};delete n[pk];return n});
+
+  const lk=(d,e,s,f)=>`${dk}_d${d}_e${e}_s${s}_${f}`;
+  const gL=(d,e,s,f)=>wLogs[lk(d,e,s,f)]||'';
+  const sL=(d,e,s,f,v)=>setWL(p=>({...p,[lk(d,e,s,f)]:v}));
+  const dK=(d,e,s)=>`${dk}_d${d}_e${e}_s${s}_dn`;
+  const iD=(d,e,s)=>wLogs[dK(d,e,s)]===true;
+  const tD=(d,e,s)=>setWL(p=>({...p,[dK(d,e,s)]:!p[dK(d,e,s)]}));
+  const sk=n=>`${dk}_${n}`;const isSD=n=>sLogs[sk(n)]===true;const tS=n=>setSL(p=>({...p,[sk(n)]:!p[sk(n)]}));
+
+  const uS=user?SP[user]:{daily:[],weekly:[]};
+  const tSp=[...uS.daily,...uS.weekly.filter(s=>s.days.includes(tdow))];
+
+  const uc={greg:{a:'text-purple-400',b:'bg-purple-500',bl:'bg-purple-500/20',bd:'border-purple-500'},ricki:{a:'text-rose-400',b:'bg-rose-500',bl:'bg-rose-500/20',bd:'border-rose-500'},dalton:{a:'text-blue-400',b:'bg-blue-500',bl:'bg-blue-500/20',bd:'border-blue-500'},denver:{a:'text-emerald-400',b:'bg-emerald-500',bl:'bg-emerald-500/20',bd:'border-emerald-500'}}[user]||{a:'text-purple-400',b:'bg-purple-500',bl:'bg-purple-500/20',bd:'border-purple-500'};
+
+  if(!user)return(
+    <div className="min-h-screen bg-zinc-950 text-white flex flex-col items-center justify-center p-6">
+      <div className="mb-8 text-center"><I.Dumbbell s={48} c="text-purple-400 mx-auto mb-4"/><h1 className="text-3xl font-bold">IRON PROTOCOL</h1><p className="text-zinc-500 mt-2">Select your profile</p></div>
+      <div className="w-full max-w-xs space-y-3">
+        {[{id:'greg',l:'Greg',e:'🏋️'},{id:'ricki',l:'Ricki',e:'💪'},{id:'dalton',l:'Dalton',e:'⚡'},{id:'denver',l:'Denver',e:'🌟'}].map(u=>
+          <button key={u.id} onClick={()=>doLogin(u.id)} className="w-full p-4 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-600 transition-all flex items-center gap-4"><span className="text-2xl">{u.e}</span><span className="text-lg font-semibold">{u.l}</span></button>
+        )}
       </div>
-
-      {step === 'select' ? (
-        <div className="w-full max-w-xs bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
-          <h2 className="text-lg font-semibold mb-4 text-center">Whos Training?</h2>
-          <div className="space-y-2">
-            {['Greg','Ricki','Dalton'].map(n => (
-              <button key={n} onClick={() => select(n.toLowerCase())} className="w-full py-4 bg-purple-600 hover:bg-purple-500 rounded-lg font-semibold flex items-center justify-center gap-2">
-                <I.User s={20}/> {n}
-              </button>
-            ))}
-          </div>
-          <p className="text-xs text-zinc-500 text-center mt-4 flex items-center justify-center gap-1"><I.Lock s={12}/> PIN protected</p>
-        </div>
-      ) : (
-        <div className="w-full max-w-xs bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
-          <button onClick={() => setStep('select')} className="text-zinc-400 hover:text-white mb-4 flex items-center gap-1 text-sm"><I.ChevL s={16}/> Back</button>
-          <div className="text-center mb-6">
-            <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-3"><I.User s={32}/></div>
-            <h2 className="text-xl font-bold capitalize">{user}</h2>
-            <p className="text-zinc-400 text-sm">Enter 4-digit PIN</p>
-          </div>
-          <form onSubmit={submit}>
-            <input type="password" value={pin} onChange={e => { setPin(e.target.value.replace(/\D/g,'').slice(0,4)); setError(''); }}
-              placeholder="****" className="w-full px-4 py-4 text-center text-2xl bg-zinc-800 border border-zinc-700 rounded-lg outline-none focus:ring-2 focus:ring-purple-500 mb-4"
-              inputMode="numeric" autoFocus maxLength={4}/>
-            {error && <p className="text-red-400 text-sm text-center mb-4">{error}</p>}
-            <button type="submit" disabled={pin.length !== 4}
-              className={'w-full py-3 rounded-lg font-semibold flex items-center justify-center gap-2 ' + (pin.length === 4 ? 'bg-purple-600 hover:bg-purple-500' : 'bg-zinc-700 text-zinc-400')}>
-              <I.Lock s={18}/> Unlock
-            </button>
-          </form>
-        </div>
-      )}
     </div>
   );
-}
 
-function App() {
-  const [user, setUser] = useState(null);
-  const [view, setView] = useState('workout');
-  const [logs, setLogs] = useState({});
-  const [suppLogs, setSuppLogs] = useState({});
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [loading, setLoading] = useState(true);
-  const [saved, setSaved] = useState(false);
+  if(!authed)return(
+    <div className="min-h-screen bg-zinc-950 text-white flex flex-col items-center justify-center p-6">
+      <button onClick={()=>setUser(null)} className="absolute top-6 left-6 text-zinc-500">&#8592; Back</button>
+      <h2 className="text-2xl font-bold mb-2 capitalize">{user}</h2><p className="text-zinc-500 mb-6">Enter 4-digit PIN</p>
+      <input type="password" maxLength={4} value={pin} onChange={e=>{setPin(e.target.value.replace(/\D/g,''));setPE(false)}} onKeyDown={e=>e.key==='Enter'&&doAuth()}
+        className={`w-48 text-center text-2xl p-3 rounded-xl bg-zinc-900 border ${pinErr?'border-red-500':'border-zinc-700'} focus:outline-none focus:border-purple-500`} autoFocus placeholder="&#8226;&#8226;&#8226;&#8226;"/>
+      {pinErr&&<p className="text-red-400 text-sm mt-2">Wrong PIN</p>}
+      <button onClick={doAuth} className={`mt-4 px-8 py-3 rounded-xl ${uc.b} text-white font-semibold`}>Unlock</button>
+    </div>
+  );
 
-  const currentDayOfWeek = selectedDate.getDay();
-  
-  useEffect(() => {
-    const s = localStorage.getItem('iron_session');
-    if (s) {
-      try {
-        const parsed = JSON.parse(s);
-        if (Date.now() - parsed.ts < 24*60*60*1000) { loadUser(parsed.user); return; }
-      } catch(e) {}
-    }
-    setLoading(false);
-  }, []);
-
-  const loadUser = async n => {
-    const d = await load(n);
-    if (d) { setLogs(d.logs||{}); setSuppLogs(d.suppLogs||{}); }
-    setUser(n);
-    localStorage.setItem('iron_session', JSON.stringify({ user: n, ts: Date.now() }));
-    setLoading(false);
-  };
-
-  useEffect(() => { if (user) save(user, { logs, suppLogs }); }, [logs, suppLogs, user]);
-
-  const logout = () => { localStorage.removeItem('iron_session'); setUser(null); setLogs({}); setSuppLogs({}); };
-  const flash = () => { setSaved(true); setTimeout(() => setSaved(false), 1200); };
-
-  const lk = (date, dayOfWeek, exerciseIdx) => getWeekKey(date) + '-' + dayOfWeek + '-' + exerciseIdx;
-  
-  const upLog = (e,s,f,v) => { 
-    const key = lk(selectedDate, currentDayOfWeek, e);
-    setLogs(p => {
-      const existing = p[key] || {sets:{}};
-      const existingSets = existing.sets || {};
-      const existingSet = existingSets[s] || {};
-      return { 
-        ...p, 
-        [key]: { 
-          ...existing, 
-          sets: { 
-            ...existingSets, 
-            [s]: { ...existingSet, [f]: v }
-          }
-        }
-      };
-    }); 
-    flash(); 
-  };
-  
-  const getLog = (e,s,f) => {
-    const key = lk(selectedDate, currentDayOfWeek, e);
-    const entry = logs[key];
-    if (!entry || !entry.sets || !entry.sets[s]) return '';
-    return entry.sets[s][f] || '';
-  };
-
-  const togSupp = id => { 
-    const key = dateKey(selectedDate) + '-' + id;
-    setSuppLogs(p => ({ ...p, [key]: !p[key] })); 
-    flash(); 
-  };
-  const suppDone = id => suppLogs[dateKey(selectedDate) + '-' + id] || false;
-
-  const navDay = (dir) => {
-    const newDate = new Date(selectedDate);
-    newDate.setDate(newDate.getDate() + dir);
-    setSelectedDate(newDate);
-  };
-
-  const goToday = () => setSelectedDate(new Date());
-  const isToday = dateKey(selectedDate) === dateKey(new Date());
-
-  if (loading) return <div className="min-h-screen bg-zinc-950 flex items-center justify-center"><I.Dumbbell s={48} c="text-purple-400 animate-pulse"/></div>;
-  if (!user) return <Login onLogin={loadUser}/>;
-
-  const proto = protocols[user] || { daily: [], weekly: [] };
-  const todayWeekly = proto.weekly.filter(i => i.days.includes(currentDayOfWeek));
-  const hasSupps = proto.daily.length > 0 || proto.weekly.length > 0;
-  const wo = workouts[currentDayOfWeek];
-
-  const dayOrder = [1,2,3,4,5,6,0];
-
-  return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100">
-      <header className="sticky top-0 z-50 bg-zinc-900/95 backdrop-blur border-b border-zinc-800 px-4 py-3">
+  return(
+    <div className="min-h-screen bg-zinc-950 text-white pb-24">
+      <header className="sticky top-0 z-50 bg-zinc-950/95 backdrop-blur border-b border-zinc-800 px-4 py-3">
         <div className="flex items-center justify-between">
+          <div><h1 className={`text-lg font-bold ${uc.a}`}>IRON PROTOCOL</h1><p className="text-xs text-zinc-500 capitalize">{user} &#8226; {DN[tdow]}</p></div>
           <div className="flex items-center gap-2">
-            <I.Dumbbell s={24} c="text-purple-400"/>
-            <div><span className="font-bold text-sm">IRON PROTOCOL</span><span className="text-purple-400 text-xs ml-2 capitalize flex items-center gap-1"><I.Lock s={10}/>{user}</span></div>
+            {isDual(user)&&view==='workout'&&<div className="flex items-center bg-zinc-900 rounded-full px-1 py-0.5">
+              <button onClick={()=>setGM(false)} className={`p-1.5 rounded-full transition-all ${!gymMode?uc.bl+' '+uc.a:'text-zinc-500'}`}><I.Home s={14}/></button>
+              <button onClick={()=>setGM(true)} className={`p-1.5 rounded-full transition-all ${gymMode?uc.bl+' '+uc.a:'text-zinc-500'}`}><I.Bld s={14}/></button>
+            </div>}
+            {view==='workout'&&<button onClick={()=>{setEM(!editMode);setAD(null)}} className={`p-2 rounded-lg transition-all ${editMode?uc.b+' text-white':'text-zinc-500'}`}>
+              {editMode?<I.Check s={18}/>:<span className="text-xs font-bold">EDIT</span>}
+            </button>}
+            <button onClick={doLogout} className="text-zinc-500 p-2"><I.Out s={18}/></button>
           </div>
-          <button onClick={logout} className="p-2 text-zinc-400 hover:text-red-400"><I.LogOut s={18}/></button>
         </div>
-        {saved && <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1 bg-emerald-500 text-sm rounded-full flex items-center gap-1"><I.Check s={14}/> Saved</div>}
       </header>
 
-      <main className="px-4 py-4 pb-28">
-        {view === 'workout' && (
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <button onClick={() => navDay(-1)} className="p-2 hover:bg-zinc-800 rounded-lg"><I.ChevL/></button>
-              <div className="text-center flex-1">
-                <div className="font-bold text-2xl text-purple-400">{dayNames[currentDayOfWeek]}</div>
-                <div className="text-sm text-zinc-400">{selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
-                {!isToday && <button onClick={goToday} className="text-xs text-purple-400 underline mt-1">Go to Today</button>}
+      <main className="px-4 pt-4">
+        {view==='workout'&&<div>
+          <div className="flex gap-1 mb-4">{['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((d,i)=>{const dn=i+1,isT=DM[tdow]===dn,isS=selDay===dn;
+            return<button key={d} onClick={()=>{setSD(dn);setSI(null);setAD(null)}} className={`flex-1 py-2 rounded-lg text-xs font-medium transition-all ${isS?uc.b+' text-white':isT?uc.bl+' '+uc.a:'bg-zinc-900 text-zinc-500'}`}>{d}</button>})}</div>
+
+          {selDay===7?<div className="text-center py-16"><p className="text-4xl mb-4">😴</p><h2 className="text-xl font-bold">Rest Day</h2><p className="text-zinc-500 mt-2">Recover. Sleep. Eat protein.</p></div>
+          :cW?<div>
+            <div className="flex justify-between items-start mb-4">
+              <div><h2 className="text-xl font-bold">{cW.name}</h2><p className="text-sm text-zinc-500">{cW.focus}</p>
+                {isDual(user)&&<span className={`inline-block mt-1 text-xs px-2 py-0.5 rounded-full ${uc.bl} ${uc.a}`}>{gymMode?'🏢 Gym':'🏠 At Home'}</span>}
               </div>
-              <button onClick={() => navDay(1)} className="p-2 hover:bg-zinc-800 rounded-lg"><I.ChevR/></button>
+              {editMode&&<button onClick={()=>rstDay(selDay)} className="text-xs text-zinc-500 flex items-center gap-1 bg-zinc-900 px-2 py-1 rounded-lg"><I.Rst s={12}/> Reset</button>}
             </div>
 
-            <div className="flex justify-between mb-4 gap-1">
-              {dayOrder.map(d => {
-                const isSelected = d === currentDayOfWeek;
-                const diff = d - currentDayOfWeek;
-                const actualDate = new Date(selectedDate);
-                actualDate.setDate(actualDate.getDate() + diff);
-                const isTodayPill = dateKey(actualDate) === dateKey(new Date());
-                
-                return (
-                  <button 
-                    key={d} 
-                    onClick={() => {
-                      const newDate = new Date(selectedDate);
-                      newDate.setDate(newDate.getDate() + (d - currentDayOfWeek));
-                      setSelectedDate(newDate);
-                    }}
-                    className={'flex-1 py-2 rounded-lg text-center text-xs font-medium transition-all ' +
-                      (isSelected ? 'bg-purple-600 text-white' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700') +
-                      (isTodayPill && !isSelected ? ' ring-2 ring-purple-400' : '')}
-                  >
-                    {dayNamesShort[d]}
-                  </button>
-                );
-              })}
-            </div>
-
-            {wo && wo.exercises.length > 0 ? (
-              <div>
-                <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 mb-4">
-                  <div className="font-bold text-xl">{wo.name}</div>
-                  <div className="text-sm text-purple-400">{wo.focus}</div>
-                </div>
-                <div className="space-y-3">
-                  {wo.exercises.map((ex,i) => (
-                    <div key={i} className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
-                      <div className="px-4 py-3 bg-zinc-800/50 flex justify-between items-start">
-                        <div><h3 className="font-semibold">{ex.name}</h3><p className="text-sm text-zinc-400">{ex.sets} x {ex.reps}</p></div>
-                        {ex.notes && <span className="text-xs bg-zinc-700 px-2 py-1 rounded-full">{ex.notes}</span>}
-                      </div>
-                      <div className="p-4">
-                        <div className="grid grid-cols-4 gap-2 mb-2 text-xs text-zinc-500 text-center"><span>Set</span><span>Wt</span><span>Reps</span><span>Done</span></div>
-                        {Array.from({length:ex.sets},(_,s) => (
-                          <div key={s} className="grid grid-cols-4 gap-2 mb-2 items-center">
-                            <span className="text-center text-sm text-zinc-400">{s+1}</span>
-                            <input type="number" inputMode="numeric" placeholder="lbs" value={getLog(i,s,'wt')} onChange={e=>upLog(i,s,'wt',e.target.value)} className="w-full px-2 py-2 rounded-lg text-center text-sm bg-zinc-800 border border-zinc-700 outline-none"/>
-                            <input type="number" inputMode="numeric" placeholder="#" value={getLog(i,s,'rp')} onChange={e=>upLog(i,s,'rp',e.target.value)} className="w-full px-2 py-2 rounded-lg text-center text-sm bg-zinc-800 border border-zinc-700 outline-none"/>
-                            <button onClick={()=>upLog(i,s,'dn',!getLog(i,s,'dn'))} className={'w-full h-9 rounded-lg flex items-center justify-center ' + (getLog(i,s,'dn')?'bg-emerald-500':'bg-zinc-800 border border-zinc-700')}>{getLog(i,s,'dn') && <I.Check s={18}/>}</button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-8 text-center">
-                <div className="text-4xl mb-4">Rest Day</div>
-                <div className="font-bold text-xl mb-2">Recovery Day</div>
-                <div className="text-zinc-400">Recovery is part of the process. Take it easy today!</div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {view === 'supplements' && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold">Todays Protocol</h2>
-              {!isToday && <button onClick={goToday} className="text-sm text-purple-400 underline">Go to Today</button>}
-            </div>
-            <p className="text-sm text-zinc-400">{dayNames[currentDayOfWeek]}, {selectedDate.toLocaleDateString()}</p>
-            
-            <div className="flex justify-between gap-1">
-              {dayOrder.map(d => {
-                const isSelected = d === currentDayOfWeek;
-                const diff = d - currentDayOfWeek;
-                const actualDate = new Date(selectedDate);
-                actualDate.setDate(actualDate.getDate() + diff);
-                const isTodayPill = dateKey(actualDate) === dateKey(new Date());
-                
-                return (
-                  <button 
-                    key={d} 
-                    onClick={() => {
-                      const newDate = new Date(selectedDate);
-                      newDate.setDate(newDate.getDate() + (d - currentDayOfWeek));
-                      setSelectedDate(newDate);
-                    }}
-                    className={'flex-1 py-2 rounded-lg text-center text-xs font-medium transition-all ' +
-                      (isSelected ? 'bg-purple-600 text-white' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700') +
-                      (isTodayPill && !isSelected ? ' ring-2 ring-purple-400' : '')}
-                  >
-                    {dayNamesShort[d]}
-                  </button>
-                );
-              })}
-            </div>
-
-            {!hasSupps ? (
-              <div className="text-center py-12 text-zinc-500"><I.Pill s={48} c="mx-auto mb-4 opacity-50"/><p>No supplements for this account</p></div>
-            ) : (
-              <div>
-                {proto.daily.length > 0 && (
-                  <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden mb-4">
-                    <div className="px-4 py-3 bg-zinc-800/50 border-b border-zinc-800 flex items-center gap-2"><I.Sun s={18} c="text-amber-400"/><span className="font-semibold">Daily - Morning (Fasted)</span></div>
-                    <div className="divide-y divide-zinc-800">
-                      {proto.daily.map(it => (
-                        <button key={it.id} onClick={()=>togSupp(it.id)} className="w-full px-4 py-3 flex items-center justify-between hover:bg-zinc-800/50">
-                          <div className="flex items-center gap-3">
-                            <div className={'w-6 h-6 rounded-full flex items-center justify-center ' + (suppDone(it.id)?'bg-emerald-500':'border-2 border-zinc-600')}>{suppDone(it.id) && <I.Check s={14}/>}</div>
-                            <div className="text-left"><div className={suppDone(it.id)?'line-through text-zinc-500':'font-medium'}>{it.name}</div><div className="text-sm text-zinc-400 font-mono">{it.dose}</div></div>
-                          </div>
-                          <span className={'text-xs px-2 py-1 rounded ' + (it.type==='peptide'?'bg-blue-500/20 text-blue-400':'bg-green-500/20 text-green-400')}>{it.type}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {todayWeekly.length > 0 && (
-                  <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden mb-4">
-                    <div className="px-4 py-3 bg-zinc-800/50 border-b border-zinc-800 flex items-center gap-2"><I.Syringe s={18} c="text-red-400"/><span className="font-semibold">{dayNames[currentDayOfWeek]} Injections</span></div>
-                    <div className="divide-y divide-zinc-800">
-                      {todayWeekly.map(it => (
-                        <button key={it.id} onClick={()=>togSupp(it.id)} className="w-full px-4 py-3 flex items-center justify-between hover:bg-zinc-800/50">
-                          <div className="flex items-center gap-3">
-                            <div className={'w-6 h-6 rounded-full flex items-center justify-center ' + (suppDone(it.id)?'bg-emerald-500':'border-2 border-zinc-600')}>{suppDone(it.id) && <I.Check s={14}/>}</div>
-                            <div className="text-left"><div className={suppDone(it.id)?'line-through text-zinc-500':'font-medium'}>{it.name}</div><div className="text-sm text-zinc-400 font-mono">{it.dose}</div></div>
-                          </div>
-                          <span className={'text-xs px-2 py-1 rounded ' + (it.type==='injection'?'bg-red-500/20 text-red-400':'bg-purple-500/20 text-purple-400')}>{it.type}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 mb-4">
-                  <h3 className="font-semibold mb-3">Weekly Schedule</h3>
-                  <div className="space-y-2 text-sm">
-                    {proto.weekly.map(it => <div key={it.id} className="flex justify-between"><span>{it.name} <span className="font-mono text-purple-400">({it.dose})</span></span><span className="text-zinc-500">{it.days.map(d=>dayNames[d].slice(0,3)).join(' and ')}</span></div>)}
+            <div className="space-y-3">{exs.map((ex,ei)=>{
+              if(ex.name.startsWith('---'))return<div key={ei} className={`text-center text-sm font-bold ${uc.a} py-2 border-t border-zinc-800 mt-4`}>{ex.name.replace(/---/g,'').trim()}</div>;
+              return<div key={ei} className="bg-zinc-900 rounded-xl p-3 border border-zinc-800">
+                <div className="flex justify-between items-start mb-2">
+                  <div className="flex-1 min-w-0"><h3 className="font-semibold text-sm truncate">{ex.name}</h3><p className="text-xs text-zinc-500">{ex.muscle||''} {ex.muscle?'•':''} {ex.sets}x{ex.reps}</p></div>
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    {editMode?<>
+                      <button onClick={()=>mvEx(selDay,ei,-1)} className="text-zinc-600 p-1"><I.Up s={14}/></button>
+                      <button onClick={()=>mvEx(selDay,ei,1)} className="text-zinc-600 p-1"><I.Dn s={14}/></button>
+                      <button onClick={()=>rmEx(selDay,ei)} className="text-red-500 p-1"><I.X s={14}/></button>
+                    </>:ex.notes&&<button onClick={()=>setSI(showInf===ei?null:ei)} className="text-zinc-500 p-1"><I.Inf s={14}/></button>}
                   </div>
                 </div>
-                
-                <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
-                  <h3 className="font-semibold mb-3">Reconstitution Reference</h3>
-                  <div className="space-y-2 text-xs">
-                    <div className="grid grid-cols-4 text-zinc-500 border-b border-zinc-800 pb-2">
-                      <span>Peptide</span><span className="text-center">Vial</span><span className="text-center">Water</span><span className="text-right">Per Unit</span>
-                    </div>
-                    {reconstitution.map(r => (
-                      <div key={r.name} className="grid grid-cols-4 text-zinc-300">
-                        <span>{r.name}</span>
-                        <span className="text-center">{r.vial}</span>
-                        <span className="text-center">{r.water}</span>
-                        <span className="text-right font-mono text-purple-400">{r.conc}</span>
-                      </div>
-                    ))}
+                {!editMode&&showInf===ei&&ex.notes&&<p className={`text-xs ${uc.a} mb-2 p-2 rounded ${uc.bl}`}>{ex.notes}</p>}
+                {!editMode&&<div className="space-y-1.5">{Array.from({length:ex.sets},(_,si)=>
+                  <div key={si} className="flex items-center gap-2">
+                    <span className="text-xs text-zinc-600 w-5">{si+1}</span>
+                    <input type="number" placeholder="lbs" value={gL(selDay,ei,si,'wt')} onChange={e=>sL(selDay,ei,si,'wt',e.target.value)} className="w-16 bg-zinc-800 rounded px-2 py-1.5 text-xs text-center focus:outline-none focus:ring-1 focus:ring-purple-500"/>
+                    <input type="number" placeholder="reps" value={gL(selDay,ei,si,'rp')} onChange={e=>sL(selDay,ei,si,'rp',e.target.value)} className="w-16 bg-zinc-800 rounded px-2 py-1.5 text-xs text-center focus:outline-none focus:ring-1 focus:ring-purple-500"/>
+                    <button onClick={()=>tD(selDay,ei,si)} className={`w-7 h-7 rounded-full flex items-center justify-center transition-all ${iD(selDay,ei,si)?uc.b+' text-white':'bg-zinc-800 text-zinc-600'}`}><I.Check s={14}/></button>
                   </div>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+                )}</div>}
+              </div>})}</div>
 
-        {view === 'calendar' && (
-          <div className="space-y-4">
-            <h2 className="text-xl font-bold mb-4">Weekly Schedule</h2>
-            
-            <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
-              {dayOrder.map(d => {
-                const wo = workouts[d];
-                const today = new Date();
-                const isTodayItem = d === today.getDay();
-                
-                return (
-                  <button 
-                    key={d} 
-                    onClick={() => { 
-                      const newDate = new Date();
-                      const diff = d - today.getDay();
-                      newDate.setDate(newDate.getDate() + diff);
-                      setSelectedDate(newDate); 
-                      setView('workout'); 
-                    }}
-                    className={'w-full px-4 py-4 flex justify-between items-center border-b border-zinc-800 last:border-0 hover:bg-zinc-800/50 ' + (isTodayItem ? 'bg-purple-600/20' : '')}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={'w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold ' + (isTodayItem ? 'bg-purple-600' : 'bg-zinc-800')}>
-                        {dayNamesShort[d]}
-                      </div>
-                      <div className="text-left">
-                        <div className="font-semibold">{wo.name}</div>
-                        <div className="text-sm text-zinc-400">{wo.focus}</div>
-                      </div>
-                    </div>
-                    {isTodayItem && <span className="text-xs bg-purple-600 px-2 py-1 rounded-full">Today</span>}
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
-              <h3 className="font-semibold mb-3">Injection Days</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center gap-2">
-                  <span className="w-16 text-zinc-500">Tue and Thu</span>
-                  <span>TRT + TB-500</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="w-16 text-zinc-500">Thu</span>
-                  <span>Tirzepatide</span>
-                </div>
+            {editMode&&<div className="mt-4">
+              {addDay===selDay?<div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
+                <div className="flex justify-between items-center mb-3"><h3 className="font-bold text-sm">Add Exercise</h3><button onClick={()=>setAD(null)} className="text-zinc-500"><I.X s={16}/></button></div>
+                <div className="flex gap-1 overflow-x-auto no-sb pb-2 mb-3">{MG.map(g=><button key={g} onClick={()=>setLG(g)} className={`px-3 py-1 rounded-full text-xs whitespace-nowrap transition-all ${libGrp===g?uc.b+' text-white':'bg-zinc-800 text-zinc-400'}`}>{g}</button>)}</div>
+                <div className="space-y-1 max-h-64 overflow-y-auto">{EL[libGrp].map((ex,i)=>
+                  <div key={i} className="flex justify-between items-center p-2 rounded-lg bg-zinc-800">
+                    <div><p className="text-sm font-medium">{ex.name}</p><p className="text-xs text-zinc-500">{ex.sets}x{ex.reps} &#8226; {ex.notes}</p></div>
+                    <button onClick={()=>addEx(selDay,ex)} className={`${uc.a} p-1`}><I.Plus s={18}/></button>
+                  </div>
+                )}</div>
               </div>
-            </div>
-          </div>
-        )}
+              :<button onClick={()=>setAD(selDay)} className="w-full p-3 rounded-xl border-2 border-dashed border-zinc-700 text-zinc-500 flex items-center justify-center gap-2 hover:border-zinc-500 transition-all"><I.Plus s={18}/> Add Exercise from Library</button>}
+            </div>}
+          </div>:<div className="text-center py-16 text-zinc-500">No workout</div>}
+        </div>}
+
+        {view==='library'&&<div>
+          <h2 className="text-xl font-bold mb-1">Exercise Library</h2><p className="text-sm text-zinc-500 mb-4">Browse by muscle group. Tap EDIT on Workout tab to add these to your program.</p>
+          <div className="flex gap-1 overflow-x-auto no-sb pb-2 mb-4">{MG.map(g=><button key={g} onClick={()=>setLG(g)} className={`px-3 py-1.5 rounded-full text-xs whitespace-nowrap transition-all ${libGrp===g?uc.b+' text-white':'bg-zinc-800 text-zinc-400'}`}>{g}</button>)}</div>
+          <div className="space-y-2">{EL[libGrp].map((ex,i)=><div key={i} className="bg-zinc-900 border border-zinc-800 rounded-xl p-3"><h3 className="font-semibold text-sm">{ex.name}</h3><p className="text-xs text-zinc-500 mt-1">{ex.sets} sets x {ex.reps}</p>{ex.notes&&<p className={`text-xs ${uc.a} mt-1`}>{ex.notes}</p>}</div>)}</div>
+          {custProg[pk]&&<button onClick={rstAll} className="w-full mt-6 p-3 rounded-xl bg-zinc-900 border border-red-500/30 text-red-400 text-sm flex items-center justify-center gap-2"><I.Rst s={14}/> Reset All Days to Default</button>}
+        </div>}
+
+        {view==='supplements'&&<div>
+          <h2 className="text-xl font-bold mb-1">Supplements</h2><p className="text-sm text-zinc-500 mb-4">{DN[tdow]} &#8226; {dk}</p>
+          {tSp.length===0?<div className="text-center py-16"><p className="text-4xl mb-4">✨</p><p className="text-zinc-500">No supplements to track today</p></div>
+          :<div className="space-y-2">{tSp.map((s,i)=>
+            <button key={i} onClick={()=>tS(s.name)} className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-all ${isSD(s.name)?'bg-emerald-500/10 border-emerald-500/30':'bg-zinc-900 border-zinc-800'}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${isSD(s.name)?'bg-emerald-500 text-white':'bg-zinc-800 text-zinc-600'}`}>{isSD(s.name)?<I.Check s={16}/>:<span className="text-xs">{s.type==='injection'?'💉':'💊'}</span>}</div>
+              <div className="text-left flex-1"><p className={`text-sm font-medium ${isSD(s.name)?'text-emerald-400 line-through':'text-white'}`}>{s.name}</p><p className="text-xs text-zinc-500">{s.dose} &#8226; {s.time}</p></div>
+            </button>
+          )}</div>}
+        </div>}
+
+        {view==='calendar'&&<div>
+          <h2 className="text-xl font-bold mb-4">Weekly Schedule</h2>
+          <div className="space-y-2">{['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].map((day,i)=>{
+            const dn=i+1,w=dn<=6?cP[dn]:null,isT=DM[tdow]===dn;
+            return<button key={day} onClick={()=>{setSD(dn);setView('workout')}} className={`w-full p-3 rounded-xl text-left flex justify-between items-center border transition-all ${isT?uc.bl+' '+uc.bd:'bg-zinc-900 border-zinc-800'}`}>
+              <div><p className={`font-semibold text-sm ${isT?uc.a:'text-white'}`}>{day}</p><p className="text-xs text-zinc-500">{w?w.name:'Rest Day'}</p></div>
+              <p className="text-xs text-zinc-500">{w?w.focus:'😴'}</p>
+            </button>})}</div>
+        </div>}
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-800 safe-bottom">
+      <nav className="fixed bottom-0 left-0 right-0 bg-zinc-950/95 backdrop-blur border-t border-zinc-800 safe-bottom">
         <div className="flex justify-around py-2">
-          {[{id:'workout',icon:I.Dumbbell,label:'Workout'},{id:'supplements',icon:I.Pill,label:'Supplements'},{id:'calendar',icon:I.Calendar,label:'Calendar'}].map(t => (
-            <button key={t.id} onClick={()=>setView(t.id)} className={'flex flex-col items-center py-2 px-4 ' + (view===t.id?'text-purple-400':'text-zinc-500')}><t.icon s={24}/><span className="text-xs mt-1">{t.label}</span></button>
-          ))}
+          {[{id:'workout',icon:I.Dumbbell,l:'Workout'},{id:'library',icon:I.Lib,l:'Exercises'},...(user==='greg'||user==='ricki'?[{id:'supplements',icon:I.Pill,l:'Supps'}]:[]),{id:'calendar',icon:I.Cal,l:'Schedule'}].map(t=>
+            <button key={t.id} onClick={()=>{setView(t.id);setEM(false);setAD(null)}} className={`flex flex-col items-center py-2 px-3 transition-all ${view===t.id?uc.a:'text-zinc-500'}`}><t.icon s={22}/><span className="text-xs mt-1">{t.l}</span></button>
+          )}
         </div>
       </nav>
     </div>
   );
 }
-
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
-  </script>
+</script>
 </body>
 </html>
