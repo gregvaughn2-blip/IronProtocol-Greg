@@ -618,6 +618,10 @@ function App() {
   };
 
   const logout = () => { setUser(null); setAuthed(false); setPin(''); setWorkoutLogs({}); setSuppLogs({}); setView('workout'); setSuppAuthed(false); setSuppPinInput(''); };
+  const doSuppAuth = () => {
+    if (hashPin(suppPinInput) === SUPP_PIN) { setSuppAuthed(true); setSuppPinErr(false); }
+    else { setSuppPinErr(true); setSuppPinInput(''); }
+  };
 
   // Get workouts for current user
   const workouts = user ? userWorkouts[user] || {} : {};
