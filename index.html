@@ -378,6 +378,7 @@ function App(){
         <h2 className="text-xl font-bold mb-1">Supplements</h2><p className="text-sm text-zinc-500 mb-4">{DN[tdow]} {'\u2022'} {dk}</p>
         {tSp.length===0?<div className="text-center py-16"><p className="text-4xl mb-4">{'\u2728'}</p><p className="text-zinc-500">No supplements to track today</p></div>
         :<div className="space-y-2">{tSp.map((s,i)=><button key={i} onClick={()=>tS(s.name)} className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-all ${isSD(s.name)?'bg-emerald-500/10 border-emerald-500/30':'bg-zinc-900 border-zinc-800'}`}><div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${isSD(s.name)?'bg-emerald-500 text-white':'bg-zinc-800 text-zinc-600'}`}>{isSD(s.name)?<I.Check s={16}/>:<span className="text-xs">{s.type==='injection'?'\u{1F489}':'\u{1F48A}'}</span>}</div><div className="text-left flex-1"><p className={`text-sm font-medium ${isSD(s.name)?'text-emerald-400 line-through':'text-white'}`}>{s.name}</p><p className="text-xs text-zinc-500">{s.dose} {'\u2022'} {s.time}</p></div></button>)}</div>}
+        </div>}
       </div>}
 
       {view==='calendar'&&<div>
