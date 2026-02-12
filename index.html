@@ -137,349 +137,648 @@ const gregWorkouts = {
     { name: 'Hammer Curls', sets: 3, reps: '12', muscle: 'Brachialis', notes: 'Arm width' },
     { name: 'Hanging Knee Raise', sets: 3, reps: '15', muscle: 'Core', notes: 'Slow control' },
   ]},
-  3: { name: 'Legs & Abs', focus: 'Definition & Pump', exercises: [
-    { name: 'Leg Press', sets: 4, reps: '12-15', muscle: 'Quads', notes: 'Full ROM deep' },
-    { name: 'Smith RDL', sets: 4, reps: '10-12', muscle: 'Hamstrings', notes: 'Hip hinge feel' },
-    { name: 'Walking Lunges', sets: 3, reps: '12 each', muscle: 'Quads', notes: 'Long stride' },
-    { name: 'Leg Curl', sets: 3, reps: '15', muscle: 'Hamstrings', notes: 'Squeeze peak' },
-    { name: 'Leg Extension', sets: 3, reps: '15', muscle: 'Quads', notes: 'Pause top' },
-    { name: 'Calf Raises', sets: 4, reps: '15', muscle: 'Calves', notes: 'Full ROM' },
-    { name: 'Weighted Crunch', sets: 3, reps: '15', muscle: 'Abs', notes: 'Squeeze hard' },
+  3: { name: 'Legs & Core', focus: 'Quad Sweep & Hams', exercises: [
+    { name: 'Leg Press', sets: 4, reps: '12-15', muscle: 'Quads', notes: 'Deep full ROM' },
+    { name: 'Walking Lunges', sets: 3, reps: '12 each', muscle: 'Quads/Glutes', notes: 'Heavy long stride' },
+    { name: 'Leg Extension', sets: 3, reps: '12-15', muscle: 'Quads', notes: 'Squeeze 2s top' },
+    { name: 'Lying Leg Curl', sets: 4, reps: '12', muscle: 'Hamstrings', notes: '3s negative' },
+    { name: 'Standing Calf Raises', sets: 4, reps: '15-20', muscle: 'Calves', notes: 'Full ROM pause' },
+    { name: 'Cable Woodchop', sets: 3, reps: '12 each', muscle: 'Obliques', notes: 'Definition' },
+    { name: 'Plank', sets: 3, reps: '60 sec', muscle: 'Core', notes: 'Tight braced' },
   ]},
-  4: { name: 'Shoulders & Arms', focus: 'Definition & Pump', exercises: [
-    { name: 'Seated DB OHP', sets: 4, reps: '10', muscle: 'Shoulders', notes: 'Heavy strict' },
-    { name: 'Lateral Raise', sets: 4, reps: '15', muscle: 'Side Delts', notes: 'Light controlled' },
-    { name: 'Rear Delt Machine', sets: 3, reps: '15', muscle: 'Rear Delts', notes: 'Slow squeeze' },
-    { name: 'Machine Curl', sets: 3, reps: '12', muscle: 'Biceps', notes: 'Full ROM' },
-    { name: 'Rope Pushdown', sets: 3, reps: '12-15', muscle: 'Triceps', notes: 'Squeeze bottom' },
-    { name: 'Hammer Curl', sets: 3, reps: '12', muscle: 'Biceps', notes: 'Alt arms' },
-    { name: 'Dip Machine', sets: 2, reps: '12-15', muscle: 'Triceps', notes: 'Chest lean' },
+  4: { name: 'Shoulders & Arms', focus: '3D Delts & Arms', exercises: [
+    { name: 'Seated DB OHP', sets: 4, reps: '8-10', muscle: 'Shoulders', notes: 'Heavy full ROM' },
+    { name: 'Cable Lateral Raise', sets: 4, reps: '12-15', muscle: 'Side Delts', notes: 'Slow burn capped' },
+    { name: 'Reverse Pec Deck', sets: 3, reps: '15', muscle: 'Rear Delts', notes: '3D delts' },
+    { name: 'DB Curls', sets: 3, reps: '10-12', muscle: 'Biceps', notes: 'Strict alternating' },
+    { name: 'Concentration Curl', sets: 3, reps: '10 each', muscle: 'Biceps', notes: 'Peak squeeze' },
+    { name: 'Dip Machine', sets: 3, reps: '12', muscle: 'Triceps', notes: 'Horseshoe' },
+    { name: 'Pallof Press', sets: 3, reps: '12 each', muscle: 'Core', notes: 'Anti-rotation' },
   ]},
-  5: { name: 'Chest & Shoulders', focus: 'Pump Day', exercises: [
-    { name: 'Incline Machine Press', sets: 3, reps: '15', muscle: 'Upper Chest', notes: 'Light pump' },
-    { name: 'Pec Deck', sets: 3, reps: '15', muscle: 'Chest', notes: 'Squeeze peak' },
-    { name: 'Lateral Raise', sets: 3, reps: '20', muscle: 'Side Delts', notes: 'Very light' },
-    { name: 'Front Raise', sets: 3, reps: '15', muscle: 'Front Delts', notes: 'Light' },
-    { name: 'Cable Crossover', sets: 3, reps: '15', muscle: 'Chest', notes: 'Squeeze' },
-    { name: 'Machine Fly', sets: 2, reps: '15', muscle: 'Chest', notes: 'Burnout' },
+  5: { name: 'Back & Chest', focus: 'Thickness & Detail', exercises: [
+    { name: 'Close Grip Pulldown', sets: 4, reps: '10-12', muscle: 'Lat Thickness', notes: 'V-bar thick back' },
+    { name: 'Chest Supported Row', sets: 4, reps: '10-12', muscle: 'Mid Back', notes: 'Squeeze hard' },
+    { name: 'Smith Incline Press', sets: 4, reps: '10-12', muscle: 'Upper Chest', notes: 'Mass builder' },
+    { name: 'Cable Crossover', sets: 3, reps: '15', muscle: 'Inner Chest', notes: 'Low to high striations' },
+    { name: 'Straight Arm Pulldown', sets: 3, reps: '12', muscle: 'Lats', notes: 'Carve the lats' },
+    { name: 'Ab Wheel/Rollout', sets: 3, reps: '10', muscle: 'Core', notes: 'Full extension' },
+    { name: 'Side Plank', sets: 3, reps: '30 sec ea', muscle: 'Obliques', notes: 'Cut' },
   ]},
-  6: { name: 'Rest Day', focus: 'Recovery', exercises: [] },
-  7: { name: 'Rest Day', focus: 'Recovery', exercises: [] }
+  6: { name: 'Legs & Pump', focus: 'Glutes/Hams & Burnout', exercises: [
+    { name: 'Goblet Squat', sets: 4, reps: '12', muscle: 'Quads/Glutes', notes: 'Deep pause bottom' },
+    { name: 'Bulgarian Split Squat', sets: 3, reps: '10 each', muscle: 'Quads/Glutes', notes: 'DB heavy' },
+    { name: 'Seated Leg Curl', sets: 4, reps: '12', muscle: 'Hamstrings', notes: 'Squeeze peak' },
+    { name: 'Hip Thrust (Smith)', sets: 4, reps: '12', muscle: 'Glutes', notes: 'Pause top 2s' },
+    { name: 'Calf Raises', sets: 4, reps: '20', muscle: 'Calves', notes: 'Burnout' },
+    { name: 'Farmer Carries', sets: 3, reps: '40 yards', muscle: 'Core/Traps', notes: 'Heavy grip' },
+    { name: 'Russian Twist', sets: 3, reps: '15 each', muscle: 'Obliques', notes: 'Define' },
+  ]},
 };
 
-// ===== RICKI'S WORKOUTS (all machines, form friendly) =====
+// ===== RICKI'S WORKOUTS (Same gym, lighter focus) =====
 const rickiWorkouts = {
-  1: { name: 'Chest & Triceps', focus: 'Beginner-friendly', exercises: [
-    { name: 'Machine Chest Press', sets: 3, reps: '12', muscle: 'Chest', notes: 'Full ROM' },
-    { name: 'Pec Deck', sets: 3, reps: '15', muscle: 'Chest', notes: 'Squeeze' },
-    { name: 'Tricep Machine', sets: 3, reps: '12', muscle: 'Triceps', notes: 'Slow' },
-    { name: 'Rope Pushdown', sets: 2, reps: '15', muscle: 'Triceps', notes: 'Light' },
+  1: { name: 'Lower Body A', focus: 'Glutes/Hamstrings', exercises: [
+    { name: 'Hip Thrust (Smith)', sets: 4, reps: '12', muscle: 'Glutes', notes: 'Pause at top' },
+    { name: 'Romanian Deadlift (DB)', sets: 4, reps: '10', muscle: 'Hamstrings', notes: 'Hip hinge' },
+    { name: 'Bulgarian Split Squat', sets: 3, reps: '10 each', muscle: 'Glutes/Quads', notes: 'Rear foot on bench' },
+    { name: 'Cable Kickback', sets: 3, reps: '12 each', muscle: 'Glutes', notes: 'Squeeze top' },
+    { name: 'Lying Leg Curl', sets: 3, reps: '12', muscle: 'Hamstrings', notes: 'Slow negative' },
+    { name: 'Calf Raises', sets: 3, reps: '15', muscle: 'Calves', notes: 'Full ROM' },
+    { name: '--- CORE ---', sets: 0, reps: '', muscle: '', notes: '' },
+    { name: 'Plank', sets: 3, reps: '45 sec', muscle: 'Core', notes: 'Tight' },
+    { name: 'Dead Bug', sets: 3, reps: '10 each', muscle: 'Core', notes: 'Slow' },
   ]},
-  2: { name: 'Back & Biceps', focus: 'Beginner-friendly', exercises: [
-    { name: 'Lat Pulldown', sets: 3, reps: '12', muscle: 'Back', notes: 'To chest' },
-    { name: 'Machine Row', sets: 3, reps: '12', muscle: 'Back', notes: 'Squeeze' },
-    { name: 'Machine Curl', sets: 3, reps: '12', muscle: 'Biceps', notes: 'Full ROM' },
+  2: { name: 'Upper Body A', focus: 'Back/Shoulders', exercises: [
+    { name: 'Lat Pulldown', sets: 4, reps: '12', muscle: 'Lats', notes: 'To chest' },
+    { name: 'Seated Cable Row', sets: 3, reps: '12', muscle: 'Mid Back', notes: 'Squeeze' },
+    { name: 'DB Shoulder Press', sets: 3, reps: '10', muscle: 'Shoulders', notes: 'Seated' },
+    { name: 'Face Pulls', sets: 3, reps: '15', muscle: 'Rear Delts', notes: 'High cable' },
+    { name: 'Lateral Raise', sets: 3, reps: '12', muscle: 'Side Delts', notes: 'Light DB' },
+    { name: 'DB Curl', sets: 3, reps: '12', muscle: 'Biceps', notes: 'Alternating' },
+    { name: '--- CORE ---', sets: 0, reps: '', muscle: '', notes: '' },
+    { name: 'Cable Crunch', sets: 3, reps: '15', muscle: 'Abs', notes: 'Exhale hard' },
   ]},
-  3: { name: 'Legs', focus: 'Beginner-friendly', exercises: [
-    { name: 'Leg Press', sets: 3, reps: '12', muscle: 'Quads', notes: 'Full ROM' },
-    { name: 'Leg Curl', sets: 3, reps: '12', muscle: 'Hamstrings', notes: 'Slow' },
-    { name: 'Leg Extension', sets: 3, reps: '12', muscle: 'Quads', notes: 'Squeeze' },
+  3: { name: 'Lower Body B', focus: 'Quads/Glutes', exercises: [
+    { name: 'Leg Press', sets: 4, reps: '12', muscle: 'Quads', notes: 'Feet low/narrow' },
+    { name: 'Smith Squat', sets: 3, reps: '10', muscle: 'Quads', notes: 'Feet forward' },
+    { name: 'Walking Lunges', sets: 3, reps: '12 each', muscle: 'Glutes/Quads', notes: 'DB in hands' },
+    { name: 'Leg Extension', sets: 3, reps: '15', muscle: 'Quads', notes: 'Slow negative' },
+    { name: 'Abductor Machine', sets: 3, reps: '15', muscle: 'Outer Glutes', notes: 'Squeeze out' },
+    { name: 'Adductor Machine', sets: 3, reps: '15', muscle: 'Inner Thigh', notes: 'Control' },
+    { name: '--- CORE ---', sets: 0, reps: '', muscle: '', notes: '' },
+    { name: 'Hanging Knee Raise', sets: 3, reps: '12', muscle: 'Lower Abs', notes: 'Slow' },
   ]},
-  4: { name: 'Rest Day', focus: 'Recovery', exercises: [] },
-  5: { name: 'Full Body', focus: 'Light circuit', exercises: [
-    { name: 'Machine Chest', sets: 2, reps: '12', muscle: 'Chest', notes: 'Light' },
-    { name: 'Machine Back', sets: 2, reps: '12', muscle: 'Back', notes: 'Light' },
-    { name: 'Leg Machine', sets: 2, reps: '12', muscle: 'Legs', notes: 'Light' },
+  4: { name: 'Upper Body B', focus: 'Chest/Arms', exercises: [
+    { name: 'DB Chest Press', sets: 3, reps: '12', muscle: 'Chest', notes: 'Flat bench' },
+    { name: 'Incline DB Press', sets: 3, reps: '12', muscle: 'Upper Chest', notes: '30° bench' },
+    { name: 'Pec Deck', sets: 3, reps: '12', muscle: 'Chest', notes: 'Squeeze' },
+    { name: 'Tricep Pushdown', sets: 3, reps: '12', muscle: 'Triceps', notes: 'Rope' },
+    { name: 'DB Hammer Curl', sets: 3, reps: '12', muscle: 'Biceps', notes: 'Standing' },
+    { name: 'Rear Delt Machine', sets: 3, reps: '15', muscle: 'Rear Delts', notes: 'Slow' },
+    { name: '--- CORE ---', sets: 0, reps: '', muscle: '', notes: '' },
+    { name: 'Pallof Press', sets: 3, reps: '10 each', muscle: 'Anti-Rotation', notes: 'Cable' },
   ]},
-  6: { name: 'Rest Day', focus: 'Recovery', exercises: [] },
-  7: { name: 'Rest Day', focus: 'Recovery', exercises: [] }
+  5: { name: 'Full Body', focus: 'Compounds/Conditioning', exercises: [
+    { name: 'Smith Squat', sets: 3, reps: '10', muscle: 'Legs', notes: 'Moderate weight' },
+    { name: 'Hip Thrust', sets: 3, reps: '12', muscle: 'Glutes', notes: 'Smith machine' },
+    { name: 'Lat Pulldown', sets: 3, reps: '12', muscle: 'Back', notes: 'Close grip' },
+    { name: 'DB Chest Press', sets: 3, reps: '12', muscle: 'Chest', notes: 'Flat' },
+    { name: 'DB Shoulder Press', sets: 3, reps: '10', muscle: 'Shoulders', notes: 'Seated' },
+    { name: '--- CORE ---', sets: 0, reps: '', muscle: '', notes: '' },
+    { name: 'Plank', sets: 3, reps: '45 sec', muscle: 'Core', notes: '' },
+    { name: 'Russian Twist', sets: 3, reps: '15 each', muscle: 'Obliques', notes: 'DB or plate' },
+  ]},
+  6: { name: 'Active Recovery', focus: 'Walking/Stretching', exercises: [
+    { name: 'Walk', sets: 1, reps: '30-45 min', muscle: 'Cardio', notes: 'Moderate' },
+    { name: 'Hip Opener Stretch', sets: 2, reps: '30 sec each', muscle: 'Hips', notes: 'Deep' },
+    { name: 'Cat-Cow', sets: 2, reps: '10', muscle: 'Spine', notes: 'Slow' },
+    { name: 'Foam Rolling', sets: 1, reps: '10 min', muscle: 'Recovery', notes: 'Full body' },
+  ]},
 };
 
 // ===== DALTON'S WORKOUTS =====
 const daltonWorkouts = {
-  1: { name: 'Chest & Triceps', focus: 'Strength', exercises: [
-    { name: 'Barbell Bench Press', sets: 4, reps: '6-8', muscle: 'Chest', notes: 'Heavy' },
-    { name: 'Incline Press', sets: 3, reps: '8-10', muscle: 'Upper Chest', notes: 'Heavy' },
-    { name: 'Tricep Dips', sets: 3, reps: '8-10', muscle: 'Triceps', notes: 'Full ROM' },
+  1: { name: 'Push', focus: 'Chest/Shoulders/Triceps', exercises: [
+    { name: 'Bench Press', sets: 4, reps: '8-10', muscle: 'Chest', notes: 'BB or DB' },
+    { name: 'Incline DB Press', sets: 3, reps: '10', muscle: 'Upper Chest', notes: '30°' },
+    { name: 'OHP', sets: 4, reps: '8-10', muscle: 'Shoulders', notes: 'Standing or seated' },
+    { name: 'Lateral Raise', sets: 3, reps: '12-15', muscle: 'Side Delts', notes: 'Light' },
+    { name: 'Tricep Pushdown', sets: 3, reps: '12', muscle: 'Triceps', notes: 'Rope' },
+    { name: 'Dips', sets: 3, reps: 'AMRAP', muscle: 'Triceps/Chest', notes: 'BW or weighted' },
   ]},
-  2: { name: 'Back & Biceps', focus: 'Strength', exercises: [
-    { name: 'Deadlift', sets: 4, reps: '5-6', muscle: 'Full Back', notes: 'Heavy' },
-    { name: 'Barbell Row', sets: 4, reps: '6-8', muscle: 'Back', notes: 'Heavy' },
-    { name: 'Barbell Curl', sets: 3, reps: '8', muscle: 'Biceps', notes: 'Strict' },
+  2: { name: 'Pull', focus: 'Back/Biceps', exercises: [
+    { name: 'Pull-ups', sets: 4, reps: 'AMRAP', muscle: 'Lats', notes: 'Wide grip' },
+    { name: 'Barbell Row', sets: 4, reps: '8-10', muscle: 'Mid Back', notes: 'Overhand' },
+    { name: 'Lat Pulldown', sets: 3, reps: '12', muscle: 'Lats', notes: 'Close grip' },
+    { name: 'Face Pulls', sets: 3, reps: '15', muscle: 'Rear Delts', notes: 'Cable' },
+    { name: 'Barbell Curl', sets: 3, reps: '10-12', muscle: 'Biceps', notes: 'EZ bar' },
+    { name: 'Hammer Curl', sets: 3, reps: '12', muscle: 'Brachialis', notes: 'DB' },
   ]},
-  3: { name: 'Rest Day', focus: 'Recovery', exercises: [] },
-  4: { name: 'Legs', focus: 'Strength', exercises: [
-    { name: 'Squat', sets: 4, reps: '6-8', muscle: 'Quads', notes: 'Heavy' },
-    { name: 'Leg Press', sets: 3, reps: '8-10', muscle: 'Quads', notes: 'Heavy' },
-    { name: 'Leg Curl', sets: 3, reps: '8-10', muscle: 'Hamstrings', notes: 'Slow' },
-  ]},
-  5: { name: 'Shoulders & Arms', focus: 'Strength', exercises: [
-    { name: 'Standing OHP', sets: 4, reps: '6-8', muscle: 'Shoulders', notes: 'Heavy' },
-    { name: 'Barbell Curl', sets: 3, reps: '8', muscle: 'Biceps', notes: 'Strict' },
-    { name: 'Rope Pushdown', sets: 3, reps: '10', muscle: 'Triceps', notes: 'Full ROM' },
-  ]},
-  6: { name: 'Rest Day', focus: 'Recovery', exercises: [] },
-  7: { name: 'Rest Day', focus: 'Recovery', exercises: [] }
-};
-
-// ===== DENVER'S WORKOUTS (Female, Strength + Hypertrophy) =====
-const denverWorkouts = {
-  1: { name: 'Lower Body A', focus: 'Glutes & Hamstrings', exercises: [
-    { name: 'Hip Thrust', sets: 4, reps: '12', muscle: 'Glutes', notes: 'Squeeze top' },
+  3: { name: 'Legs', focus: 'Quads/Hamstrings/Glutes', exercises: [
+    { name: 'Squat', sets: 4, reps: '8-10', muscle: 'Quads', notes: 'BB or Smith' },
     { name: 'Romanian Deadlift', sets: 4, reps: '10', muscle: 'Hamstrings', notes: 'Hip hinge' },
-    { name: 'Bulgarian Split Squat', sets: 3, reps: '10 each', muscle: 'Glutes', notes: 'DB' },
+    { name: 'Leg Press', sets: 3, reps: '12', muscle: 'Quads', notes: 'Full depth' },
+    { name: 'Walking Lunges', sets: 3, reps: '12 each', muscle: 'Glutes', notes: 'DB' },
+    { name: 'Leg Curl', sets: 3, reps: '12', muscle: 'Hamstrings', notes: 'Machine' },
+    { name: 'Calf Raises', sets: 4, reps: '15', muscle: 'Calves', notes: 'Full ROM' },
+  ]},
+  4: { name: 'Upper', focus: 'Strength Focus', exercises: [
+    { name: 'Bench Press', sets: 4, reps: '6-8', muscle: 'Chest', notes: 'Heavy' },
+    { name: 'Barbell Row', sets: 4, reps: '6-8', muscle: 'Back', notes: 'Heavy' },
+    { name: 'DB Shoulder Press', sets: 3, reps: '8-10', muscle: 'Shoulders', notes: 'Seated' },
+    { name: 'Weighted Pull-ups', sets: 3, reps: '6-8', muscle: 'Lats', notes: 'Belt or DB' },
+    { name: 'Close Grip Bench', sets: 3, reps: '8-10', muscle: 'Triceps', notes: 'Narrow grip' },
+    { name: 'Barbell Curl', sets: 3, reps: '8-10', muscle: 'Biceps', notes: 'Strict form' },
+  ]},
+  5: { name: 'Legs B', focus: 'Posterior Chain', exercises: [
+    { name: 'Deadlift', sets: 4, reps: '6-8', muscle: 'Full Posterior', notes: 'Conventional' },
+    { name: 'Front Squat', sets: 3, reps: '10', muscle: 'Quads', notes: 'Upright torso' },
+    { name: 'Hip Thrust', sets: 3, reps: '12', muscle: 'Glutes', notes: 'BB' },
+    { name: 'Bulgarian Split Squat', sets: 3, reps: '10 each', muscle: 'Quads/Glutes', notes: 'DB' },
     { name: 'Leg Curl', sets: 3, reps: '12', muscle: 'Hamstrings', notes: 'Slow' },
+    { name: 'Farmer Carries', sets: 3, reps: '40 yards', muscle: 'Core/Grip', notes: 'Heavy DB' },
   ]},
-  2: { name: 'Upper Body A', focus: 'Push', exercises: [
-    { name: 'DB Chest Press', sets: 3, reps: '12', muscle: 'Chest', notes: 'Full ROM' },
-    { name: 'Shoulder Press', sets: 3, reps: '10', muscle: 'Shoulders', notes: 'Seated' },
-    { name: 'Tricep Dips', sets: 2, reps: '10', muscle: 'Triceps', notes: 'Machine' },
+  6: { name: 'Rest/Cardio', focus: 'Active Recovery', exercises: [
+    { name: 'Walk or Light Jog', sets: 1, reps: '30-45 min', muscle: 'Cardio', notes: 'Easy pace' },
+    { name: 'Stretching', sets: 1, reps: '15 min', muscle: 'Flexibility', notes: 'Full body' },
   ]},
-  3: { name: 'Rest Day', focus: 'Recovery', exercises: [] },
-  4: { name: 'Lower Body B', focus: 'Quads & Glutes', exercises: [
-    { name: 'Goblet Squat', sets: 4, reps: '12', muscle: 'Quads/Glutes', notes: 'Deep' },
-    { name: 'Leg Press', sets: 4, reps: '12', muscle: 'Quads', notes: 'Feet low' },
-    { name: 'Walking Lunge', sets: 3, reps: '10 each', muscle: 'Glutes', notes: 'DB' },
-    { name: 'Leg Extension', sets: 3, reps: '15', muscle: 'Quads', notes: 'Slow' },
-  ]},
-  5: { name: 'Upper Body B', focus: 'Pull & Arms', exercises: [
-    { name: 'Lat Pulldown', sets: 4, reps: '12', muscle: 'Back', notes: 'To chest' },
-    { name: 'Machine Row', sets: 3, reps: '12', muscle: 'Back', notes: 'Squeeze' },
-    { name: 'DB Curl', sets: 3, reps: '12', muscle: 'Biceps', notes: 'Alt' },
-  ]},
-  6: { name: 'Active Recovery', focus: 'Cardio', exercises: [
-    { name: 'Elliptical', sets: 1, reps: '20-30 min', muscle: 'Cardio', notes: 'Steady' },
-  ]},
-  7: { name: 'Rest Day', focus: 'Recovery', exercises: [] }
 };
 
-// ===== BRANDON'S WORKOUTS (Heavy Strength) =====
+// ===== DENVER'S WORKOUTS - Dual Mode (Gym + At Home Bodyweight) =====
+// 26F, 5'3", small frame. Goal: build muscle for strength & physique
+// 6 days/week. Each day has GYM and HOME options
+const denverWorkouts = {
+  1: { name: 'Lower Body A', focus: 'Glutes & Hamstrings',
+    gym: [
+      { name: 'Barbell Hip Thrust', sets: 4, reps: '10-12', muscle: 'Glutes', notes: 'Pause 2 sec at top, squeeze hard' },
+      { name: 'Romanian Deadlift', sets: 4, reps: '10', muscle: 'Hamstrings/Glutes', notes: 'DB or BB, hinge at hips' },
+      { name: 'Bulgarian Split Squat', sets: 3, reps: '10 each', muscle: 'Glutes/Quads', notes: 'DB in each hand, rear foot on bench' },
+      { name: 'Cable Pull-Through', sets: 3, reps: '12', muscle: 'Glutes/Hams', notes: 'Rope attachment, squeeze glutes' },
+      { name: 'Lying Leg Curl', sets: 3, reps: '12', muscle: 'Hamstrings', notes: 'Slow negative 3 sec' },
+      { name: 'Single Leg Hip Thrust', sets: 3, reps: '10 each', muscle: 'Glute Isolation', notes: 'Bench, bodyweight or light plate' },
+      { name: '--- CORE ---', sets: 0, reps: '', muscle: '', notes: '' },
+      { name: 'Dead Bug', sets: 3, reps: '12 each', muscle: 'Core Stability', notes: 'Low back pressed flat' },
+      { name: 'Plank', sets: 3, reps: '30-45 sec', muscle: 'Core', notes: 'Squeeze everything tight' },
+    ],
+    home: [
+      { name: 'Single Leg Glute Bridge', sets: 4, reps: '12 each', muscle: 'Glutes', notes: 'Pause 2 sec top, foot flat' },
+      { name: 'Single Leg RDL (BW)', sets: 4, reps: '10 each', muscle: 'Hamstrings/Balance', notes: 'Touch floor, slow controlled' },
+      { name: 'Reverse Lunge', sets: 3, reps: '12 each', muscle: 'Glutes/Quads', notes: 'Step back, knee to floor' },
+      { name: 'Sumo Squat Pulse', sets: 3, reps: '20', muscle: 'Inner Thigh/Glutes', notes: 'Wide stance, pulse at bottom' },
+      { name: 'Donkey Kicks', sets: 3, reps: '15 each', muscle: 'Glutes', notes: 'Slow & squeeze top' },
+      { name: 'Fire Hydrants', sets: 3, reps: '15 each', muscle: 'Glute Med', notes: 'Keep hips square' },
+      { name: 'Nordic Curl Negative', sets: 3, reps: '5', muscle: 'Hamstrings', notes: 'Anchor feet, slow lower' },
+      { name: '--- CORE ---', sets: 0, reps: '', muscle: '', notes: '' },
+      { name: 'Dead Bug', sets: 3, reps: '12 each', muscle: 'Core Stability', notes: 'Low back flat' },
+      { name: 'Plank', sets: 3, reps: '30-45 sec', muscle: 'Core', notes: 'Squeeze tight' },
+    ]
+  },
+  2: { name: 'Upper Body A', focus: 'Push - Chest/Shoulders/Triceps',
+    gym: [
+      { name: 'DB Bench Press', sets: 4, reps: '10-12', muscle: 'Chest', notes: 'Start light, build up. Full ROM' },
+      { name: 'Incline DB Press', sets: 3, reps: '12', muscle: 'Upper Chest', notes: '30° incline, squeeze top' },
+      { name: 'Cable Flye', sets: 3, reps: '12', muscle: 'Chest', notes: 'Mid-height cables, hug motion' },
+      { name: 'DB Shoulder Press', sets: 4, reps: '10', muscle: 'Shoulders', notes: 'Seated, palms forward' },
+      { name: 'Lateral Raise', sets: 3, reps: '12-15', muscle: 'Side Delts', notes: 'Light weight, slow raise' },
+      { name: 'Tricep Pushdown', sets: 3, reps: '12', muscle: 'Triceps', notes: 'Rope attachment' },
+      { name: 'Overhead Tricep Ext', sets: 3, reps: '12', muscle: 'Triceps Long Head', notes: 'Cable or DB' },
+      { name: '--- CORE ---', sets: 0, reps: '', muscle: '', notes: '' },
+      { name: 'Pallof Press', sets: 3, reps: '10 each', muscle: 'Anti-Rotation', notes: 'Cable, slow extend' },
+    ],
+    home: [
+      { name: 'Push-ups', sets: 4, reps: '10-15', muscle: 'Chest/Triceps', notes: 'Knees if needed, full ROM' },
+      { name: 'Incline Push-up', sets: 3, reps: '12', muscle: 'Lower Chest', notes: 'Hands on chair/couch' },
+      { name: 'Diamond Push-up', sets: 3, reps: '8-10', muscle: 'Triceps/Chest', notes: 'Hands together' },
+      { name: 'Pike Push-up', sets: 4, reps: '8-10', muscle: 'Shoulders', notes: 'Hips high, head toward floor' },
+      { name: 'Lateral Arm Circles', sets: 3, reps: '15 each way', muscle: 'Shoulders', notes: 'Water bottles for weight' },
+      { name: 'Tricep Dips (Chair)', sets: 3, reps: '12', muscle: 'Triceps', notes: 'Hands on chair edge' },
+      { name: 'Close Grip Push-up', sets: 3, reps: '10', muscle: 'Triceps', notes: 'Shoulder width' },
+      { name: '--- CORE ---', sets: 0, reps: '', muscle: '', notes: '' },
+      { name: 'Bird Dog', sets: 3, reps: '10 each', muscle: 'Core/Balance', notes: 'Slow extend' },
+    ]
+  },
+  3: { name: 'Lower Body B', focus: 'Quads & Glutes',
+    gym: [
+      { name: 'Goblet Squat', sets: 4, reps: '12', muscle: 'Quads/Glutes', notes: 'DB at chest, deep squat' },
+      { name: 'Leg Press', sets: 4, reps: '12', muscle: 'Quads', notes: 'Feet low & narrow for quads' },
+      { name: 'Walking Lunges', sets: 3, reps: '12 each', muscle: 'Quads/Glutes', notes: 'DB in each hand' },
+      { name: 'Leg Extension', sets: 3, reps: '12-15', muscle: 'Quads', notes: 'Slow negative, squeeze top' },
+      { name: 'Smith Squat', sets: 3, reps: '10', muscle: 'Quads', notes: 'Feet slightly forward' },
+      { name: 'Calf Raises', sets: 4, reps: '15', muscle: 'Calves', notes: 'Full stretch at bottom' },
+      { name: '--- CORE ---', sets: 0, reps: '', muscle: '', notes: '' },
+      { name: 'Cable Crunch', sets: 3, reps: '15', muscle: 'Abs', notes: 'Exhale hard, crunch down' },
+      { name: 'Side Plank', sets: 3, reps: '20 sec each', muscle: 'Obliques', notes: 'Build up time' },
+    ],
+    home: [
+      { name: 'Bodyweight Squat', sets: 4, reps: '15-20', muscle: 'Quads/Glutes', notes: 'Deep, controlled, 3 sec down' },
+      { name: 'Jump Squat', sets: 3, reps: '10', muscle: 'Quads/Power', notes: 'Land soft, full depth' },
+      { name: 'Curtsy Lunge', sets: 3, reps: '12 each', muscle: 'Quads/Glute Med', notes: 'Cross behind, deep' },
+      { name: 'Wall Sit', sets: 3, reps: '30-45 sec', muscle: 'Quads', notes: 'Thighs parallel' },
+      { name: 'Step-ups (Chair)', sets: 3, reps: '12 each', muscle: 'Quads/Glutes', notes: 'Full step, drive up' },
+      { name: 'Calf Raise (Stair)', sets: 4, reps: '15', muscle: 'Calves', notes: 'Hang heels off edge' },
+      { name: 'Pistol Squat Negative', sets: 3, reps: '5 each', muscle: 'Quads/Balance', notes: 'Hold something for balance' },
+      { name: '--- CORE ---', sets: 0, reps: '', muscle: '', notes: '' },
+      { name: 'Bicycle Crunch', sets: 3, reps: '15 each', muscle: 'Obliques/Abs', notes: 'Slow & controlled' },
+      { name: 'Side Plank', sets: 3, reps: '20 sec each', muscle: 'Obliques', notes: 'Build up' },
+    ]
+  },
+  4: { name: 'Upper Body B', focus: 'Pull - Back/Biceps',
+    gym: [
+      { name: 'Lat Pulldown', sets: 4, reps: '10-12', muscle: 'Lats', notes: 'Wide grip, pull to chest' },
+      { name: 'Seated Cable Row', sets: 4, reps: '12', muscle: 'Mid Back', notes: 'Close grip, squeeze back' },
+      { name: 'Single Arm DB Row', sets: 3, reps: '10 each', muscle: 'Lats', notes: 'Bench support, full stretch' },
+      { name: 'Face Pulls', sets: 3, reps: '15', muscle: 'Rear Delts/RC', notes: 'High cable, pull to ears' },
+      { name: 'Rear Delt Fly', sets: 3, reps: '12', muscle: 'Rear Delts', notes: 'DB bent over or machine' },
+      { name: 'DB Curl', sets: 3, reps: '12', muscle: 'Biceps', notes: 'Alternating, full ROM' },
+      { name: 'Hammer Curl', sets: 3, reps: '12', muscle: 'Brachialis', notes: 'Neutral grip' },
+      { name: '--- CORE ---', sets: 0, reps: '', muscle: '', notes: '' },
+      { name: 'Hanging Knee Raise', sets: 3, reps: '10', muscle: 'Lower Abs', notes: 'Control swing' },
+    ],
+    home: [
+      { name: 'Inverted Row (Table)', sets: 4, reps: '10-12', muscle: 'Back', notes: 'Under sturdy table, pull chest up' },
+      { name: 'Superman', sets: 4, reps: '12', muscle: 'Lower Back/Erectors', notes: 'Hold top 2 sec' },
+      { name: 'Reverse Snow Angel', sets: 3, reps: '10', muscle: 'Mid/Upper Back', notes: 'Prone, arms sweep overhead' },
+      { name: 'Prone Y-T-W', sets: 3, reps: '8 each', muscle: 'Upper Back/RC', notes: 'Face down, arms make letters' },
+      { name: 'Doorway Row', sets: 3, reps: '12 each', muscle: 'Lats', notes: 'Single arm, lean back from frame' },
+      { name: 'Towel Curl', sets: 3, reps: '10', muscle: 'Biceps', notes: 'Step on towel, curl up' },
+      { name: 'Chin-up Negative', sets: 3, reps: '5', muscle: 'Lats/Biceps', notes: 'Jump up, lower 5 sec (if bar avail)' },
+      { name: '--- CORE ---', sets: 0, reps: '', muscle: '', notes: '' },
+      { name: 'Leg Raise', sets: 3, reps: '12', muscle: 'Lower Abs', notes: 'Lying on back, slow' },
+    ]
+  },
+  5: { name: 'Full Body', focus: 'Compound Strength',
+    gym: [
+      { name: 'Goblet Squat', sets: 3, reps: '10', muscle: 'Legs', notes: 'Heavy DB, deep' },
+      { name: 'DB Romanian Deadlift', sets: 3, reps: '10', muscle: 'Posterior Chain', notes: 'Hip hinge' },
+      { name: 'DB Bench Press', sets: 3, reps: '10', muscle: 'Chest', notes: 'Full ROM' },
+      { name: 'Lat Pulldown', sets: 3, reps: '12', muscle: 'Back', notes: 'Wide grip' },
+      { name: 'DB Shoulder Press', sets: 3, reps: '10', muscle: 'Shoulders', notes: 'Seated' },
+      { name: 'Hip Thrust', sets: 3, reps: '12', muscle: 'Glutes', notes: 'Smith or BB' },
+      { name: '--- CORE ---', sets: 0, reps: '', muscle: '', notes: '' },
+      { name: 'Plank', sets: 3, reps: '30-45 sec', muscle: 'Core', notes: '' },
+      { name: 'Russian Twist', sets: 3, reps: '12 each', muscle: 'Obliques', notes: 'DB or plate' },
+    ],
+    home: [
+      { name: 'Squat to Lunge Combo', sets: 3, reps: '10 (5 each)', muscle: 'Legs', notes: 'Squat, step back to lunge, alternate' },
+      { name: 'Single Leg RDL', sets: 3, reps: '10 each', muscle: 'Hamstrings/Balance', notes: 'Slow, touch floor' },
+      { name: 'Push-ups', sets: 3, reps: '12-15', muscle: 'Chest/Triceps', notes: 'Full ROM' },
+      { name: 'Inverted Row (Table)', sets: 3, reps: '10', muscle: 'Back', notes: 'Under sturdy table' },
+      { name: 'Pike Push-up', sets: 3, reps: '8-10', muscle: 'Shoulders', notes: 'Hips high' },
+      { name: 'Glute Bridge March', sets: 3, reps: '10 each', muscle: 'Glutes/Core', notes: 'Bridge up, lift one knee' },
+      { name: '--- CORE ---', sets: 0, reps: '', muscle: '', notes: '' },
+      { name: 'Plank', sets: 3, reps: '30-45 sec', muscle: 'Core', notes: '' },
+      { name: 'Mountain Climber', sets: 3, reps: '15 each', muscle: 'Core/Cardio', notes: 'Slow & controlled' },
+    ]
+  },
+  6: { name: 'Active Recovery', focus: 'Mobility & Cardio',
+    gym: [
+      { name: 'Treadmill Walk/Incline', sets: 1, reps: '20-30 min', muscle: 'Cardio', notes: '10-15% incline, 3mph' },
+      { name: 'Hip Circles', sets: 2, reps: '10 each way', muscle: 'Hip Mobility', notes: 'Standing' },
+      { name: 'Cat-Cow', sets: 2, reps: '10', muscle: 'Spine', notes: 'Slow breath' },
+      { name: 'World\'s Greatest Stretch', sets: 2, reps: '5 each', muscle: 'Full Body', notes: 'Hold 5 sec each' },
+      { name: 'Foam Rolling', sets: 1, reps: '10 min', muscle: 'Recovery', notes: 'Quads, glutes, back' },
+    ],
+    home: [
+      { name: 'Walk', sets: 1, reps: '20-30 min', muscle: 'Cardio', notes: 'Brisk pace' },
+      { name: 'Hip 90/90 Stretch', sets: 2, reps: '30 sec each', muscle: 'Hips', notes: 'Rotate between sides' },
+      { name: 'Cat-Cow', sets: 2, reps: '10', muscle: 'Spine', notes: 'Slow breath' },
+      { name: 'Pigeon Stretch', sets: 2, reps: '30 sec each', muscle: 'Glutes/Hips', notes: 'Relax into it' },
+      { name: 'Yoga Flow', sets: 1, reps: '10-15 min', muscle: 'Full Body', notes: 'Sun salutations' },
+    ]
+  },
+};
+
+// ===== BRANDON (Mass & Fitness - 5'10" 180lb) =====
 const brandonWorkouts = {
-  1: { name: 'Push Heavy', focus: 'Strength', exercises: [
-    { name: 'Barbell Bench Press', sets: 5, reps: '5', muscle: 'Chest', notes: 'Heavy' },
-    { name: 'Incline Press', sets: 4, reps: '6', muscle: 'Upper Chest', notes: 'Heavy' },
-    { name: 'Shoulder Press', sets: 4, reps: '5', muscle: 'Shoulders', notes: 'Heavy' },
+  1: { name: 'Push Heavy', focus: 'Chest/Shoulders/Tri', exercises: [
+    { name: 'Barbell Bench Press', sets: 4, reps: '6-8', muscle: 'Chest', notes: 'Heavy' },
+    { name: 'Incline DB Press', sets: 4, reps: '8-10', muscle: 'Upper Chest', notes: '30 deg' },
+    { name: 'Cable Crossover', sets: 3, reps: '12', muscle: 'Chest', notes: 'Stretch' },
+    { name: 'Smith OHP', sets: 4, reps: '8-10', muscle: 'Shoulders', notes: 'Heavy' },
+    { name: 'Lateral Raise', sets: 4, reps: '12-15', muscle: 'Side Delts', notes: 'Light slow' },
+    { name: 'Close Grip Bench', sets: 3, reps: '8-10', muscle: 'Triceps', notes: 'Compound' },
+    { name: 'Skull Crushers', sets: 3, reps: '10-12', muscle: 'Triceps', notes: 'Stretch' },
   ]},
-  2: { name: 'Pull Heavy', focus: 'Strength', exercises: [
-    { name: 'Deadlift', sets: 5, reps: '3-5', muscle: 'Full Back', notes: 'Heavy' },
-    { name: 'Barbell Row', sets: 5, reps: '5', muscle: 'Back', notes: 'Heavy' },
-    { name: 'Weighted Pullup', sets: 4, reps: '5', muscle: 'Back', notes: 'Heavy' },
+  2: { name: 'Pull Heavy', focus: 'Back/Biceps', exercises: [
+    { name: 'Barbell Row', sets: 4, reps: '6-8', muscle: 'Back', notes: 'Overhand' },
+    { name: 'Wide Lat Pulldown', sets: 4, reps: '8-10', muscle: 'Lats', notes: 'Wide' },
+    { name: 'Chest Supported Row', sets: 4, reps: '8-10', muscle: 'Back', notes: 'Heavy' },
+    { name: 'Face Pulls', sets: 3, reps: '15', muscle: 'Rear Delts', notes: 'Cable' },
+    { name: 'Barbell Curl', sets: 3, reps: '8-10', muscle: 'Biceps', notes: 'EZ' },
+    { name: 'Incline DB Curl', sets: 3, reps: '10-12', muscle: 'Biceps', notes: 'Stretch' },
+    { name: 'Hanging Knee Raise', sets: 3, reps: '12', muscle: 'Core', notes: 'Control' },
   ]},
-  3: { name: 'Legs Heavy', focus: 'Strength', exercises: [
-    { name: 'Squat', sets: 5, reps: '5', muscle: 'Quads', notes: 'Heavy' },
-    { name: 'Leg Press', sets: 4, reps: '6', muscle: 'Quads', notes: 'Heavy' },
-    { name: 'RDL', sets: 4, reps: '6', muscle: 'Hamstrings', notes: 'Heavy' },
+  3: { name: 'Legs Strength', focus: 'Quads/Hams/Glutes', exercises: [
+    { name: 'Barbell Squat', sets: 4, reps: '6-8', muscle: 'Quads', notes: 'Heavy' },
+    { name: 'Romanian Deadlift', sets: 4, reps: '8-10', muscle: 'Hamstrings', notes: 'Heavy hinge' },
+    { name: 'Leg Press', sets: 4, reps: '10-12', muscle: 'Quads', notes: 'Full' },
+    { name: 'Walking Lunges', sets: 3, reps: '10 each', muscle: 'Quads/Glutes', notes: 'Heavy' },
+    { name: 'Lying Leg Curl', sets: 4, reps: '10-12', muscle: 'Hamstrings', notes: 'Squeeze' },
+    { name: 'Standing Calf Raises', sets: 4, reps: '12-15', muscle: 'Calves', notes: 'Full ROM' },
+    { name: 'Ab Wheel/Rollout', sets: 3, reps: '10', muscle: 'Core', notes: 'Knees' },
   ]},
-  4: { name: 'Push Volume', focus: 'Hypertrophy', exercises: [
-    { name: 'DB Press', sets: 4, reps: '8-10', muscle: 'Chest', notes: 'Heavy DB' },
-    { name: 'Incline Press', sets: 4, reps: '8-10', muscle: 'Upper Chest', notes: 'DB' },
+  4: { name: 'Push Volume', focus: 'Chest/Shoulders/Tri', exercises: [
+    { name: 'DB Bench Press', sets: 4, reps: '10-12', muscle: 'Chest', notes: 'Full ROM' },
+    { name: 'Incline DB Flyes', sets: 3, reps: '12', muscle: 'Upper Chest', notes: 'Stretch' },
+    { name: 'Pec Deck', sets: 3, reps: '12-15', muscle: 'Chest', notes: 'Squeeze' },
+    { name: 'DB Shoulder Press', sets: 4, reps: '10-12', muscle: 'Shoulders', notes: 'Full ROM' },
+    { name: 'Cable Lateral Raise', sets: 3, reps: '15', muscle: 'Side Delts', notes: 'Burn' },
+    { name: 'Tricep Pushdown', sets: 3, reps: '12', muscle: 'Triceps', notes: 'Rope' },
+    { name: 'OH DB Extension', sets: 3, reps: '12', muscle: 'Triceps', notes: 'Stretch' },
   ]},
-  5: { name: 'Pull Volume', focus: 'Hypertrophy', exercises: [
-    { name: 'Barbell Row', sets: 4, reps: '8-10', muscle: 'Back', notes: 'Controlled' },
-    { name: 'Lat Pulldown', sets: 4, reps: '8-10', muscle: 'Back', notes: 'Full ROM' },
+  5: { name: 'Pull Volume', focus: 'Back/Biceps', exercises: [
+    { name: 'Lat Pulldown', sets: 4, reps: '10-12', muscle: 'Lats', notes: 'Wide' },
+    { name: 'Seated Cable Row', sets: 4, reps: '10-12', muscle: 'Mid Back', notes: 'Squeeze' },
+    { name: 'Straight Arm Pulldown', sets: 3, reps: '12', muscle: 'Lats', notes: 'Feel it' },
+    { name: 'Rear Delt Fly', sets: 3, reps: '12-15', muscle: 'Rear Delts', notes: 'DB slow' },
+    { name: 'DB Curls', sets: 3, reps: '10-12', muscle: 'Biceps', notes: 'Alternating' },
+    { name: 'Hammer Curls', sets: 3, reps: '12', muscle: 'Brachialis', notes: 'Width' },
+    { name: 'Cable Woodchop', sets: 3, reps: '12 each', muscle: 'Core', notes: 'High-low' },
   ]},
-  6: { name: 'Legs Volume', focus: 'Hypertrophy', exercises: [
-    { name: 'Front Squat', sets: 4, reps: '8-10', muscle: 'Quads', notes: 'Heavy' },
-    { name: 'Leg Extension', sets: 4, reps: '10-12', muscle: 'Quads', notes: 'Slow' },
+  6: { name: 'Legs Hypertrophy', focus: 'Quads/Hams/Glutes', exercises: [
+    { name: 'Hack Squat', sets: 4, reps: '10-12', muscle: 'Quads', notes: 'Deep' },
+    { name: 'Stiff Leg Deadlift', sets: 4, reps: '10-12', muscle: 'Hamstrings', notes: 'Stretch' },
+    { name: 'Bulgarian Split Squat', sets: 3, reps: '10 each', muscle: 'Quads/Glutes', notes: 'DB' },
+    { name: 'Leg Extension', sets: 3, reps: '12-15', muscle: 'Quads', notes: 'Slow squeeze' },
+    { name: 'Seated Leg Curl', sets: 3, reps: '12', muscle: 'Hamstrings', notes: 'Squeeze' },
+    { name: 'Hip Thrust (Smith)', sets: 3, reps: '12', muscle: 'Glutes', notes: 'Pause' },
+    { name: 'Pallof Press', sets: 3, reps: '12 each', muscle: 'Core', notes: 'Cable' },
   ]},
-  7: { name: 'Rest Day', focus: 'Recovery', exercises: [] }
 };
 
-// ===== SHAYLA'S WORKOUTS (Female, Lower/Upper Split) =====
+// ===== SHAYLA (Fit & Muscular - 5'5" 108lb) =====
 const shaylaWorkouts = {
-  1: { name: 'Lower A', focus: 'Glutes & Hams', exercises: [
-    { name: 'Hip Thrust', sets: 4, reps: '12', muscle: 'Glutes', notes: 'Squeeze peak' },
-    { name: 'RDL', sets: 4, reps: '10', muscle: 'Hamstrings', notes: 'Hip hinge' },
-    { name: 'Bulgarian Split Squat', sets: 3, reps: '10', muscle: 'Glutes', notes: 'DB' },
-    { name: 'Leg Curl', sets: 3, reps: '12', muscle: 'Hamstrings', notes: 'Slow' },
+  1: { name: 'Lower Body A', focus: 'Glutes/Hamstrings', exercises: [
+    { name: 'Hip Thrust (Smith)', sets: 4, reps: '12', muscle: 'Glutes', notes: 'Pause squeeze' },
+    { name: 'Romanian Deadlift (DB)', sets: 4, reps: '10', muscle: 'Hamstrings', notes: 'Slow hinge' },
+    { name: 'Bulgarian Split Squat', sets: 3, reps: '10 each', muscle: 'Glutes/Quads', notes: 'DB' },
+    { name: 'Cable Kickback', sets: 3, reps: '12 each', muscle: 'Glutes', notes: 'Squeeze' },
+    { name: 'Lying Leg Curl', sets: 3, reps: '12', muscle: 'Hamstrings', notes: 'Slow neg' },
+    { name: 'Calf Raises', sets: 3, reps: '15', muscle: 'Calves', notes: 'Full ROM' },
+    { name: 'Plank', sets: 3, reps: '45 sec', muscle: 'Core', notes: 'Tight' },
   ]},
-  2: { name: 'Upper A', focus: 'Back & Shoulders', exercises: [
+  2: { name: 'Upper Body A', focus: 'Back/Shoulders', exercises: [
     { name: 'Lat Pulldown', sets: 4, reps: '12', muscle: 'Back', notes: 'To chest' },
-    { name: 'Machine Row', sets: 3, reps: '12', muscle: 'Back', notes: 'Squeeze' },
-    { name: 'Shoulder Press', sets: 3, reps: '10', muscle: 'Shoulders', notes: 'Seated' },
-    { name: 'Face Pulls', sets: 3, reps: '15', muscle: 'Rear Delts', notes: 'Slow' },
+    { name: 'Seated Cable Row', sets: 3, reps: '12', muscle: 'Mid Back', notes: 'Squeeze' },
+    { name: 'DB Shoulder Press', sets: 3, reps: '10', muscle: 'Shoulders', notes: 'Light' },
+    { name: 'Face Pulls', sets: 3, reps: '15', muscle: 'Rear Delts', notes: 'Cable' },
+    { name: 'Lateral Raise', sets: 3, reps: '12-15', muscle: 'Side Delts', notes: 'Light' },
+    { name: 'DB Curls', sets: 3, reps: '12', muscle: 'Biceps', notes: 'Alt' },
+    { name: 'Cable Crunch', sets: 3, reps: '15', muscle: 'Core', notes: 'Exhale' },
   ]},
-  3: { name: 'Rest Day', focus: 'Recovery', exercises: [] },
-  4: { name: 'Lower B', focus: 'Quads & Glutes', exercises: [
+  3: { name: 'Lower Body B', focus: 'Quads/Glutes', exercises: [
     { name: 'Goblet Squat', sets: 4, reps: '12', muscle: 'Quads/Glutes', notes: 'Deep' },
     { name: 'Leg Press', sets: 4, reps: '12', muscle: 'Quads', notes: 'Feet low' },
-    { name: 'Walking Lunge', sets: 3, reps: '10', muscle: 'Glutes', notes: 'DB' },
-    { name: 'Leg Extension', sets: 3, reps: '15', muscle: 'Quads', notes: 'Squeeze' },
+    { name: 'Walking Lunges', sets: 3, reps: '12 each', muscle: 'Quads/Glutes', notes: 'Light DB' },
+    { name: 'Leg Extension', sets: 3, reps: '15', muscle: 'Quads', notes: 'Slow neg' },
+    { name: 'Abductor Machine', sets: 3, reps: '15', muscle: 'Glutes', notes: 'Squeeze' },
+    { name: 'Hanging Knee Raise', sets: 3, reps: '10', muscle: 'Core', notes: 'Slow' },
+    { name: 'Side Plank', sets: 3, reps: '20 sec ea', muscle: 'Obliques', notes: 'Build' },
   ]},
-  5: { name: 'Upper B', focus: 'Chest & Arms', exercises: [
-    { name: 'DB Bench', sets: 3, reps: '12', muscle: 'Chest', notes: 'Full ROM' },
-    { name: 'Incline Press', sets: 3, reps: '12', muscle: 'Upper Chest', notes: '30deg' },
-    { name: 'DB Curl', sets: 3, reps: '12', muscle: 'Biceps', notes: 'Alt' },
-    { name: 'Tricep Dip', sets: 2, reps: '10', muscle: 'Triceps', notes: 'Machine' },
+  4: { name: 'Upper Body B', focus: 'Chest/Arms', exercises: [
+    { name: 'DB Bench Press', sets: 3, reps: '12', muscle: 'Chest', notes: 'Full ROM' },
+    { name: 'Incline DB Press', sets: 3, reps: '12', muscle: 'Upper Chest', notes: '30 deg' },
+    { name: 'Cable Flye', sets: 3, reps: '12', muscle: 'Chest', notes: 'Squeeze' },
+    { name: 'Tricep Pushdown', sets: 3, reps: '12', muscle: 'Triceps', notes: 'Rope' },
+    { name: 'Hammer Curls', sets: 3, reps: '12', muscle: 'Biceps', notes: 'Neutral' },
+    { name: 'Rear Delt Machine', sets: 3, reps: '15', muscle: 'Rear Delts', notes: 'Slow' },
+    { name: 'Pallof Press', sets: 3, reps: '10 each', muscle: 'Core', notes: 'Cable' },
   ]},
-  6: { name: 'Active Recovery', focus: 'Cardio', exercises: [
-    { name: 'Elliptical', sets: 1, reps: '20 min', muscle: 'Cardio', notes: 'Steady' },
+  5: { name: 'Full Body', focus: 'Full Body', exercises: [
+    { name: 'Smith Squat', sets: 3, reps: '10', muscle: 'Legs', notes: 'Moderate' },
+    { name: 'Hip Thrust (Smith)', sets: 3, reps: '12', muscle: 'Glutes', notes: 'Pause' },
+    { name: 'Lat Pulldown', sets: 3, reps: '12', muscle: 'Back', notes: 'Close' },
+    { name: 'DB Bench Press', sets: 3, reps: '12', muscle: 'Chest', notes: 'Flat' },
+    { name: 'DB Shoulder Press', sets: 3, reps: '10', muscle: 'Shoulders', notes: 'Seated' },
+    { name: 'Plank', sets: 3, reps: '45 sec', muscle: 'Core', notes: '' },
+    { name: 'Russian Twist', sets: 3, reps: '15 each', muscle: 'Core', notes: 'Light DB' },
   ]},
-  7: { name: 'Rest Day', focus: 'Recovery', exercises: [] }
+  6: { name: 'Active Recovery', focus: 'Walking/Mobility', exercises: [
+    { name: 'Walk', sets: 1, reps: '30-45 min', muscle: 'Cardio', notes: 'Moderate' },
+    { name: 'Hip Circles', sets: 2, reps: '10 each', muscle: 'Mobility', notes: '' },
+    { name: 'Cat-Cow', sets: 2, reps: '10', muscle: 'Spine', notes: 'Slow' },
+    { name: 'Pigeon Stretch', sets: 2, reps: '30 sec each', muscle: 'Hips', notes: 'Relax' },
+    { name: 'Foam Rolling', sets: 1, reps: '10 min', muscle: 'Recovery', notes: 'Full body' },
+  ]},
 };
 
-const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-const dayMap = { 0: 7, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6 };
-const dateKey = new Date().toISOString().split('T')[0];
+// Map user to workouts
+const userWorkouts = { greg: gregWorkouts, ricki: rickiWorkouts, dalton: daltonWorkouts, denver: denverWorkouts, brandon: brandonWorkouts, shayla: shaylaWorkouts };
+
+
+// Day names mapping
+const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const dayMap = { 0:7, 1:1, 2:2, 3:3, 4:4, 5:5, 6:6 }; // Sunday=7(rest), Mon=1..Sat=6
 
 // ===== MAIN APP =====
 function App() {
   const [user, setUser] = useState(null);
   const [pin, setPin] = useState('');
-  const [pinErr, setPinErr] = useState('');
+  const [pinError, setPinError] = useState(false);
   const [view, setView] = useState('workout');
-  const [selectedDay, setSelectedDay] = useState(1);
-  const [showInfo, setShowInfo] = useState(null);
+  const [selectedDay, setSelectedDay] = useState(() => dayMap[new Date().getDay()]);
   const [workoutLogs, setWorkoutLogs] = useState({});
   const [suppLogs, setSuppLogs] = useState({});
+  const [gymMode, setGymMode] = useState(true); // true=gym, false=home (Denver only)
+  const [showInfo, setShowInfo] = useState(null);
+  const [suppAuthed, setSuppAuthed] = useState(false);
   const [suppPinInput, setSuppPinInput] = useState('');
   const [suppPinErr, setSuppPinErr] = useState(false);
-  const [suppAuthed, setSuppAuthed] = useState(false);
+
+  const today = new Date();
+  const todayDow = today.getDay(); // 0=Sun
+  const dateKey = today.toISOString().split('T')[0];
+
+  // Load/save
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      const data = await load(`${user}_workouts`);
+      if (data?.logs) setWorkoutLogs(data.logs);
+      const sData = await load(`${user}_supps`);
+      if (sData?.logs) setSuppLogs(sData.logs);
+      const pref = await load(`${user}_prefs`);
+      if (pref?.gymMode !== undefined) setGymMode(pref.gymMode);
+    })();
+  }, [user]);
 
   useEffect(() => {
-    const init = async () => {
-      const u = await load('user');
-      if (u) setUser(u.user);
-      const logs = await load('workoutLogs');
-      if (logs) setWorkoutLogs(logs.data || {});
-      const slogs = await load('suppLogs');
-      if (slogs) setSuppLogs(slogs.data || {});
-    };
-    init();
-  }, []);
+    if (!user) return;
+    save(`${user}_workouts`, { logs: workoutLogs });
+  }, [workoutLogs, user]);
 
-  const doLogin = async (username) => {
-    if (hashPin(pin) !== userPins[username]) {
-      setPinErr('Wrong PIN');
-      return;
+  useEffect(() => {
+    if (!user) return;
+    save(`${user}_supps`, { logs: suppLogs });
+  }, [suppLogs, user]);
+
+  useEffect(() => {
+    if (!user) return;
+    save(`${user}_prefs`, { gymMode });
+  }, [gymMode, user]);
+
+  const handleLogin = (u) => {
+    setUser(u);
+    setPin('');
+    setPinError(false);
+  };
+
+  const checkPin = () => {
+    if (hashPin(pin) === userPins[user]) {
+      return true;
     }
-    setUser(username);
+    setPinError(true);
     setPin('');
-    setPinErr('');
-    await save('user', { user: username });
+    return false;
   };
 
-  const doLogout = () => {
-    setUser(null);
-    setPin('');
-    setPinErr('');
-    setView('workout');
-    setSuppAuthed(false);
-    setSuppPinInput('');
-    save('user', { user: null });
+  const [authed, setAuthed] = useState(false);
+  const doAuth = () => {
+    if (checkPin()) setAuthed(true);
   };
 
+  const logout = () => { setUser(null); setAuthed(false); setPin(''); setWorkoutLogs({}); setSuppLogs({}); setView('workout'); setSuppAuthed(false); setSuppPinInput(''); };
   const doSuppAuth = () => {
-    if (hashPin(suppPinInput) !== SUPP_PIN) {
-      setSuppPinErr(true);
-      return;
-    }
-    setSuppAuthed(true);
-    setSuppPinInput('');
-    setSuppPinErr(false);
+    if (hashPin(suppPinInput) === SUPP_PIN) { setSuppAuthed(true); setSuppPinErr(false); }
+    else { setSuppPinErr(true); setSuppPinInput(''); }
   };
 
-  const hashPin = (pin) => {
-    let h = 0;
-    for (let i = 0; i < pin.length; i++) h = ((h << 5) - h) + pin.charCodeAt(i) & 0xffffffff;
-    return h.toString();
-  };
-
-  const workouts = {
-    greg: gregWorkouts,
-    ricki: rickiWorkouts,
-    dalton: daltonWorkouts,
-    denver: denverWorkouts,
-    brandon: brandonWorkouts,
-    shayla: shaylaWorkouts
-  }[user] || {};
-
-  const uc = {
-    greg: { accent: 'text-purple-400', bg: 'bg-purple-600', bgLight: 'bg-purple-500/20', border: 'border-purple-500' },
-    ricki: { accent: 'text-rose-400', bg: 'bg-rose-600', bgLight: 'bg-rose-500/20', border: 'border-rose-500' },
-    dalton: { accent: 'text-blue-400', bg: 'bg-blue-600', bgLight: 'bg-blue-500/20', border: 'border-blue-500' },
-    denver: { accent: 'text-emerald-400', bg: 'bg-emerald-600', bgLight: 'bg-emerald-500/20', border: 'border-emerald-500' },
-    brandon: { accent: 'text-amber-400', bg: 'bg-amber-600', bgLight: 'bg-amber-500/20', border: 'border-amber-500' },
-    shayla: { accent: 'text-pink-400', bg: 'bg-pink-600', bgLight: 'bg-pink-500/20', border: 'border-pink-500' }
-  }[user] || { accent: 'text-purple-400', bg: 'bg-purple-600', bgLight: 'bg-purple-500/20', border: 'border-purple-500' };
-
-  const todayDow = new Date().getDay();
-  const todayNum = dayMap[todayDow];
+  // Get workouts for current user
+  const workouts = user ? userWorkouts[user] || {} : {};
   const currentWorkout = workouts[selectedDay];
-  const userSupps = supplements[user] || { daily: [], weekly: [] };
-  const todaySupps = [...userSupps.daily, ...userSupps.weekly.filter(s => s.days.includes(todayDow))];
+  const isDualMode = true;
+  const exercises = currentWorkout ? currentWorkout.exercises || [] : [];
 
+  // Workout log helpers
   const logKey = (day, exIdx, setIdx, field) => `${dateKey}_d${day}_e${exIdx}_s${setIdx}_${field}`;
   const getLog = (day, exIdx, setIdx, field) => workoutLogs[logKey(day, exIdx, setIdx, field)] || '';
   const setLog = (day, exIdx, setIdx, field, val) => {
     setWorkoutLogs(prev => ({ ...prev, [logKey(day, exIdx, setIdx, field)]: val }));
-    save('workoutLogs', { data: { ...workoutLogs, [logKey(day, exIdx, setIdx, field)]: val } });
   };
-
   const completedKey = (day, exIdx, setIdx) => `${dateKey}_d${day}_e${exIdx}_s${setIdx}_done`;
   const isCompleted = (day, exIdx, setIdx) => workoutLogs[completedKey(day, exIdx, setIdx)] === true;
   const toggleComplete = (day, exIdx, setIdx) => {
-    const newVal = !isCompleted(day, exIdx, setIdx);
-    setWorkoutLogs(prev => ({ ...prev, [completedKey(day, exIdx, setIdx)]: newVal }));
-    save('workoutLogs', { data: { ...workoutLogs, [completedKey(day, exIdx, setIdx)]: newVal } });
+    setWorkoutLogs(prev => ({ ...prev, [completedKey(day, exIdx, setIdx)]: !prev[completedKey(day, exIdx, setIdx)] }));
   };
 
+  // Supplement log helpers  
   const suppKey = (name) => `${dateKey}_${name}`;
   const isSuppDone = (name) => suppLogs[suppKey(name)] === true;
-  const toggleSupp = (name) => {
-    const newVal = !isSuppDone(name);
-    setSuppLogs(prev => ({ ...prev, [suppKey(name)]: newVal }));
-    save('suppLogs', { data: { ...suppLogs, [suppKey(name)]: newVal } });
+  const toggleSupp = (name) => setSuppLogs(prev => ({ ...prev, [suppKey(name)]: !prev[suppKey(name)] }));
+
+  const userSupps = user ? supplements[user] : { daily: [], weekly: [] };
+  const todaySupps = [
+    ...userSupps.daily,
+    ...userSupps.weekly.filter(s => s.days.includes(todayDow))
+  ];
+
+  // User display info
+  const userColors = {
+    greg: { accent: 'text-purple-400', bg: 'bg-purple-500', bgLight: 'bg-purple-500/20', border: 'border-purple-500' },
+    ricki: { accent: 'text-rose-400', bg: 'bg-rose-500', bgLight: 'bg-rose-500/20', border: 'border-rose-500' },
+    dalton: { accent: 'text-blue-400', bg: 'bg-blue-500', bgLight: 'bg-blue-500/20', border: 'border-blue-500' },
+    denver: { accent: 'text-emerald-400', bg: 'bg-emerald-500', bgLight: 'bg-emerald-500/20', border: 'border-emerald-500' },
+    brandon: { accent: 'text-amber-400', bg: 'bg-amber-500', bgLight: 'bg-amber-500/20', border: 'border-amber-500' },
+    shayla: { accent: 'text-pink-400', bg: 'bg-pink-500', bgLight: 'bg-pink-500/20', border: 'border-pink-500' },
   };
+  const uc = user ? userColors[user] : userColors.greg;
 
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center p-6">
-        <h1 className="text-5xl font-bold mb-12 text-white">IRON PROTOCOL</h1>
-        <div className="w-full max-w-md space-y-2 mb-8">
-          {['greg', 'ricki', 'dalton', 'denver', 'brandon', 'shayla'].map(u => (
-            <button key={u} onClick={() => setView(u)} className={`w-full p-3 rounded-lg font-semibold capitalize transition-all ${view === u ? uc[u].bg + ' text-white' : 'bg-zinc-800 text-zinc-300'}`}>
-              {u}
-            </button>
-          ))}
-        </div>
-        <div className="w-full max-w-md bg-zinc-900 rounded-xl p-6 border border-zinc-700">
-          <input type="password" placeholder="PIN" value={pin} onChange={e => { setPin(e.target.value); setPinErr(''); }} maxLength="4" className={`w-full bg-zinc-800 text-white text-center text-3xl rounded-lg py-3 mb-4 border ${pinErr ? 'border-red-500' : 'border-zinc-600'}`} />
-          <button onClick={() => doLogin(view)} className={`w-full ${uc[view].bg} text-white py-3 rounded-lg font-semibold`}>Login</button>
-          {pinErr && <p className="text-red-400 text-sm mt-3 text-center">{pinErr}</p>}
-        </div>
+  // ===== LOGIN SCREEN =====
+  if (!user) return (
+    <div className="min-h-screen bg-zinc-950 text-white flex flex-col items-center justify-center p-6">
+      <div className="mb-8 text-center">
+        <I.Dumbbell s={48} c="text-purple-400 mx-auto mb-4" />
+        <h1 className="text-3xl font-bold tracking-tight">IRON PROTOCOL</h1>
+        <p className="text-zinc-500 mt-2">Select your profile</p>
       </div>
-    );
-  }
+      <div className="w-full max-w-xs space-y-3">
+        {[
+          { id: 'greg', label: 'Greg', color: 'purple', emoji: '🏋️' },
+          { id: 'ricki', label: 'Ricki', color: 'rose', emoji: '💪' },
+          { id: 'dalton', label: 'Dalton', color: 'blue', emoji: '⚡' },
+          { id: 'denver', label: 'Denver', color: 'emerald', emoji: '🌟' },
+          { id: 'brandon', label: 'Brandon', color: 'amber', emoji: '🔥' },
+          { id: 'shayla', label: 'Shayla', color: 'pink', emoji: '✨' },
+        ].map(u => (
+          <button key={u.id} onClick={() => handleLogin(u.id)}
+            className={`w-full p-4 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-${u.color}-500 transition-all flex items-center gap-4`}>
+            <span className="text-2xl">{u.emoji}</span>
+            <span className="text-lg font-semibold">{u.label}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
 
+  // ===== PIN SCREEN =====
+  if (!authed) return (
+    <div className="min-h-screen bg-zinc-950 text-white flex flex-col items-center justify-center p-6">
+      <button onClick={() => setUser(null)} className="absolute top-6 left-6 text-zinc-500">← Back</button>
+      <h2 className="text-2xl font-bold mb-2 capitalize">{user}</h2>
+      <p className="text-zinc-500 mb-6">Enter 4-digit PIN</p>
+      <input type="password" maxLength={4} value={pin} onChange={e => { setPin(e.target.value.replace(/\D/g,'')); setPinError(false); }}
+        onKeyDown={e => e.key === 'Enter' && doAuth()}
+        className={`w-48 text-center text-2xl p-3 rounded-xl bg-zinc-900 border ${pinError ? 'border-red-500' : 'border-zinc-700'} focus:outline-none focus:border-purple-500`}
+        autoFocus placeholder="••••" />
+      {pinError && <p className="text-red-400 text-sm mt-2">Wrong PIN</p>}
+      <button onClick={doAuth} className={`mt-4 px-8 py-3 rounded-xl ${uc.bg} text-white font-semibold`}>Unlock</button>
+    </div>
+  );
+
+  // ===== MAIN APP =====
   return (
-    <div className="min-h-screen bg-zinc-950 text-white flex flex-col pb-24">
-      <header className={`sticky top-0 z-20 ${uc.bgLight} border-b border-zinc-800 px-4 py-4 flex justify-between items-center`}>
-        <div>
-          <h1 className={`text-2xl font-bold ${uc.accent}`}>{user.toUpperCase()}</h1>
-          <p className="text-xs text-zinc-400">{dayNames[selectedDay]}</p>
+    <div className="min-h-screen bg-zinc-950 text-white pb-24">
+      {/* Header */}
+      <header className="sticky top-0 z-50 bg-zinc-950/95 backdrop-blur border-b border-zinc-800 px-4 py-3">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className={`text-lg font-bold ${uc.accent}`}>IRON PROTOCOL</h1>
+            <p className="text-xs text-zinc-500 capitalize">{user} • {dayNames[todayDow]}</p>
+          </div>
+          <div className="flex items-center gap-3">
+            {isDualMode && view === 'workout' && (
+              <div className="flex items-center gap-2 bg-zinc-900 rounded-full px-2 py-1">
+                <button onClick={() => setGymMode(false)} className={`p-1.5 rounded-full transition-all ${!gymMode ? uc.bgLight + ' ' + uc.accent : 'text-zinc-500'}`}>
+                  <I.Home s={16} />
+                </button>
+                <button onClick={() => setGymMode(true)} className={`p-1.5 rounded-full transition-all ${gymMode ? uc.bgLight + ' ' + uc.accent : 'text-zinc-500'}`}>
+                  <I.Building s={16} />
+                </button>
+              </div>
+            )}
+            <button onClick={logout} className="text-zinc-500 p-2"><I.Logout s={20}/></button>
+          </div>
         </div>
-        <button onClick={doLogout} className="text-zinc-400 p-2"><I.Logout s={20}/></button>
       </header>
 
-      <main className="flex-1 overflow-y-auto px-4 py-4">
-        <div className="max-w-2xl mx-auto">
-          {view === 'workout' && (
-            <>
-              <div className="mb-4 flex gap-1 overflow-x-auto no-scrollbar">
-                {[1,2,3,4,5,6,7].map(d => (
-                  <button key={d} onClick={() => setSelectedDay(d)} className={`flex-shrink-0 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${selectedDay === d ? uc.bg : 'bg-zinc-800'}`}>
-                    {dayNames[d][0]}{dayNames[d][1]}
+      <main className="px-4 pt-4">
+        {/* ===== WORKOUT VIEW ===== */}
+        {view === 'workout' && (
+          <div>
+            {/* Day selector - Mon to Sun */}
+            <div className="flex gap-1 mb-4 overflow-x-auto pb-1">
+              {['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((d, i) => {
+                const dayNum = i + 1;
+                const isToday = dayMap[todayDow] === dayNum;
+                const isSelected = selectedDay === dayNum;
+                return (
+                  <button key={d} onClick={() => setSelectedDay(dayNum)}
+                    className={`flex-1 min-w-[44px] py-2 rounded-lg text-xs font-medium transition-all
+                    ${isSelected ? uc.bg + ' text-white' : isToday ? uc.bgLight + ' ' + uc.accent : 'bg-zinc-900 text-zinc-500'}`}>
+                    {d}
                   </button>
-                ))}
+                );
+              })}
+            </div>
+
+            {/* Day 7 = Rest */}
+            {selectedDay === 7 ? (
+              <div className="text-center py-16">
+                <p className="text-4xl mb-4">😴</p>
+                <h2 className="text-xl font-bold">Rest Day</h2>
+                <p className="text-zinc-500 mt-2">Recover. Sleep well. Eat protein.</p>
               </div>
-              {currentWorkout && currentWorkout.exercises && currentWorkout.exercises.length > 0 ? (
-                <div>
-                  <h2 className={`text-2xl font-bold mb-4 ${uc.accent}`}>{currentWorkout.name}</h2>
-                  <p className="text-sm text-zinc-500 mb-4">{currentWorkout.focus}</p>
-                  <div className="space-y-3">
-                    {currentWorkout.exercises.map((ex, exIdx) => (
-                      <div key={exIdx} className={`bg-zinc-900 border ${uc.border} border-opacity-30 rounded-lg p-4`}>
+            ) : currentWorkout ? (
+              <div>
+                <div className="mb-4">
+                  <h2 className="text-xl font-bold">{currentWorkout.name}</h2>
+                  <p className="text-sm text-zinc-500">{currentWorkout.focus}</p>
+                  {isDualMode && (
+                    <span className={`inline-block mt-1 text-xs px-2 py-0.5 rounded-full ${uc.bgLight} ${uc.accent}`}>
+                      {gymMode ? '🏢 Gym' : '🏠 At Home (Bodyweight)'}
+                    </span>
+                  )}
+                </div>
+
+                <div className="space-y-3">
+                  {exercises.map((ex, exIdx) => {
+                    if (ex.name.startsWith('---')) return (
+                      <div key={exIdx} className={`text-center text-sm font-bold ${uc.accent} py-2 border-t border-zinc-800 mt-4`}>
+                        {ex.name.replace(/---/g, '').trim()}
+                      </div>
+                    );
+                    return (
+                      <div key={exIdx} className="bg-zinc-900 rounded-xl p-3 border border-zinc-800">
                         <div className="flex justify-between items-start mb-2">
                           <div className="flex-1">
                             <h3 className="font-semibold text-sm">{ex.name}</h3>
@@ -494,6 +793,7 @@ function App() {
                         {showInfo === exIdx && ex.notes && (
                           <p className={`text-xs ${uc.accent} mb-2 p-2 rounded ${uc.bgLight}`}>{ex.notes}</p>
                         )}
+                        {/* Set rows */}
                         <div className="space-y-1.5">
                           {Array.from({ length: ex.sets }, (_, sIdx) => (
                             <div key={sIdx} className="flex items-center gap-2">
@@ -505,85 +805,95 @@ function App() {
                                 onChange={e => setLog(selectedDay, exIdx, sIdx, 'rp', e.target.value)}
                                 className="w-16 bg-zinc-800 rounded px-2 py-1.5 text-xs text-center focus:outline-none focus:ring-1 focus:ring-purple-500" />
                               <button onClick={() => toggleComplete(selectedDay, exIdx, sIdx)}
-                                className={`w-7 h-7 rounded-full flex items-center justify-center transition-all ${isCompleted(selectedDay, exIdx, sIdx) ? uc.bg + ' text-white' : 'bg-zinc-800 text-zinc-600'}`}>
+                                className={`w-7 h-7 rounded-full flex items-center justify-center transition-all
+                                ${isCompleted(selectedDay, exIdx, sIdx) ? uc.bg + ' text-white' : 'bg-zinc-800 text-zinc-600'}`}>
                                 <I.Check s={14} />
                               </button>
                             </div>
                           ))}
                         </div>
                       </div>
-                    ))}
-                  </div>
+                    );
+                  })}
                 </div>
-              ) : (
-                <div className="text-center py-16 text-zinc-500">No workout for this day</div>
-              )}
-            </>
-          )}
-
-          {view === 'supplements' && (
-            (user !== 'greg' && user !== 'ricki') ? (
-              <div className="text-center py-16"><p className="text-4xl mb-4">✨</p><p className="text-zinc-500">No supplement protocol</p></div>
-            ) : !suppAuthed ? (
-              <div className="text-center py-16">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mx-auto mb-4 text-zinc-500"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                <h2 className="text-xl font-bold mt-2 mb-2">Protected</h2>
-                <p className="text-zinc-500 mb-6">Enter supplement PIN</p>
-                <input type="password" maxLength={4} value={suppPinInput} onChange={e => { setSuppPinInput(e.target.value.replace(/\D/g, '')); setSuppPinErr(false); }} onKeyDown={e => e.key === 'Enter' && doSuppAuth()} className={`w-48 text-center text-2xl p-3 rounded-xl bg-zinc-900 border ${suppPinErr ? 'border-red-500' : 'border-zinc-700'} focus:outline-none focus:border-purple-500 mx-auto block`} placeholder="••••" />
-                {suppPinErr && <p className="text-red-400 text-sm mt-2">Wrong PIN</p>}
-                <button onClick={doSuppAuth} className={`mt-4 px-8 py-3 rounded-xl ${uc.bg} text-white font-semibold`}>Unlock</button>
               </div>
             ) : (
-              <div>
-                <h2 className="text-xl font-bold mb-1">Supplements</h2>
-                <p className="text-sm text-zinc-500 mb-4">{dayNames[todayDow]} • {dateKey}</p>
-                {todaySupps.length === 0 ? (
-                  <div className="text-center py-16"><p className="text-4xl mb-4">✨</p><p className="text-zinc-500">No supplements to track today</p></div>
-                ) : (
-                  <div className="space-y-2">
-                    {todaySupps.map((s, i) => (
-                      <button key={i} onClick={() => toggleSupp(s.name)}
-                        className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-all ${isSuppDone(s.name) ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-zinc-900 border-zinc-800'}`}>
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${isSuppDone(s.name) ? 'bg-emerald-500 text-white' : 'bg-zinc-800 text-zinc-600'}`}>
-                          {isSuppDone(s.name) ? <I.Check s={16}/> : <span className="text-xs">{s.type === 'injection' ? '💉' : '💊'}</span>}
-                        </div>
-                        <div className="text-left flex-1">
-                          <p className={`text-sm font-medium ${isSuppDone(s.name) ? 'text-emerald-400 line-through' : 'text-white'}`}>{s.name}</p>
-                          <p className="text-xs text-zinc-500">{s.dose} • {s.time}</p>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )
-          )}
+              <div className="text-center py-16 text-zinc-500">No workout for this day</div>
+            )}
+          </div>
+        )}
 
-          {view === 'calendar' && (
-            <div>
-              <h2 className="text-xl font-bold mb-4">Weekly Schedule</h2>
-              <div className="space-y-2">
-                {['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].map((day, i) => {
-                  const dayNum = i + 1;
-                  const workout = dayNum <= 6 ? workouts[dayNum] : null;
-                  const isToday = dayMap[todayDow] === dayNum;
-                  return (
-                    <button key={day} onClick={() => { setSelectedDay(dayNum); setView('workout'); }}
-                      className={`w-full p-3 rounded-xl text-left flex justify-between items-center border transition-all ${isToday ? uc.bgLight + ' ' + uc.border : 'bg-zinc-900 border-zinc-800'}`}>
-                      <div>
-                        <p className={`font-semibold text-sm ${isToday ? uc.accent : 'text-white'}`}>{day}</p>
-                        <p className="text-xs text-zinc-500">{workout ? workout.name : 'Rest Day'}</p>
-                      </div>
-                      <p className="text-xs text-zinc-500">{workout ? workout.focus : '😴'}</p>
-                    </button>
-                  );
-                })}
-              </div>
+        {/* ===== SUPPLEMENTS VIEW ===== */}
+        {view === 'supplements' && (
+          (user !== 'greg' && user !== 'ricki') ? (
+            <div className="text-center py-16"><p className="text-4xl mb-4">\u2728</p><p className="text-zinc-500">No supplement protocol</p></div>
+          ) : !suppAuthed ? (
+            <div className="text-center py-16">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mx-auto mb-4 text-zinc-500"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <h2 className="text-xl font-bold mt-2 mb-2">Protected</h2>
+              <p className="text-zinc-500 mb-6">Enter supplement PIN</p>
+              <input type="password" maxLength={4} value={suppPinInput} onChange={e => { setSuppPinInput(e.target.value.replace(/\D/g, '')); setSuppPinErr(false); }} onKeyDown={e => e.key === 'Enter' && doSuppAuth()} className={`w-48 text-center text-2xl p-3 rounded-xl bg-zinc-900 border ${suppPinErr ? 'border-red-500' : 'border-zinc-700'} focus:outline-none focus:border-purple-500 mx-auto block`} placeholder="\u2022\u2022\u2022\u2022" />
+              {suppPinErr && <p className="text-red-400 text-sm mt-2">Wrong PIN</p>}
+              <button onClick={doSuppAuth} className={`mt-4 px-8 py-3 rounded-xl ${uc.bg} text-white font-semibold`}>Unlock</button>
             </div>
-          )}
-        </div>
+          ) : (
+          <div>
+            <h2 className="text-xl font-bold mb-1">Supplements</h2>
+            <p className="text-sm text-zinc-500 mb-4">{dayNames[todayDow]} • {dateKey}</p>
+
+            {todaySupps.length === 0 ? (
+              <div className="text-center py-16">
+                <p className="text-4xl mb-4">✨</p>
+                <p className="text-zinc-500">No supplements to track today</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {todaySupps.map((s, i) => (
+                  <button key={i} onClick={() => toggleSupp(s.name)}
+                    className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-all
+                    ${isSuppDone(s.name) ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-zinc-900 border-zinc-800'}`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0
+                      ${isSuppDone(s.name) ? 'bg-emerald-500 text-white' : 'bg-zinc-800 text-zinc-600'}`}>
+                      {isSuppDone(s.name) ? <I.Check s={16}/> : <span className="text-xs">{s.type === 'injection' ? '💉' : '💊'}</span>}
+                    </div>
+                    <div className="text-left flex-1">
+                      <p className={`text-sm font-medium ${isSuppDone(s.name) ? 'text-emerald-400 line-through' : 'text-white'}`}>{s.name}</p>
+                      <p className="text-xs text-zinc-500">{s.dose} • {s.time}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+
+        {/* ===== CALENDAR VIEW ===== */}
+        {view === 'calendar' && (
+          <div>
+            <h2 className="text-xl font-bold mb-4">Weekly Schedule</h2>
+            <div className="space-y-2">
+              {['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].map((day, i) => {
+                const dayNum = i + 1;
+                const workout = dayNum <= 6 ? workouts[dayNum] : null;
+                const isToday = dayMap[todayDow] === dayNum;
+                return (
+                  <button key={day} onClick={() => { setSelectedDay(dayNum); setView('workout'); }}
+                    className={`w-full p-3 rounded-xl text-left flex justify-between items-center border transition-all
+                    ${isToday ? uc.bgLight + ' ' + uc.border : 'bg-zinc-900 border-zinc-800'}`}>
+                    <div>
+                      <p className={`font-semibold text-sm ${isToday ? uc.accent : 'text-white'}`}>{day}</p>
+                      <p className="text-xs text-zinc-500">{workout ? workout.name : 'Rest Day'}</p>
+                    </div>
+                    <p className="text-xs text-zinc-500">{workout ? workout.focus : '😴'}</p>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </main>
 
+      {/* Bottom Nav */}
       <nav className="fixed bottom-0 left-0 right-0 bg-zinc-950/95 backdrop-blur border-t border-zinc-800 safe-bottom">
         <div className="flex justify-around py-2">
           {[
