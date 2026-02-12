@@ -7,6 +7,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#09090b">
   <title>Iron Protocol</title>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -25,10 +27,22 @@ const{useState,useEffect,useMemo,useCallback}=React;
 const hashPin=p=>{let h=0;for(let i=0;i<p.length;i++)h=((h<<5)-h)+p.charCodeAt(i)&0xffffffff;return h.toString()};
 const UP={greg:hashPin('1234'),ricki:hashPin('5678'),dalton:hashPin('0000'),denver:hashPin('2626')};
 const SUPP_PIN=hashPin('1989');
-const DB_N='IronProtocolDB_v10';
-const odb=()=>new Promise((res,rej)=>{const r=indexedDB.open(DB_N,1);r.onerror=()=>rej(r.error);r.onsuccess=()=>res(r.result);r.onupgradeneeded=e=>e.target.result.createObjectStore('data',{keyPath:'id'})});
-const sv=async(id,d)=>{try{const db=await odb();return new Promise(r=>{const t=db.transaction('data','readwrite');t.objectStore('data').put({id,...d,ts:Date.now()});t.oncomplete=()=>r(true)})}catch(e){return false}};
-const ld=async id=>{try{const db=await odb();return new Promise(r=>{const q=db.transaction('data','readonly').objectStore('data').get(id);q.onsuccess=()=>r(q.result)})}catch(e){return null}};
+
+// Firebase config
+const fbApp=firebase.initializeApp({
+  apiKey:"AIzaSyD7lClKYt_Gwy0d4mobXYfq59HZc80ZSlY",
+  authDomain:"ironprotocol-734ee.firebaseapp.com",
+  databaseURL:"https://ironprotocol-734ee-default-rtdb.firebaseio.com",
+  projectId:"ironprotocol-734ee",
+  storageBucket:"ironprotocol-734ee.firebasestorage.app",
+  messagingSenderId:"244544864489",
+  appId:"1:244544864489:web:c808fea30f55b2dbbaf078"
+});
+const fbDb=firebase.database();
+
+// Cloud save/load with local fallback
+const sv=async(id,d)=>{try{await fbDb.ref('data/'+id).set({...d,ts:Date.now()});try{localStorage.setItem('ip_'+id,JSON.stringify(d))}catch(e){}}catch(e){try{localStorage.setItem('ip_'+id,JSON.stringify(d))}catch(e2){}}};
+const ld=async id=>{try{const snap=await fbDb.ref('data/'+id).once('value');const v=snap.val();if(v)return v;const lc=localStorage.getItem('ip_'+id);return lc?JSON.parse(lc):null}catch(e){try{const lc=localStorage.getItem('ip_'+id);return lc?JSON.parse(lc):null}catch(e2){return null}}};
 
 const I={
   Dumbbell:({s=24,c=""})=><svg className={c} width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m6.5 6.5 11 11M21 21l-1-1M3 3l1 1M18 22l4-4M2 6l4-4M3 10l7-7M14 21l7-7"/></svg>,
