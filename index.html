@@ -627,7 +627,7 @@ function App() {
   const workouts = user ? userWorkouts[user] || {} : {};
   const currentWorkout = workouts[selectedDay];
   const isDualMode = true;
-  const exercises = currentWorkout ? (isDualMode ? (gymMode ? currentWorkout.gym : currentWorkout.home) : currentWorkout.exercises) : [];
+  const exercises = currentWorkout ? currentWorkout.exercises || [] : [];
 
   // Workout log helpers
   const logKey = (day, exIdx, setIdx, field) => `${dateKey}_d${day}_e${exIdx}_s${setIdx}_${field}`;
