@@ -24,6 +24,7 @@
 const{useState,useEffect,useMemo,useCallback}=React;
 const hashPin=p=>{let h=0;for(let i=0;i<p.length;i++)h=((h<<5)-h)+p.charCodeAt(i)&0xffffffff;return h.toString()};
 const UP={greg:hashPin('1234'),ricki:hashPin('5678'),dalton:hashPin('0000'),denver:hashPin('2626')};
+const SUPP_PIN=hashPin('1989');
 const DB_N='IronProtocolDB_v10';
 const odb=()=>new Promise((res,rej)=>{const r=indexedDB.open(DB_N,1);r.onerror=()=>rej(r.error);r.onsuccess=()=>res(r.result);r.onupgradeneeded=e=>e.target.result.createObjectStore('data',{keyPath:'id'})});
 const sv=async(id,d)=>{try{const db=await odb();return new Promise(r=>{const t=db.transaction('data','readwrite');t.objectStore('data').put({id,...d,ts:Date.now()});t.oncomplete=()=>r(true)})}catch(e){return false}};
@@ -249,6 +250,7 @@ const isDual=u=>u==='denver';
 
 function App(){
   const[user,setUser]=useState(null);const[pin,setPin]=useState('');const[pinErr,setPE]=useState(false);const[authed,setAuth]=useState(false);
+  const[suppAuthed,setSuppAuth]=useState(false);const[suppPin,setSuppPin]=useState('');const[suppPinErr,setSuppPE]=useState(false);
   const[view,setView]=useState('workout');const[selDay,setSD]=useState(()=>DM[new Date().getDay()]);
   const[wLogs,setWL]=useState({});const[sLogs,setSL]=useState({});const[gymMode,setGM]=useState(true);const[showInf,setSI]=useState(null);
   const[custProg,setCP]=useState({});const[editMode,setEM]=useState(false);const[libGrp,setLG]=useState('Chest');const[addDay,setAD]=useState(null);
@@ -268,7 +270,7 @@ function App(){
 
   const doLogin=u=>{setUser(u);setPin('');setPE(false)};
   const doAuth=()=>{if(hashPin(pin)===UP[user])setAuth(true);else{setPE(true);setPin('')}};
-  const doLogout=()=>{setUser(null);setAuth(false);setPin('');setWL({});setSL({});setCP({});setView('workout');setEM(false);setAD(null);setSchedMode(false)};
+  const doLogout=()=>{setUser(null);setAuth(false);setSuppAuth(false);setSuppPin('');setSuppPE(false);setPin('');setWL({});setSL({});setCP({});setView('workout');setEM(false);setAD(null);setSchedMode(false)};
 
   const enC=()=>{if(!custProg[pk])setCP(p=>({...p,[pk]:JSON.parse(JSON.stringify(gDP()))}))};
   const rmEx=(d,i)=>{enC();setCP(p=>{const g=JSON.parse(JSON.stringify(p[pk]||gDP()));g[d].exercises.splice(i,1);return{...p,[pk]:g}})};
@@ -359,9 +361,12 @@ function App(){
       </div>}
 
       {view==='supplements'&&<div>
+        {!suppAuthed?<div className="flex flex-col items-center justify-center py-16"><I.Pill s={48} c={`${uc.a} mb-4`}/><h2 className="text-xl font-bold mb-2">Supplements Locked</h2><p className="text-zinc-500 mb-6">Enter supplements PIN</p><input type="password" maxLength={4} value={suppPin} onChange={e=>{setSuppPin(e.target.value.replace(/\D/g,''));setSuppPE(false)}} onKeyDown={e=>{if(e.key==='Enter'&&suppPin.length===4){if(hashPin(suppPin)===SUPP_PIN){setSuppAuth(true);setSuppPin('')}else{setSuppPE(true);setSuppPin('')}}}} className={`w-48 text-center text-2xl p-3 rounded-xl bg-zinc-900 border ${suppPinErr?'border-red-500':'border-zinc-700'} focus:outline-none focus:border-purple-500`} autoFocus placeholder={'\u2022\u2022\u2022\u2022'}/>{suppPinErr&&<p className="text-red-400 text-sm mt-2">Wrong PIN</p>}<button onClick={()=>{if(hashPin(suppPin)===SUPP_PIN){setSuppAuth(true);setSuppPin('')}else{setSuppPE(true);setSuppPin('')}}} className={`mt-4 px-8 py-3 rounded-xl ${uc.b} text-white font-semibold`}>Unlock</button></div>
+        :<div>
         <h2 className="text-xl font-bold mb-1">Supplements</h2><p className="text-sm text-zinc-500 mb-4">{DN[tdow]} {'\u2022'} {dk}</p>
         {tSp.length===0?<div className="text-center py-16"><p className="text-4xl mb-4">{'\u2728'}</p><p className="text-zinc-500">No supplements to track today</p></div>
         :<div className="space-y-2">{tSp.map((s,i)=><button key={i} onClick={()=>tS(s.name)} className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-all ${isSD(s.name)?'bg-emerald-500/10 border-emerald-500/30':'bg-zinc-900 border-zinc-800'}`}><div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${isSD(s.name)?'bg-emerald-500 text-white':'bg-zinc-800 text-zinc-600'}`}>{isSD(s.name)?<I.Check s={16}/>:<span className="text-xs">{s.type==='injection'?'\u{1F489}':'\u{1F48A}'}</span>}</div><div className="text-left flex-1"><p className={`text-sm font-medium ${isSD(s.name)?'text-emerald-400 line-through':'text-white'}`}>{s.name}</p><p className="text-xs text-zinc-500">{s.dose} {'\u2022'} {s.time}</p></div></button>)}</div>}
+      </div>}
       </div>}
 
       {view==='calendar'&&<div>
