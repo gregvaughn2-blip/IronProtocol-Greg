@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#09090b">
+  <meta name="theme-color" content="#0a0a0a">
   <title>Iron Protocol</title>
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -13,9 +13,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     * { -webkit-tap-highlight-color: transparent; }
-    body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #09090b; color: white; }
-    input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-    input[type="number"] { -moz-appearance: textfield; }
+    html, body { margin: 0; padding: 0; background: #0a0a0a; color: white; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
     input[type="password"] { letter-spacing: 0.3em; }
     .safe-bottom { padding-bottom: max(env(safe-area-inset-bottom), 16px); }
     .no-sb::-webkit-scrollbar { display: none; }
@@ -27,26 +25,18 @@
   <script type="text/babel">
 const { useState, useEffect } = React;
 
-// PIN hashing
+// PIN hash
 const hashPin = (pin) => {
   let h = 0;
   for (let i = 0; i < pin.length; i++) h = ((h << 5) - h) + pin.charCodeAt(i) & 0xffffffff;
   return h.toString();
 };
 
-const userPins = {
-  greg: hashPin('1234'),
-  ricki: hashPin('5678'),
-  dalton: hashPin('0000'),
-  denver: hashPin('2626'),
-  brandon: hashPin('1980'),
-  shayla: hashPin('1111')
-};
-
+const userPins = { greg: hashPin('1234'), ricki: hashPin('5678'), dalton: hashPin('0000'), denver: hashPin('2626'), brandon: hashPin('1980'), shayla: hashPin('1111') };
 const SUPP_PIN = hashPin('9999');
 
-// IndexedDB
-const DB = 'IronProtocolDB_v15';
+// DB
+const DB = 'IronDB_v15';
 const openDB = () => new Promise((res, rej) => {
   const r = indexedDB.open(DB, 1);
   r.onerror = () => rej(r.error);
@@ -55,320 +45,186 @@ const openDB = () => new Promise((res, rej) => {
 });
 
 const save = async (id, data) => {
-  try {
-    const db = await openDB();
-    return new Promise(res => {
-      const tx = db.transaction('data', 'readwrite');
-      tx.objectStore('data').put({ id, ...data, ts: Date.now() });
-      tx.oncomplete = () => res(true);
-    });
-  } catch (e) {
-    return false;
-  }
+  try { const db = await openDB(); return new Promise(res => { const tx = db.transaction('data', 'readwrite'); tx.objectStore('data').put({ id, ...data, ts: Date.now() }); tx.oncomplete = () => res(true); }); } catch (e) { return false; }
 };
 
 const load = async (id) => {
-  try {
-    const db = await openDB();
-    return new Promise(res => {
-      const q = db.transaction('data', 'readonly').objectStore('data').get(id);
-      q.onsuccess = () => res(q.result);
-    });
-  } catch (e) {
-    return null;
-  }
+  try { const db = await openDB(); return new Promise(res => { const q = db.transaction('data', 'readonly').objectStore('data').get(id); q.onsuccess = () => res(q.result); }); } catch (e) { return null; }
 };
 
-// WORKOUT DATA - Gym exercises
-const gymData = {
-  greg: {
-    mon: { name: 'Chest/Shoulders', exs: [{ name: 'Barbell Bench', sets: 4, reps: '8-10' }, { name: 'Incline DB Press', sets: 3, reps: '10' }, { name: 'Dumbbell Flyes', sets: 3, reps: '12' }, { name: 'Seated Shoulder Press', sets: 4, reps: '8-10' }, { name: 'Lateral Raise', sets: 3, reps: '12' }] },
-    tue: { name: 'Back/Biceps', exs: [{ name: 'Lat Pulldown', sets: 4, reps: '8-10' }, { name: 'Barbell Row', sets: 4, reps: '8' }, { name: 'Dumbbell Row', sets: 3, reps: '10' }, { name: 'Barbell Curl', sets: 3, reps: '10' }, { name: 'Machine Curl', sets: 3, reps: '12' }] },
-    wed: { name: 'Legs', exs: [{ name: 'Leg Press', sets: 4, reps: '10-12' }, { name: 'Smith Squat', sets: 4, reps: '8-10' }, { name: 'Leg Curl', sets: 3, reps: '12' }, { name: 'Leg Extension', sets: 3, reps: '12' }, { name: 'Calf Raises', sets: 3, reps: '15' }] },
-    thu: { name: 'Rest Day', exs: [] },
-    fri: { name: 'Full Body', exs: [{ name: 'Deadlift', sets: 4, reps: '6-8' }, { name: 'Incline Treadmill', sets: 3, reps: '10min' }, { name: 'Core Circuit', sets: 3, reps: '30sec' }] },
-    sat: { name: 'Active Recovery', exs: [{ name: 'Light Cardio', sets: 1, reps: '30min' }] },
-    sun: { name: 'Rest Day', exs: [] }
-  },
-  denver: {
-    mon: { name: 'Lower A', exs: [{ name: 'Goblet Squat', sets: 3, reps: '12' }, { name: 'Romanian Deadlift', sets: 3, reps: '10' }, { name: 'Leg Extension', sets: 2, reps: '12' }] },
-    tue: { name: 'Upper A', exs: [{ name: 'Machine Chest Press', sets: 3, reps: '12' }, { name: 'Lat Pulldown', sets: 3, reps: '12' }, { name: 'Dumbbell Row', sets: 3, reps: '10' }] },
-    wed: { name: 'Rest', exs: [] },
-    thu: { name: 'Lower B', exs: [{ name: 'Leg Press', sets: 3, reps: '12' }, { name: 'Leg Curl', sets: 3, reps: '12' }, { name: 'Walking Lunge', sets: 3, reps: '10' }] },
-    fri: { name: 'Upper B', exs: [{ name: 'Shoulder Press', sets: 3, reps: '10' }, { name: 'Dumbbell Curl', sets: 3, reps: '12' }, { name: 'Tricep Dip', sets: 2, reps: '10' }] },
-    sat: { name: 'Cardio', exs: [{ name: 'Elliptical', sets: 1, reps: '20min' }] },
-    sun: { name: 'Rest', exs: [] }
-  },
-  ricki: {
-    mon: { name: 'Push', exs: [{ name: 'Smith Chest Press', sets: 3, reps: '12' }, { name: 'Shoulder Press', sets: 3, reps: '10' }, { name: 'Tricep Machine', sets: 3, reps: '12' }] },
-    tue: { name: 'Pull', exs: [{ name: 'Lat Pulldown', sets: 3, reps: '12' }, { name: 'Cable Row', sets: 3, reps: '12' }, { name: 'Machine Curl', sets: 3, reps: '12' }] },
-    wed: { name: 'Legs', exs: [{ name: 'Leg Press', sets: 3, reps: '12' }, { name: 'Leg Curl', sets: 3, reps: '12' }, { name: 'Leg Extension', sets: 3, reps: '12' }] },
-    thu: { name: 'Rest', exs: [] },
-    fri: { name: 'Full Body', exs: [{ name: 'Machine Workout', sets: 3, reps: '12' }] },
-    sat: { name: 'Cardio', exs: [{ name: 'Elliptical', sets: 1, reps: '20min' }] },
-    sun: { name: 'Rest', exs: [] }
-  },
-  dalton: {
-    mon: { name: 'Chest', exs: [{ name: 'Bench Press', sets: 4, reps: '10' }, { name: 'Incline Press', sets: 3, reps: '10' }] },
-    tue: { name: 'Back', exs: [{ name: 'Lat Pulldown', sets: 4, reps: '10' }, { name: 'Row', sets: 3, reps: '10' }] },
-    wed: { name: 'Rest', exs: [] },
-    thu: { name: 'Legs', exs: [{ name: 'Leg Press', sets: 4, reps: '10' }, { name: 'Squat', sets: 3, reps: '8' }] },
-    fri: { name: 'Arms', exs: [{ name: 'Curl', sets: 3, reps: '10' }, { name: 'Extension', sets: 3, reps: '10' }] },
-    sat: { name: 'Cardio', exs: [{ name: 'Treadmill', sets: 1, reps: '30min' }] },
-    sun: { name: 'Rest', exs: [] }
-  },
-  brandon: {
-    mon: { name: 'Push Day 1', exs: [{ name: 'Bench Press', sets: 4, reps: '8-10' }, { name: 'Incline Press', sets: 3, reps: '10' }, { name: 'Shoulder Press', sets: 3, reps: '8-10' }] },
-    tue: { name: 'Pull Day 1', exs: [{ name: 'Deadlift', sets: 4, reps: '6-8' }, { name: 'Lat Pulldown', sets: 4, reps: '8-10' }, { name: 'Row', sets: 3, reps: '10' }] },
-    wed: { name: 'Leg Day 1', exs: [{ name: 'Squat', sets: 4, reps: '8-10' }, { name: 'Leg Press', sets: 4, reps: '10' }, { name: 'Curl', sets: 3, reps: '12' }] },
-    thu: { name: 'Push Day 2', exs: [{ name: 'Incline Bench', sets: 4, reps: '8-10' }, { name: 'Dumbbell Press', sets: 3, reps: '10' }] },
-    fri: { name: 'Pull Day 2', exs: [{ name: 'Barbell Row', sets: 4, reps: '8-10' }, { name: 'Cable Row', sets: 3, reps: '10' }] },
-    sat: { name: 'Leg Day 2', exs: [{ name: 'Front Squat', sets: 3, reps: '8-10' }, { name: 'Extension', sets: 3, reps: '12' }] },
-    sun: { name: 'Rest', exs: [] }
-  },
-  shayla: {
-    mon: { name: 'Lower A', exs: [{ name: 'Hip Thrust', sets: 4, reps: '12' }, { name: 'RDL', sets: 4, reps: '10' }, { name: 'Bulgarian Split Squat', sets: 3, reps: '10' }] },
-    tue: { name: 'Upper A', exs: [{ name: 'Lat Pulldown', sets: 4, reps: '12' }, { name: 'Cable Row', sets: 3, reps: '12' }, { name: 'Shoulder Press', sets: 3, reps: '10' }] },
-    wed: { name: 'Rest', exs: [] },
-    thu: { name: 'Lower B', exs: [{ name: 'Goblet Squat', sets: 4, reps: '12' }, { name: 'Leg Press', sets: 4, reps: '12' }, { name: 'Leg Curl', sets: 3, reps: '12' }] },
-    fri: { name: 'Upper B', exs: [{ name: 'DB Press', sets: 3, reps: '12' }, { name: 'Incline Press', sets: 3, reps: '12' }, { name: 'Curl', sets: 3, reps: '12' }] },
-    sat: { name: 'Cardio', exs: [{ name: 'Elliptical', sets: 1, reps: '20min' }] },
-    sun: { name: 'Rest', exs: [] }
-  }
+// User color themes
+const userThemes = {
+  greg: { accent: 'text-purple-400', button: 'bg-purple-600 hover:bg-purple-700', border: 'border-purple-500', pill: 'bg-purple-500/20' },
+  ricki: { accent: 'text-rose-400', button: 'bg-rose-600 hover:bg-rose-700', border: 'border-rose-500', pill: 'bg-rose-500/20' },
+  dalton: { accent: 'text-blue-400', button: 'bg-blue-600 hover:bg-blue-700', border: 'border-blue-500', pill: 'bg-blue-500/20' },
+  denver: { accent: 'text-emerald-400', button: 'bg-emerald-600 hover:bg-emerald-700', border: 'border-emerald-500', pill: 'bg-emerald-500/20' },
+  brandon: { accent: 'text-amber-400', button: 'bg-amber-600 hover:bg-amber-700', border: 'border-amber-500', pill: 'bg-amber-500/20' },
+  shayla: { accent: 'text-pink-400', button: 'bg-pink-600 hover:bg-pink-700', border: 'border-pink-500', pill: 'bg-pink-500/20' }
 };
 
-// HOME/BODYWEIGHT exercises
-const homeData = {
-  greg: {
-    mon: { name: 'Chest/Shoulders', exs: [{ name: 'Push-ups', sets: 4, reps: '12-15' }, { name: 'Incline Push-ups', sets: 3, reps: '12' }, { name: 'Pike Push-ups', sets: 3, reps: '10' }, { name: 'Handstand Hold', sets: 3, reps: '20sec' }, { name: 'Shoulder Tap', sets: 3, reps: '10' }] },
-    tue: { name: 'Back/Biceps', exs: [{ name: 'Pull-up', sets: 3, reps: '8' }, { name: 'Inverted Row', sets: 4, reps: '10' }, { name: 'Superman', sets: 3, reps: '12' }, { name: 'Chin-up', sets: 3, reps: '8' }, { name: 'Resistance Band Curl', sets: 3, reps: '12' }] },
-    wed: { name: 'Legs', exs: [{ name: 'Squat', sets: 4, reps: '15-20' }, { name: 'Lunge', sets: 3, reps: '12' }, { name: 'Single-leg Squat', sets: 3, reps: '8' }, { name: 'Glute Bridge', sets: 3, reps: '15' }, { name: 'Calf Raise', sets: 3, reps: '20' }] },
-    thu: { name: 'Rest Day', exs: [] },
-    fri: { name: 'Full Body', exs: [{ name: 'Burpees', sets: 3, reps: '10' }, { name: 'Jump Rope', sets: 3, reps: '1min' }, { name: 'Plank', sets: 3, reps: '1min' }] },
-    sat: { name: 'Light Walk', exs: [{ name: 'Walking', sets: 1, reps: '30min' }] },
-    sun: { name: 'Rest Day', exs: [] }
-  },
-  denver: {
-    mon: { name: 'Lower A', exs: [{ name: 'Jump Squat', sets: 3, reps: '10' }, { name: 'Single-leg RDL', sets: 3, reps: '10' }, { name: 'Reverse Lunge', sets: 2, reps: '12' }] },
-    tue: { name: 'Upper A', exs: [{ name: 'Push-up', sets: 3, reps: '12' }, { name: 'Band Pull-down', sets: 3, reps: '12' }, { name: 'Band Row', sets: 3, reps: '12' }] },
-    wed: { name: 'Rest', exs: [] },
-    thu: { name: 'Lower B', exs: [{ name: 'Bodyweight Squat', sets: 3, reps: '20' }, { name: 'Nordic Curl', sets: 3, reps: '5' }, { name: 'Fire Hydrant', sets: 3, reps: '15' }] },
-    fri: { name: 'Upper B', exs: [{ name: 'Pike Push-up', sets: 3, reps: '10' }, { name: 'Resistance Band Curl', sets: 3, reps: '12' }, { name: 'Dip Hold', sets: 2, reps: '10' }] },
-    sat: { name: 'Walk', exs: [{ name: 'Walking', sets: 1, reps: '20min' }] },
-    sun: { name: 'Rest', exs: [] }
-  },
-  ricki: {
-    mon: { name: 'Push', exs: [{ name: 'Push-up', sets: 3, reps: '10-12' }, { name: 'Pike Push-up', sets: 3, reps: '8' }, { name: 'Dip Hold', sets: 3, reps: '10' }] },
-    tue: { name: 'Pull', exs: [{ name: 'Band Pull-down', sets: 3, reps: '12' }, { name: 'Inverted Row', sets: 3, reps: '10' }, { name: 'Band Curl', sets: 3, reps: '12' }] },
-    wed: { name: 'Legs', exs: [{ name: 'Squat', sets: 3, reps: '15' }, { name: 'Lunge', sets: 3, reps: '12' }, { name: 'Glute Bridge', sets: 3, reps: '15' }] },
-    thu: { name: 'Rest', exs: [] },
-    fri: { name: 'Full Body', sets: 3, reps: '12' },
-    sat: { name: 'Walk', exs: [{ name: 'Walking', sets: 1, reps: '20min' }] },
-    sun: { name: 'Rest', exs: [] }
-  },
-  dalton: {
-    mon: { name: 'Push', exs: [{ name: 'Push-up', sets: 3, reps: '15' }, { name: 'Pike Push', sets: 3, reps: '10' }] },
-    tue: { name: 'Pull', exs: [{ name: 'Band Pull', sets: 3, reps: '12' }, { name: 'Row', sets: 3, reps: '12' }] },
-    wed: { name: 'Rest', exs: [] },
-    thu: { name: 'Legs', exs: [{ name: 'Squat', sets: 3, reps: '20' }, { name: 'Lunge', sets: 3, reps: '12' }] },
-    fri: { name: 'Arms', exs: [{ name: 'Band Curl', sets: 3, reps: '12' }, { name: 'Extension', sets: 3, reps: '12' }] },
-    sat: { name: 'Walk', exs: [{ name: 'Walking', sets: 1, reps: '30min' }] },
-    sun: { name: 'Rest', exs: [] }
-  },
-  brandon: {
-    mon: { name: 'Push Day 1', exs: [{ name: 'Push-up', sets: 4, reps: '12-15' }, { name: 'Incline Push', sets: 3, reps: '12' }, { name: 'Pike Push', sets: 3, reps: '10' }] },
-    tue: { name: 'Pull Day 1', exs: [{ name: 'Pull-up', sets: 4, reps: '8' }, { name: 'Band Pull-down', sets: 4, reps: '12' }, { name: 'Inverted Row', sets: 3, reps: '12' }] },
-    wed: { name: 'Leg Day 1', exs: [{ name: 'Squat', sets: 4, reps: '15' }, { name: 'Lunge', sets: 4, reps: '12' }, { name: 'Jump Squat', sets: 3, reps: '10' }] },
-    thu: { name: 'Push Day 2', exs: [{ name: 'Decline Push', sets: 4, reps: '10' }, { name: 'Diamond Push', sets: 3, reps: '12' }] },
-    fri: { name: 'Pull Day 2', exs: [{ name: 'Chin-up', sets: 4, reps: '8' }, { name: 'Band Row', sets: 3, reps: '12' }] },
-    sat: { name: 'Leg Day 2', exs: [{ name: 'Pistol Squat', sets: 3, reps: '6' }, { name: 'Single-leg RDL', sets: 3, reps: '10' }] },
-    sun: { name: 'Rest', exs: [] }
-  },
-  shayla: {
-    mon: { name: 'Lower A', exs: [{ name: 'Single-leg Glute Bridge', sets: 4, reps: '12' }, { name: 'Single-leg RDL', sets: 4, reps: '10' }, { name: 'Reverse Lunge', sets: 3, reps: '10' }] },
-    tue: { name: 'Upper A', exs: [{ name: 'Band Pull-down', sets: 4, reps: '12' }, { name: 'Inverted Row', sets: 3, reps: '12' }, { name: 'Pike Push-up', sets: 3, reps: '10' }] },
-    wed: { name: 'Rest', exs: [] },
-    thu: { name: 'Lower B', exs: [{ name: 'Jump Squat', sets: 4, reps: '12' }, { name: 'Bodyweight Squat', sets: 4, reps: '15' }, { name: 'Step-up', sets: 3, reps: '12' }] },
-    fri: { name: 'Upper B', exs: [{ name: 'Push-up', sets: 3, reps: '12' }, { name: 'Incline Push', sets: 3, reps: '12' }, { name: 'Band Curl', sets: 3, reps: '12' }] },
-    sat: { name: 'Walk', exs: [{ name: 'Walking', sets: 1, reps: '20min' }] },
-    sun: { name: 'Rest', exs: [] }
-  }
+// Workout data
+const workouts = {
+  greg: { mon: { name: 'Chest/Shoulder', exs: [{ n: 'Barbell Bench' }, { n: 'Incline Press' }, { n: 'Lateral Raise' }] }, tue: { name: 'Back/Biceps', exs: [{ n: 'Lat Pulldown' }, { n: 'Rows' }, { n: 'Curls' }] }, wed: { name: 'Legs', exs: [{ n: 'Leg Press' }, { n: 'Squat' }, { n: 'Curl' }] }, thu: { name: 'Rest' }, fri: { name: 'Full Body', exs: [{ n: 'Deadlift' }, { n: 'Cardio' }] }, sat: { name: 'Active Recovery' }, sun: { name: 'Rest' } },
+  denver: { mon: { name: 'Lower A', exs: [{ n: 'Goblet Squat' }, { n: 'RDL' }] }, tue: { name: 'Upper A', exs: [{ n: 'Chest Press' }, { n: 'Row' }] }, wed: { name: 'Rest' }, thu: { name: 'Lower B', exs: [{ n: 'Leg Press' }] }, fri: { name: 'Upper B', exs: [{ n: 'Press' }] }, sat: { name: 'Cardio' }, sun: { name: 'Rest' } },
+  ricki: { mon: { name: 'Push', exs: [{ n: 'Press' }] }, tue: { name: 'Pull', exs: [{ n: 'Pull' }] }, wed: { name: 'Legs' }, thu: { name: 'Rest' }, fri: { name: 'Full' }, sat: { name: 'Cardio' }, sun: { name: 'Rest' } },
+  dalton: { mon: { name: 'Chest' }, tue: { name: 'Back' }, wed: { name: 'Rest' }, thu: { name: 'Legs' }, fri: { name: 'Arms' }, sat: { name: 'Cardio' }, sun: { name: 'Rest' } },
+  brandon: { mon: { name: 'Push 1' }, tue: { name: 'Pull 1' }, wed: { name: 'Legs 1' }, thu: { name: 'Push 2' }, fri: { name: 'Pull 2' }, sat: { name: 'Legs 2' }, sun: { name: 'Rest' } },
+  shayla: { mon: { name: 'Lower A' }, tue: { name: 'Upper A' }, wed: { name: 'Rest' }, thu: { name: 'Lower B' }, fri: { name: 'Upper B' }, sat: { name: 'Cardio' }, sun: { name: 'Rest' } }
 };
 
-// SUPPLEMENTS (greg & ricki only)
-const suppData = {
-  greg: [
-    { day: 'Daily', items: [{ name: 'Tesamorelin', dose: '80 units', type: 'inject' }, { name: 'Ipamorelin', dose: '5-6 units', type: 'inject' }] },
-    { day: 'Mon', items: [{ name: 'TRT', dose: '80mg', type: 'inject' }] },
-    { day: 'Thu', items: [{ name: 'TB-500', dose: '40 units', type: 'inject' }, { name: 'Retatrutide', dose: '2.5 units', type: 'inject' }] }
-  ],
-  ricki: [
-    { day: 'Daily', items: [{ name: 'Tesamorelin', dose: '40 units', type: 'inject' }, { name: 'Ipamorelin', dose: '2 units', type: 'inject' }] },
-    { day: 'Thu', items: [{ name: 'Retatrutide', dose: '2 units', type: 'inject' }] }
-  ]
-};
+const suppData = { greg: [{ day: 'Daily', items: ['Tesamorelin', 'Ipamorelin'] }, { day: 'Mon', items: ['TRT'] }, { day: 'Thu', items: ['TB-500', 'Retatrutide'] }], ricki: [{ day: 'Daily', items: ['Tesamorelin', 'Ipamorelin'] }, { day: 'Thu', items: ['Retatrutide'] }] };
 
-// ICONS
-const Icon = ({ name }) => {
-  if (name === 'Dumbbell') return <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 4h12v2H6zM5 8h14v8H5zM8 16h8v2H8z"/></svg>;
-  if (name === 'Pill') return <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/></svg>;
-  if (name === 'Logout') return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 3l7 7-7 7M23 10H9"/></svg>;
-  return null;
-};
-
-// MAIN APP
 function App() {
   const [user, setUser] = useState(null);
   const [pin, setPin] = useState('');
+  const [error, setError] = useState('');
   const [view, setView] = useState('workout');
   const [day, setDay] = useState('mon');
   const [gym, setGym] = useState(true);
   const [suppAuth, setSuppAuth] = useState(false);
   const [suppPin, setSuppPin] = useState('');
-  const [error, setError] = useState('');
 
   useEffect(() => {
-    const loadUser = async () => {
-      const u = await load('currentUser');
-      if (u) setUser(u.user);
-    };
+    const loadUser = async () => { const u = await load('user'); if (u) setUser(u.user); };
     loadUser();
   }, []);
 
-  const login = async (username) => {
-    if (hashPin(pin) !== userPins[username]) {
-      setError('Wrong PIN');
-      return;
-    }
-    setUser(username);
-    setPin('');
-    setError('');
-    await save('currentUser', { user: username });
+  const login = async (u) => {
+    if (hashPin(pin) !== userPins[u]) { setError('Wrong PIN'); setPin(''); return; }
+    setUser(u); setPin(''); setError(''); await save('user', { user: u });
   };
 
-  const logout = () => {
-    setUser(null);
-    setView('workout');
-    setPin('');
-    setSuppAuth(false);
-    setSuppPin('');
-    save('currentUser', { user: null });
-  };
+  const logout = () => { setUser(null); setPin(''); setError(''); setSuppAuth(false); setSuppPin(''); save('user', { user: null }); };
 
   const authSupp = () => {
-    if (hashPin(suppPin) !== SUPP_PIN) {
-      setError('Wrong supplement PIN');
-      return;
-    }
-    setSuppAuth(true);
-    setSuppPin('');
-    setError('');
+    if (hashPin(suppPin) !== SUPP_PIN) { setError('Wrong PIN'); return; }
+    setSuppAuth(true); setSuppPin(''); setError('');
   };
+
+  const theme = user ? userThemes[user] : null;
+  const dayLabels = { mon: 'Monday', tue: 'Tuesday', wed: 'Wednesday', thu: 'Thursday', fri: 'Friday', sat: 'Saturday', sun: 'Sunday' };
+  const hasSupps = user === 'greg' || user === 'ricki';
+  const workout = workouts[user] ? workouts[user][day] : null;
 
   if (!user) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-black p-4">
-        <h1 className="text-4xl font-bold mb-8 text-purple-400">Iron Protocol</h1>
-        <div className="w-full max-w-sm space-y-2 mb-6">
-          {['greg', 'ricki', 'dalton', 'denver', 'brandon', 'shayla'].map(u => (
-            <button key={u} onClick={() => setView(u === view ? 'workout' : u)} className={`w-full py-3 rounded-lg font-semibold ${view === u ? 'bg-purple-600 text-white' : 'bg-zinc-800 text-zinc-300'}`}>
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 to-black flex flex-col items-center justify-center p-4">
+        <div className="mb-12 text-center">
+          <h1 className="text-5xl font-bold tracking-tight mb-2">IRON PROTOCOL</h1>
+          <p className="text-slate-400 text-lg">Select Profile to Begin</p>
+        </div>
+        <div className="w-full max-w-md space-y-3 mb-8">
+          {Object.keys(userThemes).map(u => (
+            <button key={u} onClick={() => { setView(u === view ? 'workout' : u); }} className={`w-full p-4 rounded-lg font-semibold transition-all border-2 ${view === u ? `${userThemes[u].button} border-${userThemes[u].border.split('-')[1]}-500` : 'bg-slate-800 border-slate-700 text-slate-300'}`}>
               {u.charAt(0).toUpperCase() + u.slice(1)}
             </button>
           ))}
         </div>
-        <div className="w-full max-w-sm bg-zinc-900 p-6 rounded-lg border border-zinc-800">
-          <input type="password" placeholder="PIN" value={pin} onChange={(e) => setPin(e.target.value)} maxLength="4" className="w-full bg-zinc-800 text-white text-center text-2xl rounded py-2 mb-4"/>
-          <button onClick={() => login(view)} className="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold mb-2">Login</button>
-          {error && <p className="text-red-400 text-sm">{error}</p>}
+        <div className="w-full max-w-md bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-6">
+          <input type="password" placeholder="PIN" value={pin} onChange={(e) => { setPin(e.target.value); setError(''); }} maxLength="4" className="w-full bg-slate-900 text-white text-center text-3xl rounded-lg py-3 mb-4 border border-slate-600" />
+          <button onClick={() => login(view)} className={`w-full ${theme ? userThemes[view].button : 'bg-slate-600'} text-white py-3 rounded-lg font-semibold transition-all`}>
+            Login
+          </button>
+          {error && <p className="text-red-400 text-sm mt-3 text-center">{error}</p>}
         </div>
       </div>
     );
   }
 
-  const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
-  const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  const workoutData = gym ? gymData[user] : homeData[user];
-  const workout = workoutData ? workoutData[day] : null;
-  const hasSupps = user === 'greg' || user === 'ricki';
-
   return (
-    <div className="min-h-screen bg-black text-white pb-24">
-      {/* Header */}
-      <div className="sticky top-0 bg-zinc-900 border-b border-zinc-800 p-4 flex justify-between items-center">
-        <h1 className="text-xl font-bold text-purple-400">{user.toUpperCase()}</h1>
-        <button onClick={logout} className="p-2 bg-zinc-800 rounded-lg"><Icon name="Logout"/></button>
+    <div className="min-h-screen bg-slate-950 text-white flex flex-col">
+      {/* HEADER */}
+      <div className={`sticky top-0 z-20 ${theme.pill} border-b border-slate-700 px-4 py-4 flex justify-between items-center`}>
+        <div className="flex-1">
+          <h1 className={`text-2xl font-bold ${theme.accent}`}>{user.toUpperCase()}</h1>
+          <p className="text-slate-400 text-sm">{dayLabels[day]}</p>
+        </div>
+        <button onClick={logout} className="px-4 py-2 bg-slate-800 rounded-lg hover:bg-slate-700 transition-all">Logout</button>
       </div>
 
-      {/* Day Selector */}
-      <div className="sticky top-16 bg-zinc-900 border-b border-zinc-800 overflow-x-auto no-sb">
-        <div className="flex gap-1 p-2">
-          {dayLabels.map((label, i) => (
-            <button key={i} onClick={() => setDay(days[i])} className={`flex-shrink-0 px-3 py-2 rounded-lg text-sm font-semibold ${day === days[i] ? 'bg-purple-600' : 'bg-zinc-800'}`}>
-              {label}
-            </button>
-          ))}
+      {/* DAY & MODE SELECTOR */}
+      <div className={`sticky top-16 z-10 bg-slate-900/80 backdrop-blur border-b border-slate-700 px-4 py-4`}>
+        <div className="mb-4">
+          <p className="text-xs text-slate-400 mb-2 font-semibold uppercase">Select Day</p>
+          <div className="flex gap-2 overflow-x-auto no-sb pb-2">
+            {Object.keys(dayLabels).map(d => (
+              <button key={d} onClick={() => setDay(d)} className={`flex-shrink-0 px-4 py-2 rounded-lg font-semibold transition-all ${day === d ? theme.button : 'bg-slate-800 hover:bg-slate-700'}`}>
+                {d.toUpperCase()}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
-
-      {/* Gym/Home Toggle */}
-      {user !== 'ricki' && (
-        <div className="flex gap-2 m-4">
-          <button onClick={() => setGym(true)} className={`flex-1 py-2 rounded-lg font-semibold ${gym ? 'bg-purple-600' : 'bg-zinc-800'}`}>Gym</button>
-          <button onClick={() => setGym(false)} className={`flex-1 py-2 rounded-lg font-semibold ${!gym ? 'bg-purple-600' : 'bg-zinc-800'}`}>Home</button>
-        </div>
-      )}
-
-      {/* Content */}
-      <div className="max-w-2xl mx-auto p-4">
-        {view === 'workout' && workout && (
-          <>
-            <h2 className="text-3xl font-bold mb-4">{workout.name}</h2>
-            <div className="space-y-2">
-              {workout.exs.map((ex, i) => (
-                <div key={i} className="bg-zinc-900 p-4 rounded-lg border border-zinc-800">
-                  <h3 className="font-semibold text-lg">{ex.name}</h3>
-                  <p className="text-sm text-zinc-400">{ex.sets} × {ex.reps}</p>
-                </div>
-              ))}
+        {user !== 'ricki' && (
+          <div>
+            <p className="text-xs text-slate-400 mb-2 font-semibold uppercase">Mode</p>
+            <div className="flex gap-2">
+              <button onClick={() => setGym(true)} className={`flex-1 py-2 rounded-lg font-semibold transition-all ${gym ? theme.button : 'bg-slate-800 hover:bg-slate-700'}`}>Gym</button>
+              <button onClick={() => setGym(false)} className={`flex-1 py-2 rounded-lg font-semibold transition-all ${!gym ? theme.button : 'bg-slate-800 hover:bg-slate-700'}`}>Home</button>
             </div>
-          </>
+          </div>
         )}
+      </div>
 
-        {view === 'workout' && (!workout || workout.exs.length === 0) && (
-          <div className="text-center py-12 text-zinc-500">Rest Day</div>
-        )}
+      {/* CONTENT */}
+      <div className="flex-1 overflow-y-auto no-sb p-4">
+        <div className="max-w-2xl mx-auto">
+          {view === 'workout' && workout && (
+            <>
+              <h2 className={`text-3xl font-bold mb-6 ${theme.accent}`}>{workout.name}</h2>
+              {workout.exs && workout.exs.length > 0 ? (
+                <div className="space-y-3">
+                  {workout.exs.map((ex, i) => (
+                    <div key={i} className={`bg-slate-800/50 border ${theme.border} border-opacity-30 rounded-lg p-4 hover:bg-slate-800/70 transition-all`}>
+                      <p className="font-semibold text-lg">{ex.n}</p>
+                      <p className="text-slate-400 text-sm mt-1">{gym ? 'Gym mode' : 'Home mode'}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-slate-400 text-center py-8">Rest Day</p>
+              )}
+            </>
+          )}
 
-        {view === 'supplements' && hasSupps && suppAuth && (
-          <div className="space-y-3">
-            <h2 className="text-2xl font-bold mb-4">Supplements</h2>
-            {suppData[user]?.map((section, i) => (
-              <div key={i}>
-                <h3 className="text-purple-400 font-semibold mb-2">{section.day}</h3>
-                {section.items.map((item, j) => (
-                  <div key={j} className="bg-zinc-900 p-3 rounded-lg border border-zinc-800 mb-2">
-                    <p className="font-semibold">{item.name}</p>
-                    <p className="text-sm text-zinc-400">{item.dose} • {item.type}</p>
+          {view === 'supplements' && hasSupps && !suppAuth && (
+            <div className="max-w-sm mx-auto py-12">
+              <h2 className="text-2xl font-bold mb-6 text-center">Supplement Access</h2>
+              <input type="password" placeholder="PIN" value={suppPin} onChange={(e) => setSuppPin(e.target.value)} maxLength="4" className="w-full bg-slate-800 text-white text-center text-3xl rounded-lg py-3 mb-4 border border-slate-600" />
+              <button onClick={authSupp} className={`w-full ${theme.button} text-white py-3 rounded-lg font-semibold`}>Unlock</button>
+              {error && <p className="text-red-400 text-sm mt-3 text-center">{error}</p>}
+            </div>
+          )}
+
+          {view === 'supplements' && hasSupps && suppAuth && (
+            <>
+              <h2 className={`text-3xl font-bold mb-6 ${theme.accent}`}>Supplements</h2>
+              <div className="space-y-4">
+                {suppData[user]?.map((section, i) => (
+                  <div key={i}>
+                    <p className={`text-sm font-semibold ${theme.accent} mb-2`}>{section.day}</p>
+                    {section.items.map((item, j) => (
+                      <div key={j} className={`bg-slate-800/50 border ${theme.border} border-opacity-30 rounded-lg p-3 mb-2`}>
+                        <p className="font-semibold">{item}</p>
+                      </div>
+                    ))}
                   </div>
                 ))}
               </div>
-            ))}
-          </div>
-        )}
-
-        {view === 'supplements' && hasSupps && !suppAuth && (
-          <div className="max-w-sm mx-auto mt-8">
-            <h2 className="text-xl font-bold mb-4">Supplement Access</h2>
-            <input type="password" placeholder="PIN" value={suppPin} onChange={(e) => setSuppPin(e.target.value)} maxLength="4" className="w-full bg-zinc-800 text-white text-center text-2xl rounded py-2 mb-4"/>
-            <button onClick={authSupp} className="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold">Unlock</button>
-            {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
-          </div>
-        )}
+            </>
+          )}
+        </div>
       </div>
 
-      {/* Bottom Nav */}
-      <div className="fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-800 flex justify-around py-3 safe-bottom">
-        <button onClick={() => { setView('workout'); setSuppAuth(false); }} className={`flex-1 text-center ${view === 'workout' ? 'text-purple-400' : 'text-zinc-500'}`}><Icon name="Dumbbell"/></button>
-        {hasSupps && <button onClick={() => setView('supplements')} className={`flex-1 text-center ${view === 'supplements' ? 'text-purple-400' : 'text-zinc-500'}`}><Icon name="Pill"/></button>}
+      {/* BOTTOM NAV */}
+      <div className={`sticky bottom-0 bg-slate-900 border-t border-slate-700 safe-bottom flex justify-around py-3`}>
+        <button onClick={() => { setView('workout'); setSuppAuth(false); }} className={`flex-1 text-center py-2 transition-all ${view === 'workout' ? theme.accent : 'text-slate-400'}`}>
+          💪 Workout
+        </button>
+        {hasSupps && (
+          <button onClick={() => setView('supplements')} className={`flex-1 text-center py-2 transition-all ${view === 'supplements' ? theme.accent : 'text-slate-400'}`}>
+            💊 Supps
+          </button>
+        )}
       </div>
     </div>
   );
